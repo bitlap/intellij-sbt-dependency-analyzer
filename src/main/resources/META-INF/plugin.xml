@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <id>org.bitlap.sbtDependencyAnalysis</id>
+    <name>Sbt Dependency Analysis</name>
+    <version>0.1.0-213.5744.223-SNAPSHOT</version>
+    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analysis" email="dreamylost@outlook.com">Bitlap</vendor>
+    <idea-version since-build="213.0"/>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>org.intellij.scala</depends>
+    <depends>com.intellij.properties</depends>
+
+    <description><![CDATA[ Description will be added by sbt plugin build ]]></description>
+    <change-notes><![CDATA[ Change notes will be filled by sbt plugin build ]]></change-notes>
+
+</idea-plugin>
