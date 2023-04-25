@@ -1,4 +1,4 @@
-package bitlap.intellij.sd
+package bitlap.intellij.analysis
 
 /** @author
  *    梦境迷离
