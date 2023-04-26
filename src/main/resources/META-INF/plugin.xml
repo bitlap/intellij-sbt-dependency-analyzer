@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <idea-plugin>
-    <id>org.bitlap.sbtDependencyAnalysis</id>
-    <name>Sbt Dependency Analysis</name>
+    <id>org.bitlap.sbtDependencyAnalyzer</id>
+    <name>Sbt Dependency Analyzer</name>
     <version>0.1.0-213.5744.223-SNAPSHOT</version>
-    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analysis" email="dreamylost@outlook.com">Bitlap</vendor>
+    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap</vendor>
     <idea-version since-build="213.0"/>
 
     <depends>com.intellij.modules.platform</depends>

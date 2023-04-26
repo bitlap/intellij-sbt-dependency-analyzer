@@ -9,7 +9,7 @@ ThisBuild / version := pluginVersion
 
 inThisBuild(
   List(
-    homepage := Some(url("https://github.com/bitlap/intellij-sbt-dependency-analysis")),
+    homepage := Some(url("https://github.com/bitlap/intellij-sbt-dependency-analyzer")),
     developers := List(
       Developer(
         id = "jxnu-liguobin",
@@ -27,14 +27,14 @@ inThisBuild(
   )
 )
 
-lazy val `sbt-dependency-analysis` = (project in file("."))
+lazy val `sbt-dependency-analyzer` = (project in file("."))
   .enablePlugins(SbtIdeaPlugin)
   .settings(
-    name                           := "sbt-dependency-analysis",
+    name                           := "sbt-dependency-analyzer",
     scalaVersion                   := scala3Version,
     organization                   := "org.bitlap",
     version                        := (ThisBuild / version).value,
-    ThisBuild / intellijPluginName := "Sbt Dependency Analysis",
+    ThisBuild / intellijPluginName := "Sbt Dependency Analyzer",
     ThisBuild / intellijBuild      := intellijVersion,
     ThisBuild / intellijPlatform   := (Global / intellijPlatform).??(IntelliJPlatform.IdeaCommunity).value,
     Global / intellijAttachSources := true,

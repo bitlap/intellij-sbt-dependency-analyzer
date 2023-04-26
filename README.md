@@ -1,7 +1,7 @@
-Sbt Dependency Analysis Plugin for IntelliJ IDEA
+Sbt Dependency Analyzer Plugin for IntelliJ IDEA
 ---------
 
-[![Build](https://github.com/bitlap/intellij-sbt-dependency-analysis/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analysis/actions/workflows/ScalaCI.yml)
+[![Build](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
 
 ## Environment
 
