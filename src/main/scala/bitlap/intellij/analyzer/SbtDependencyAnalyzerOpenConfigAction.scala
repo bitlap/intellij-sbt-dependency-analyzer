@@ -16,12 +16,12 @@ final class SbtDependencyAnalyzerOpenConfigAction
     extends ExternalSystemDependencyAnalyzerOpenConfigAction(SbtProjectSystem.Id) {
 
   override def getExternalProjectPath(e: AnActionEvent): String = {
-    val dependency = e.getData(DependencyAnalyzerView.DEPENDENCY)
+    val dependency = e.getData(DependencyAnalyzerView.Companion.getDEPENDENCY)
     if (dependency == null) return null
-    val dependencyData = dependency.data.asInstanceOf[Dependency.Data.Module]
+    val dependencyData = dependency.getData.asInstanceOf[Dependency.Data.Module]
     if (dependencyData == null) return null
     val moduleData = dependencyData.getUserData(MODULE_DATA)
     if (moduleData == null) return null
-    moduleData.linkedExternalProjectPath
+    moduleData.getLinkedExternalProjectPath
   }
 }

@@ -21,19 +21,19 @@
 
 
     <actions>
-        <action id="SDA.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
-        <action id="SDA.ToolbarDependencyAnalyzer" class="bitlap.intellij.analyzer.ToolbarDependencyAnalyzerAction"/>
-        <action id="SDA.ProjectViewDependencyAnalyzer"
+        <action id="sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
+        <action id="sbt.ToolbarDependencyAnalyzer" class="bitlap.intellij.analyzer.ToolbarDependencyAnalyzerAction"/>
+        <action id="sbt.ProjectViewDependencyAnalyzer"
                 class="bitlap.intellij.analyzer.ProjectViewDependencyAnalyzerAction">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="UML.Group"/>
         </action>
-        <action id="SDA.DependencyAnalyzer.OpenConfig"
+        <action id="sbt.DependencyAnalyzer.OpenConfig"
                 class="bitlap.intellij.analyzer.SbtDependencyAnalyzerOpenConfigAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="SDA.DependencyAnalyzer.GoTo" class="bitlap.intellij.analyzer.SbtDependencyAnalyzerGoToAction">
+        <action id="sbt.DependencyAnalyzer.GoTo" class="bitlap.intellij.analyzer.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
