@@ -1,11 +1,12 @@
 package bitlap.intellij.analyzer
 
+import org.jetbrains.sbt.project.SbtProjectSystem
+
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerExtension
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerContributor
+import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerExtension
 import com.intellij.openapi.externalSystem.model.ProjectSystemId
 import com.intellij.openapi.project.Project
-import org.jetbrains.sbt.project.SbtProjectSystem
 
 /** @author
  *    梦境迷离

@@ -1,16 +1,16 @@
 package bitlap.intellij.analyzer
 
+import scala.jdk.CollectionConverters.*
+
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.externalSystem.DependencyModifierService
 import com.intellij.ide.util.PsiNavigationSupport
 import com.intellij.openapi.actionSystem.AnActionEvent
-
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerGoToAction
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.pom.Navigatable
-import scala.jdk.CollectionConverters.*
 
 /** @author
  *    梦境迷离

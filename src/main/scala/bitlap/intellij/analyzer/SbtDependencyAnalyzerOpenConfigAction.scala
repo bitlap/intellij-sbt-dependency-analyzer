@@ -1,12 +1,13 @@
 package bitlap.intellij.analyzer
 
+import bitlap.intellij.analyzer.SbtDependencyAnalyzerContributor.MODULE_DATA
+
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.dependency.analyzer.ExternalSystemDependencyAnalyzerOpenConfigAction
-import bitlap.intellij.analyzer.SbtDependencyAnalyzerContributor.MODULE_DATA
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 
 /** @author
  *    梦境迷离

@@ -12,8 +12,8 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.view.ExternalSystemNode
 import com.intellij.openapi.externalSystem.view.ModuleNode
 import com.intellij.openapi.externalSystem.view.ProjectNode
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.module.Module
+import com.intellij.openapi.util.text.StringUtil
 
 /** @author
  *    梦境迷离
@@ -33,6 +33,7 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
     data: ExternalSystemNode[_]
   ): DependencyAnalyzerDependency.Data = ???
 }
+
 final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module] {
   override def getDependencyScope(anActionEvent: AnActionEvent, data: Module): String = ???
 
@@ -44,6 +45,7 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyz
 
   override def getDependencyData(anActionEvent: AnActionEvent, data: Module): DependencyAnalyzerDependency.Data = ???
 }
+
 final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction() {
   override def getSystemId(anActionEvent: AnActionEvent): ProjectSystemId = ???
 

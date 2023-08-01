@@ -1,11 +1,13 @@
 package bitlap.intellij.analyzer
+
 import org.jetbrains.plugins.gradle.util.GradleUtil
+import org.jetbrains.sbt.SbtUtil
+
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency
 import com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
-import org.jetbrains.sbt.SbtUtil
 
 /** @author
  *    梦境迷离
