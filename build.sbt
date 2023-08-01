@@ -1,9 +1,9 @@
 import org.jetbrains.sbtidea.Keys._
 
-lazy val scala3Version = "3.2.2"
+lazy val scala3Version = "3.3.0"
 
-lazy val pluginVersion   = "0.1.0-213.5744.223-SNAPSHOT"
-lazy val intellijVersion = "213.5744.223"
+lazy val intellijVersion = "231.9392.1"
+lazy val pluginVersion   = s"0.1.0-$intellijVersion-SNAPSHOT"
 
 ThisBuild / version := pluginVersion
 

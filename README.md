@@ -6,8 +6,8 @@ Sbt Dependency Analyzer Plugin for IntelliJ IDEA
 ## Environment
 
 - Java 11
-- Scala 3.2.2
-- Intellij 213.5744.223
+- Scala 3.3.0
+- Intellij 231.9392.1
 
 ## Features
 
