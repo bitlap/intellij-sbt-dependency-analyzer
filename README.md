@@ -1,4 +1,4 @@
-Sbt Dependency Analyzer Plugin for IntelliJ IDEA
+Sbt Dependency Analyzer for IntelliJ IDEA
 ---------
 
 <img src="./logo.png" width = "200" height = "100" alt="logo" align="right" />
