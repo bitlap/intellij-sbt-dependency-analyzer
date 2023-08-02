@@ -3,8 +3,7 @@
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
     <version>0.1.0-231.9392.1-SNAPSHOT</version>
-    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
-    </vendor>
+    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap</vendor>
     <idea-version since-build="231.0"/>
 
     <depends>com.intellij.modules.platform</depends>
@@ -13,13 +12,10 @@
     <depends>org.intellij.scala</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.modules.externalSystem</depends>
-    <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.externalSystem</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
-
 
     <actions>
         <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>

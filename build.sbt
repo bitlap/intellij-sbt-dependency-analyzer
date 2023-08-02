@@ -2,7 +2,7 @@ import org.jetbrains.sbtidea.Keys._
 
 lazy val scala3Version = "3.3.0"
 
-lazy val intellijVersion = "231.9392.1"
+lazy val intellijVersion = "231.9392.1" // https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
 lazy val pluginVersion   = s"0.1.0-$intellijVersion-SNAPSHOT"
 
 ThisBuild / version := pluginVersion
@@ -43,6 +43,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "test" / "resources",
     patchPluginXml := pluginXmlOptions { xml =>
       xml.version = pluginVersion
+      xml.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
+      xml.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change.html")
     },
     publish / skip := true,
     commands ++= Commands.value
