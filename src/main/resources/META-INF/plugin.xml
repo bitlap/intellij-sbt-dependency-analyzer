@@ -13,12 +13,13 @@
     <depends>org.intellij.scala</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.modules.externalSystem</depends>
-
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.externalSystem</depends>
     
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
-
+    
 
     <actions>
         <action id="sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
