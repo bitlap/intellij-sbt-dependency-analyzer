@@ -15,6 +15,7 @@
     <resource-bundle>messages.SbtPluginBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <configurationType implementation="bitlap.intellij.analyzer.configuration.SbtExternalTaskConfigurationType"/>
         <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
 
