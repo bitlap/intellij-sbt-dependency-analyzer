@@ -15,30 +15,58 @@
     <depends>com.intellij.modules.externalSystem</depends>
     <depends>com.intellij.modules.lang</depends>
     <depends>com.intellij.modules.externalSystem</depends>
-    
+
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
-    
+
 
     <actions>
-        <action id="sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
-        <action id="sbt.ToolbarDependencyAnalyzer" class="bitlap.intellij.analyzer.ToolbarDependencyAnalyzerAction"/>
-        <action id="sbt.ProjectViewDependencyAnalyzer"
+        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
+        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.intellij.analyzer.ToolbarDependencyAnalyzerAction"/>
+        <action id="Sbt.ProjectViewDependencyAnalyzer"
                 class="bitlap.intellij.analyzer.ProjectViewDependencyAnalyzerAction">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="UML.Group"/>
         </action>
-        <action id="sbt.DependencyAnalyzer.OpenConfig"
+        <action id="Sbt.DependencyAnalyzer.OpenConfig"
                 class="bitlap.intellij.analyzer.SbtDependencyAnalyzerOpenConfigAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="sbt.DependencyAnalyzer.GoTo" class="bitlap.intellij.analyzer.SbtDependencyAnalyzerGoToAction">
+        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.intellij.analyzer.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
+
+        <group id="Sbt.View.ProjectMenu">
+            <separator/>
+            <reference id="Sbt.ViewDependencyAnalyzer"/>
+            <separator/>
+            <add-to-group group-id="ExternalSystemView.ProjectMenu" anchor="last"/>
+        </group>
+
+        <group id="Sbt.View.ModuleMenu">
+            <separator/>
+            <reference id="Sbt.ViewDependencyAnalyzer"/>
+            <separator/>
+            <add-to-group group-id="ExternalSystemView.ModuleMenu" anchor="last"/>
+        </group>
+
+        <group id="Sbt.View.DependencyMenu">
+            <separator/>
+            <reference id="Sbt.ViewDependencyAnalyzer"/>
+            <separator/>
+            <add-to-group group-id="ExternalSystemView.DependencyMenu" anchor="last"/>
+        </group>
+
+        <group id="Sbt.View.ActionsToolbar.CenterPanel">
+            <separator/>
+            <reference id="Sbt.ToolbarDependencyAnalyzer"/>
+            <separator/>
+            <add-to-group group-id="ExternalSystemView.ActionsToolbar.CenterPanel" anchor="last"/>
+        </group>
     </actions>
 
     <description><![CDATA[ Description will be added by sbt plugin build ]]></description>

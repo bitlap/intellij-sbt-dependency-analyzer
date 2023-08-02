@@ -46,4 +46,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     },
     publish / skip := true,
     commands ++= Commands.value
+//    libraryDependencies ++= Seq(
+//      "org.jgrapht" % "jgrapht-core" % "1.5.2",
+//      "org.scalatest" %% "scalatest" % "3.2.16" % Test
+//    )
   )

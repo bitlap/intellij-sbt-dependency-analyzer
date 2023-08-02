@@ -1,5 +1,6 @@
 package bitlap.intellij.analyzer
 
+import java.io.File
 import java.util
 import java.util.*
 import java.util.concurrent.*
@@ -7,7 +8,9 @@ import java.util.concurrent.*
 import scala.collection.mutable.ListBuffer
 import scala.jdk.CollectionConverters.*
 
+import org.jetbrains.sbt.{ SbtBundle, SbtUtil }
 import org.jetbrains.sbt.project.SbtProjectSystem
+import org.jetbrains.sbt.project.SbtTaskManager
 import org.jetbrains.sbt.project.data.ModuleNode
 
 import com.intellij.openapi.Disposable
@@ -17,12 +20,15 @@ import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.model.task.*
+import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.service.notification.ExternalSystemProgressNotificationManager
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
+import com.intellij.openapi.externalSystem.task.TaskCallback
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
+import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 
 import kotlin.jvm.functions
@@ -106,9 +112,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     if (scopeNodes.isEmpty) return Collections.emptyList()
     val dependencies = ListBuffer[Dependency]()
     val root         = DAModule(moduleData.getModuleName)
-    root.putUserData(MODULE_DATA, moduleData)
+    root.putUserData(Module_Data, moduleData)
 
-    val rootDependency = DADependency(root, defaultConfiguration, null, Collections.emptyList())
+    val rootDependency = DADependency(root, DefaultConfiguration, null, Collections.emptyList())
     dependencies.append(rootDependency)
     scopeNodes.asScala.view
       .map(sn => sn.toScope -> sn.getDependencies.asScala)
@@ -172,9 +178,9 @@ object SbtDependencyAnalyzerContributor {
 
   private def scope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
 
-  final val defaultConfiguration = scope("default")
+  final val DefaultConfiguration = scope("default")
 
-  final val MODULE_DATA = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
+  final val Module_Data = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
   extension (projectDependencyNode: ProjectDependencyNode) {
 
@@ -190,7 +196,7 @@ object SbtDependencyAnalyzerContributor {
         case pdn: ProjectDependencyNode =>
           val data       = DAModule(pdn.getProjectName)
           val moduleData = pdn.getModuleData(projects)
-          data.putUserData(MODULE_DATA, moduleData)
+          data.putUserData(Module_Data, moduleData)
           data
         case adn: ArtifactDependencyNode =>
           DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
@@ -229,7 +235,31 @@ object SbtDependencyAnalyzerContributor {
   }
 
   extension (moduleData: ModuleData) {
-    def loadDependencies(project: Project): util.List[DependencyScopeNode] = ???
-  }
 
+    def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
+      var dependencyScopeNodes = scala.List[DependencyScopeNode]()
+      val sbtTaskManager       = new SbtTaskManager
+      val directoryToRunTask   = moduleData.getProperty("directoryToRunTask")
+      val sbtIdentityPath      = moduleData.getProperty("sbtIdentityPath")
+      val outputFile           = "/target/dependencies-compile.graphml"
+      sbtTaskManager.runCustomTask(
+        project,
+        "sbt.dependency.analyzer.loading",
+        if (directoryToRunTask == null) moduleData.getLinkedExternalProjectPath else directoryToRunTask,
+        if (sbtIdentityPath == null) SbtUtil.getLauncherDir.getAbsolutePath else sbtIdentityPath,
+        ProgressExecutionMode.NO_PROGRESS_SYNC,
+        new TaskCallback {
+          override def onSuccess(): Unit = {
+            val graphml = FileUtil.loadFile(new File(directoryToRunTask + outputFile))
+            // TODO parse graphml
+            val scopeNodes: scala.List[DependencyScopeNode] = ???
+            dependencyScopeNodes = scopeNodes
+          }
+
+          override def onFailure(): Unit = {}
+        }
+      )
+      dependencyScopeNodes.asJava
+    }
+  }
 }

@@ -1,6 +1,6 @@
 package bitlap.intellij.analyzer
 
-import bitlap.intellij.analyzer.SbtDependencyAnalyzerContributor.MODULE_DATA
+import bitlap.intellij.analyzer.SbtDependencyAnalyzerContributor.Module_Data
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
@@ -21,7 +21,7 @@ final class SbtDependencyAnalyzerOpenConfigAction
     if (dependency == null) return null
     val dependencyData = dependency.getData.asInstanceOf[Dependency.Data.Module]
     if (dependencyData == null) return null
-    val moduleData = dependencyData.getUserData(MODULE_DATA)
+    val moduleData = dependencyData.getUserData(Module_Data)
     if (moduleData == null) return null
     moduleData.getLinkedExternalProjectPath
   }
