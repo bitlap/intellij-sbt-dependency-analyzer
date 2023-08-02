@@ -31,7 +31,6 @@ inThisBuild(
 lazy val `sbt-dependency-analyzer` = (project in file("."))
   .enablePlugins(SbtIdeaPlugin)
   .settings(
-    name                           := "sbt-dependency-analyzer",
     scalaVersion                   := scala3Version,
     organization                   := "org.bitlap",
     version                        := (ThisBuild / version).value,
