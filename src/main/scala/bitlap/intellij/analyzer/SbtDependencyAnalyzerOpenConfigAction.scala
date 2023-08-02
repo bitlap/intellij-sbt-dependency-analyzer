@@ -9,7 +9,8 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyze
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.dependency.analyzer.ExternalSystemDependencyAnalyzerOpenConfigAction
 
-final class SbtDependencyAnalyzerOpenConfigAction extends ExternalSystemDependencyAnalyzerOpenConfigAction(SbtProjectSystem.Id) {
+final class SbtDependencyAnalyzerOpenConfigAction
+    extends ExternalSystemDependencyAnalyzerOpenConfigAction(SbtProjectSystem.Id) {
 
   override def getExternalProjectPath(e: AnActionEvent): String = {
     val dependency = e.getData(DependencyAnalyzerView.Companion.getDEPENDENCY)

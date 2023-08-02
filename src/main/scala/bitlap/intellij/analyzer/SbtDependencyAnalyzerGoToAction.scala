@@ -22,12 +22,12 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
   }
 
   private def getDeclaredDependency(e: AnActionEvent): DeclaredDependency = {
-    val project = e.getProject
+    val project    = e.getProject
     val dependency = e.getData(DependencyAnalyzerView.Companion.getDEPENDENCY)
     if (project == null || dependency == null) return null
 
     val coordinates = getUnifiedCoordinates(dependency)
-    val module = getParentModule(project, dependency)
+    val module      = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
     val dependencyModifierService = DependencyModifierService.getInstance(project)

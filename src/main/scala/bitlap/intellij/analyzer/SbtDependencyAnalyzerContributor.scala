@@ -244,7 +244,7 @@ object SbtDependencyAnalyzerContributor {
       val outputFile           = "/target/dependencies-compile.graphml"
       sbtTaskManager.runCustomTask(
         project,
-        "sbt.dependency.analyzer.loading",
+        SbtPluginBundle.message("sbt.dependency.analyzer.loading"),
         if (directoryToRunTask == null) moduleData.getLinkedExternalProjectPath else directoryToRunTask,
         if (sbtIdentityPath == null) SbtUtil.getLauncherDir.getAbsolutePath else sbtIdentityPath,
         ProgressExecutionMode.NO_PROGRESS_SYNC,
