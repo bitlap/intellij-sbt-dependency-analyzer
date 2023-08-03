@@ -115,13 +115,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
     val rootDependency = DADependency(root, DefaultConfiguration, null, Collections.emptyList())
     dependencies.append(rootDependency)
-    scopeNodes.asScala.view
-      .map(sn => sn.toScope -> sn.getDependencies.asScala)
-      .foreach((scope, dependencyList) =>
-        dependencyList.foreach { dependencyNode =>
-          addDependencies(rootDependency, scope, dependencyNode, dependencies, moduleData.getLinkedExternalProjectPath)
-        }
-      )
+    for (scopeNode <- scopeNodes.asScala) {
+      val scope = scopeNode.toScope
+      for (dependencyNode <- scopeNode.getDependencies.asScala) {
+        addDependencies(rootDependency, scope, dependencyNode, dependencies, moduleData.getLinkedExternalProjectPath)
+      }
+    }
     dependencies.asJava
   }
 
@@ -156,7 +155,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     projectDir: String
   ): Unit = {
     val dependency = createDependency(dependencyNode, scope, usage)
-    if (dependency != null) {
+    if (dependency == null)  {} else {
       dependencies.append(dependency)
       for (node <- dependencyNode.getDependencies.asScala) {
         addDependencies(dependency, scope, node, dependencies, projectDir)

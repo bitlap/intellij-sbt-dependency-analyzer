@@ -27,6 +27,7 @@ final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
 
   val visited = scala.collection.mutable.HashMap[Long, Dependency]()
 
+  // fixme
   override def buildDependencyTree(file: String): JList[DependencyNode] = {
     val (relation, dependencyList) = dependencies(file)
     dependencyList.forEach {
