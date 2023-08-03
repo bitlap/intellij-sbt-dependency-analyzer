@@ -1,12 +1,12 @@
 package bitlap.intellij.analyzer
 
 import java.util
-import java.util.*
-import java.util.concurrent.*
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.*
+import scala.concurrent.{ Promise, * }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters.*
 
@@ -261,35 +261,28 @@ object SbtDependencyAnalyzerContributor {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
       if (moduleData.getModuleName.endsWith("-build")) return Collections.emptyList()
-      val promise = Promise[util.List[DependencyScopeNode]]()
-
-      // todo , check dependencyGraphML is exists
-      // todo , parse outputFile to DependencyScopeNode
-
+      val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
       DependencyScope.values.toList.foreach { scope =>
-        val root = rootNode(scope)
+        val promise = Promise[DependencyScopeNode]()
+        promiseList.append(promise)
         comms.command(
           scopedKey(moduleData.getModuleName, scope, "dependencyGraphML"),
           new StringBuilder(),
           SbtShellCommunication.listenerAggregator {
             case SbtShellCommunication.TaskStart =>
             case SbtShellCommunication.TaskComplete =>
-              val node = new DependencyScopeNode(
-                1,
-                "compile",
-                "Compile",
-                "CompileNode"
-              )
-              node.setResolutionState(ResolutionState.RESOLVED)
-              node.getDependencies.add(new ArtifactDependencyNodeImpl(1, "bitlap", "rolls-core", "0.2.0"))
-              promise.success(scala.List(node).asJava)
+              val root = rootNode(scope)
+              root.getDependencies.addAll(DotParser.buildDependencyTree(fileName(scope)))
+              promise.success(root)
             case SbtShellCommunication.ErrorWaitForInput =>
               promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.exec")))
             case SbtShellCommunication.Output(line) =>
           }
         )
       }
-      Await.result(promise.future, Duration.Inf)
+      import concurrent.ExecutionContext.Implicits.global
+      val result = Future.sequence(promiseList.toList.map(_.future))
+      Await.result(result.map(_.asJava), Duration.Inf)
     }
   }
 }
