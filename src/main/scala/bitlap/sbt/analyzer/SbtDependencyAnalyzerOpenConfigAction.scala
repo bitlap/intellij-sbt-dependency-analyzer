@@ -1,6 +1,4 @@
-package bitlap.intellij.analyzer
-
-import bitlap.intellij.analyzer.SbtDependencyAnalyzerContributor.Module_Data
+package bitlap.sbt.analyzer
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
@@ -8,6 +6,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.dependency.analyzer.ExternalSystemDependencyAnalyzerOpenConfigAction
+
+import SbtDependencyAnalyzerContributor.Module_Data
 
 final class SbtDependencyAnalyzerOpenConfigAction
     extends ExternalSystemDependencyAnalyzerOpenConfigAction(SbtProjectSystem.Id) {

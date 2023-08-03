@@ -1,4 +1,4 @@
-package bitlap.intellij.analyzer
+package bitlap.sbt.analyzer
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 

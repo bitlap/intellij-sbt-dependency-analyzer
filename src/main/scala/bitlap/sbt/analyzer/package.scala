@@ -1,22 +1,24 @@
-package bitlap.intellij.analyzer
+package bitlap.sbt.analyzer
 
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong
 
+import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor
+
 import org.jetbrains.sbt.SbtUtil
-import org.jetbrains.sbt.project.{ SbtProjectSystem, SbtTaskManager }
+import org.jetbrains.sbt.project.*
 
 import com.intellij.build.SyncViewManager
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.execution.executors.DefaultRunExecutor
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency
 import com.intellij.openapi.externalSystem.model.execution.ExternalSystemTaskExecutionSettings
-import com.intellij.openapi.externalSystem.model.project.{ ModuleData, ProjectData }
+import com.intellij.openapi.externalSystem.model.project.*
 import com.intellij.openapi.externalSystem.service.execution.*
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemRunnableState.*
 import com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl
 import com.intellij.openapi.externalSystem.task.TaskCallback
-import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemUtil }
+import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.UserDataHolderBase

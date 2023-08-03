@@ -16,23 +16,23 @@
     <resource-bundle>messages.SbtPluginBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
+        <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
 
     <actions>
-        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.intellij.analyzer.ViewDependencyAnalyzerAction"/>
-        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.intellij.analyzer.ToolbarDependencyAnalyzerAction"/>
+        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.ViewDependencyAnalyzerAction"/>
+        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.ToolbarDependencyAnalyzerAction"/>
         <action id="Sbt.ProjectViewDependencyAnalyzer"
-                class="bitlap.intellij.analyzer.ProjectViewDependencyAnalyzerAction">
+                class="bitlap.sbt.analyzer.ProjectViewDependencyAnalyzerAction">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="UML.Group"/>
         </action>
         <action id="Sbt.DependencyAnalyzer.OpenConfig"
-                class="bitlap.intellij.analyzer.SbtDependencyAnalyzerOpenConfigAction">
+                class="bitlap.sbt.analyzer.SbtDependencyAnalyzerOpenConfigAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.intellij.analyzer.SbtDependencyAnalyzerGoToAction">
+        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>

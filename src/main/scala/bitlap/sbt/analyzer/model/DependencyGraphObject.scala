@@ -1,4 +1,4 @@
-package bitlap.intellij.analyzer.parser
+package bitlap.sbt.analyzer.model
 
 final case class DependencyGraphObject(
   _gvid: Long,

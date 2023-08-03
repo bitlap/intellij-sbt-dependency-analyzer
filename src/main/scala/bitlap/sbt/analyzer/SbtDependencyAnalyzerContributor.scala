@@ -1,4 +1,4 @@
-package bitlap.intellij.analyzer
+package bitlap.sbt.analyzer
 
 import java.util
 import java.util.Collections
@@ -9,6 +9,8 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ Promise, * }
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters.*
+
+import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
@@ -272,7 +274,9 @@ object SbtDependencyAnalyzerContributor {
             case SbtShellCommunication.TaskStart =>
             case SbtShellCommunication.TaskComplete =>
               val root = rootNode(scope)
-              root.getDependencies.addAll(DotParser.buildDependencyTree(fileName(scope)))
+              root.getDependencies.addAll(
+                DependencyGraphBuilderFactory.getInstance(GraphBuilderEnum.Dot).buildDependencyTree(fileName(scope))
+              )
               promise.success(root)
             case SbtShellCommunication.ErrorWaitForInput =>
               promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.exec")))
