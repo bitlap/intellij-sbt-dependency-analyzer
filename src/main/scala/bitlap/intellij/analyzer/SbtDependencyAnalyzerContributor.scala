@@ -266,7 +266,7 @@ object SbtDependencyAnalyzerContributor {
         val promise = Promise[DependencyScopeNode]()
         promiseList.append(promise)
         comms.command(
-          scopedKey(moduleData.getModuleName, scope, "dependencyGraphML"),
+          scopedKey(moduleData.getModuleName, scope, "dependencyDot"),
           new StringBuilder(),
           SbtShellCommunication.listenerAggregator {
             case SbtShellCommunication.TaskStart =>
