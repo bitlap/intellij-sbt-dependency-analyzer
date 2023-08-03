@@ -3,7 +3,8 @@
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
     <version>0.1.0-231.9392.1-SNAPSHOT</version>
-    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap</vendor>
+    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
+    </vendor>
     <idea-version since-build="231.0"/>
 
     <depends>com.intellij.modules.platform</depends>
@@ -15,7 +16,6 @@
     <resource-bundle>messages.SbtPluginBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
-        <configurationType implementation="bitlap.intellij.analyzer.configuration.SbtExternalTaskConfigurationType"/>
         <externalSystemDependencyAnalyzer implementation="bitlap.intellij.analyzer.SbtDependencyAnalyzerExtension"/>
     </extensions>
 

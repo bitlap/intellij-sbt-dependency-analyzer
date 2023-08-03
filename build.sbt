@@ -1,4 +1,4 @@
-import org.jetbrains.sbtidea.Keys._
+import org.jetbrains.sbtidea.Keys.*
 
 lazy val scala3Version = "3.3.0"
 
@@ -47,9 +47,12 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       xml.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change.html")
     },
     publish / skip := true,
-    commands ++= Commands.value
-//    libraryDependencies ++= Seq(
-//      "org.jgrapht" % "jgrapht-core" % "1.5.2",
-//      "org.scalatest" %% "scalatest" % "3.2.16" % Test
-//    )
+    commands ++= Commands.value,
+    libraryDependencies ++= Seq(
+      "guru.nidi"      % "graphviz-java" % "0.18.1",
+      "io.circe"      %% "circe-core"    % "0.14.3",
+      "io.circe"      %% "circe-parser"  % "0.14.3",
+      "io.circe"      %% "circe-generic" % "0.14.3",
+      "org.scalatest" %% "scalatest"     % "3.2.16" % Test
+    )
   )

@@ -1,0 +1,229 @@
+digraph "dependency-graph" {
+    graph[rankdir="LR"]
+    edge [
+        arrowtail="none"
+    ]
+    "com.google.android:annotations:4.1.1.4"[label=<com.google.android<BR/><B>annotations</B><BR/>4.1.1.4> style=""]
+    "com.google.api.grpc:proto-google-common-protos:2.0.1"[label=<com.google.api.grpc<BR/><B>proto-google-common-protos</B><BR/>2.0.1> style=""]
+    "com.google.code.findbugs:jsr305:3.0.2"[label=<com.google.code.findbugs<BR/><B>jsr305</B><BR/>3.0.2> style=""]
+    "com.google.code.gson:gson:2.8.6"[label=<com.google.code.gson<BR/><B>gson</B><BR/>2.8.6> style="stroke-dasharray: 5,5"]
+    "com.google.code.gson:gson:2.9.0"[label=<com.google.code.gson<BR/><B>gson</B><BR/>2.9.0> style=""]
+    "com.google.errorprone:error_prone_annotations:2.10.0"[label=<com.google.errorprone<BR/><B>error_prone_annotations</B><BR/>2.10.0> style=""]
+    "com.google.errorprone:error_prone_annotations:2.5.1"[label=<com.google.errorprone<BR/><B>error_prone_annotations</B><BR/>2.5.1> style="stroke-dasharray: 5,5"]
+    "com.google.errorprone:error_prone_annotations:2.7.1"[label=<com.google.errorprone<BR/><B>error_prone_annotations</B><BR/>2.7.1> style="stroke-dasharray: 5,5"]
+    "com.google.guava:failureaccess:1.0.1"[label=<com.google.guava<BR/><B>failureaccess</B><BR/>1.0.1> style=""]
+    "com.google.guava:guava:30.1.1-android"[label=<com.google.guava<BR/><B>guava</B><BR/>30.1.1-android> style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:31.0.1-android"[label=<com.google.guava<BR/><B>guava</B><BR/>31.0.1-android> style=""]
+    "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"[label=<com.google.guava<BR/><B>listenablefuture</B><BR/>9999.0-empty-to-avoid-conflict-with-guava> style=""]
+    "com.google.j2objc:j2objc-annotations:1.3"[label=<com.google.j2objc<BR/><B>j2objc-annotations</B><BR/>1.3> style=""]
+    "com.google.protobuf:protobuf-java-util:3.19.2"[label=<com.google.protobuf<BR/><B>protobuf-java-util</B><BR/>3.19.2> style=""]
+    "com.google.protobuf:protobuf-java:3.13.0"[label=<com.google.protobuf<BR/><B>protobuf-java</B><BR/>3.13.0> style="stroke-dasharray: 5,5"]
+    "com.google.protobuf:protobuf-java:3.19.2"[label=<com.google.protobuf<BR/><B>protobuf-java</B><BR/>3.19.2> style="stroke-dasharray: 5,5"]
+    "com.google.protobuf:protobuf-java:3.19.6"[label=<com.google.protobuf<BR/><B>protobuf-java</B><BR/>3.19.6> style=""]
+    "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5"[label=<com.thesamet.scalapb.zio-grpc<BR/><B>zio-grpc-core_3</B><BR/>0.6.0-rc5> style=""]
+    "com.thesamet.scalapb:lenses_3:0.11.13"[label=<com.thesamet.scalapb<BR/><B>lenses_3</B><BR/>0.11.13> style=""]
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13"[label=<com.thesamet.scalapb<BR/><B>scalapb-runtime-grpc_3</B><BR/>0.11.13> style=""]
+    "com.thesamet.scalapb:scalapb-runtime_3:0.11.13"[label=<com.thesamet.scalapb<BR/><B>scalapb-runtime_3</B><BR/>0.11.13> style=""]
+    "com.typesafe.scala-logging:scala-logging_3:3.9.5"[label=<com.typesafe.scala-logging<BR/><B>scala-logging_3</B><BR/>3.9.5> style=""]
+    "com.typesafe:config:1.4.2"[label=<com.typesafe<BR/><B>config</B><BR/>1.4.2> style=""]
+    "dev.zio:izumi-reflect-thirdparty-boopickle-shaded_3:2.2.2"[label=<dev.zio<BR/><B>izumi-reflect-thirdparty-boopickle-shaded_3</B><BR/>2.2.2> style=""]
+    "dev.zio:izumi-reflect_3:2.2.2"[label=<dev.zio<BR/><B>izumi-reflect_3</B><BR/>2.2.2> style=""]
+    "dev.zio:zio-internal-macros_3:2.0.9"[label=<dev.zio<BR/><B>zio-internal-macros_3</B><BR/>2.0.9> style=""]
+    "dev.zio:zio-stacktracer_3:2.0.9"[label=<dev.zio<BR/><B>zio-stacktracer_3</B><BR/>2.0.9> style=""]
+    "dev.zio:zio-streams_3:2.0.9"[label=<dev.zio<BR/><B>zio-streams_3</B><BR/>2.0.9> style=""]
+    "dev.zio:zio_3:2.0.9"[label=<dev.zio<BR/><B>zio_3</B><BR/>2.0.9> style=""]
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT"[label=<fc.xuanwu.star<BR/><B>engine-grpc-api_3</B><BR/>1.0.2-7957f7b7-SNAPSHOT> style=""]
+    "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT"[label=<fc.xuanwu.star<BR/><B>scala-common_3</B><BR/>1.0.2-7957f7b7-SNAPSHOT> style=""]
+    "fc.xuanwu.star:star-authority-protocol_3:1.0.0-cb74c9ab-SNAPSHOT"[label=<fc.xuanwu.star<BR/><B>star-authority-protocol_3</B><BR/>1.0.0-cb74c9ab-SNAPSHOT> style=""]
+    "fc.xuanwu.star:star-protocol_3:1.0.2-7957f7b7-SNAPSHOT"[label=<fc.xuanwu.star<BR/><B>star-protocol_3</B><BR/>1.0.2-7957f7b7-SNAPSHOT> style=""]
+    "io.grpc:grpc-api:1.47.1"[label=<io.grpc<BR/><B>grpc-api</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-api:[1.47.1]"[label=<io.grpc<BR/><B>grpc-api</B><BR/>[1.47.1]> style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-context:1.47.1"[label=<io.grpc<BR/><B>grpc-context</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-core:1.47.1"[label=<io.grpc<BR/><B>grpc-core</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-core:[1.47.1]"[label=<io.grpc<BR/><B>grpc-core</B><BR/>[1.47.1]> style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-netty:1.47.1"[label=<io.grpc<BR/><B>grpc-netty</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-protobuf-lite:1.47.1"[label=<io.grpc<BR/><B>grpc-protobuf-lite</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-protobuf:1.47.0"[label=<io.grpc<BR/><B>grpc-protobuf</B><BR/>1.47.0> style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-protobuf:1.47.1"[label=<io.grpc<BR/><B>grpc-protobuf</B><BR/>1.47.1> style=""]
+    "io.grpc:grpc-services:1.47.0"[label=<io.grpc<BR/><B>grpc-services</B><BR/>1.47.0> style=""]
+    "io.grpc:grpc-stub:1.47.0"[label=<io.grpc<BR/><B>grpc-stub</B><BR/>1.47.0> style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-stub:1.47.1"[label=<io.grpc<BR/><B>grpc-stub</B><BR/>1.47.1> style=""]
+    "io.netty:netty-buffer:4.1.72.Final"[label=<io.netty<BR/><B>netty-buffer</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-codec-http2:4.1.72.Final"[label=<io.netty<BR/><B>netty-codec-http2</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-codec-http:4.1.72.Final"[label=<io.netty<BR/><B>netty-codec-http</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-codec-socks:4.1.72.Final"[label=<io.netty<BR/><B>netty-codec-socks</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-codec:4.1.72.Final"[label=<io.netty<BR/><B>netty-codec</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-common:4.1.72.Final"[label=<io.netty<BR/><B>netty-common</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-handler-proxy:4.1.72.Final"[label=<io.netty<BR/><B>netty-handler-proxy</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-handler:4.1.72.Final"[label=<io.netty<BR/><B>netty-handler</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-resolver:4.1.72.Final"[label=<io.netty<BR/><B>netty-resolver</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-tcnative-classes:2.0.46.Final"[label=<io.netty<BR/><B>netty-tcnative-classes</B><BR/>2.0.46.Final> style=""]
+    "io.netty:netty-transport-native-unix-common:4.1.72.Final"[label=<io.netty<BR/><B>netty-transport-native-unix-common</B><BR/>4.1.72.Final> style=""]
+    "io.netty:netty-transport:4.1.72.Final"[label=<io.netty<BR/><B>netty-transport</B><BR/>4.1.72.Final> style=""]
+    "io.perfmark:perfmark-api:0.25.0"[label=<io.perfmark<BR/><B>perfmark-api</B><BR/>0.25.0> style=""]
+    "org.checkerframework:checker-compat-qual:2.5.5"[label=<org.checkerframework<BR/><B>checker-compat-qual</B><BR/>2.5.5> style=""]
+    "org.checkerframework:checker-qual:3.12.0"[label=<org.checkerframework<BR/><B>checker-qual</B><BR/>3.12.0> style=""]
+    "org.codehaus.mojo:animal-sniffer-annotations:1.19"[label=<org.codehaus.mojo<BR/><B>animal-sniffer-annotations</B><BR/>1.19> style=""]
+    "org.scala-lang.modules:scala-collection-compat_3:2.8.1"[label=<org.scala-lang.modules<BR/><B>scala-collection-compat_3</B><BR/>2.8.1> style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-collection-compat_3:2.9.0"[label=<org.scala-lang.modules<BR/><B>scala-collection-compat_3</B><BR/>2.9.0> style=""]
+    "org.scala-lang:scala3-library_3:3.1.2"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.1.2> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.1.3"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.1.3> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.0> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.0> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.0> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.0> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.1"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.1> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.1"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.1> style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.2"[label=<org.scala-lang<BR/><B>scala3-library_3</B><BR/>3.2.2> style=""]
+    "org.slf4j:slf4j-api:1.7.36"[label=<org.slf4j<BR/><B>slf4j-api</B><BR/>1.7.36> style=""]
+    "com.google.api.grpc:proto-google-common-protos:2.0.1" -> "com.google.protobuf:protobuf-java:3.13.0"
+    "com.google.code.gson:gson:2.8.6" -> "com.google.code.gson:gson:2.9.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.errorprone:error_prone_annotations:2.5.1" -> "com.google.errorprone:error_prone_annotations:2.10.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.errorprone:error_prone_annotations:2.7.1" -> "com.google.errorprone:error_prone_annotations:2.10.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:30.1.1-android" -> "com.google.guava:guava:31.0.1-android" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.guava:guava:31.0.1-android" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "com.google.guava:guava:31.0.1-android" -> "com.google.errorprone:error_prone_annotations:2.7.1"
+    "com.google.guava:guava:31.0.1-android" -> "com.google.guava:failureaccess:1.0.1"
+    "com.google.guava:guava:31.0.1-android" -> "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
+    "com.google.guava:guava:31.0.1-android" -> "com.google.j2objc:j2objc-annotations:1.3"
+    "com.google.guava:guava:31.0.1-android" -> "org.checkerframework:checker-compat-qual:2.5.5"
+    "com.google.guava:guava:31.0.1-android" -> "org.checkerframework:checker-qual:3.12.0"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.code.gson:gson:2.8.6"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.errorprone:error_prone_annotations:2.5.1"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.guava:guava:30.1.1-android"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.j2objc:j2objc-annotations:1.3"
+    "com.google.protobuf:protobuf-java-util:3.19.2" -> "com.google.protobuf:protobuf-java:3.19.2"
+    "com.google.protobuf:protobuf-java:3.13.0" -> "com.google.protobuf:protobuf-java:3.19.6" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.google.protobuf:protobuf-java:3.19.2" -> "com.google.protobuf:protobuf-java:3.19.6" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5" -> "dev.zio:zio-streams_3:2.0.9"
+    "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5" -> "dev.zio:zio_3:2.0.9"
+    "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5" -> "io.grpc:grpc-services:1.47.0"
+    "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "com.thesamet.scalapb:lenses_3:0.11.13" -> "org.scala-lang.modules:scala-collection-compat_3:2.9.0"
+    "com.thesamet.scalapb:lenses_3:0.11.13" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13" -> "com.thesamet.scalapb:scalapb-runtime_3:0.11.13"
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13" -> "io.grpc:grpc-protobuf:1.47.1"
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13" -> "io.grpc:grpc-stub:1.47.1"
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13" -> "org.scala-lang.modules:scala-collection-compat_3:2.9.0"
+    "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "com.thesamet.scalapb:scalapb-runtime_3:0.11.13" -> "com.google.protobuf:protobuf-java:3.19.6"
+    "com.thesamet.scalapb:scalapb-runtime_3:0.11.13" -> "com.thesamet.scalapb:lenses_3:0.11.13"
+    "com.thesamet.scalapb:scalapb-runtime_3:0.11.13" -> "org.scala-lang.modules:scala-collection-compat_3:2.9.0"
+    "com.thesamet.scalapb:scalapb-runtime_3:0.11.13" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "com.typesafe.scala-logging:scala-logging_3:3.9.5" -> "org.scala-lang:scala3-library_3:3.1.2"
+    "com.typesafe.scala-logging:scala-logging_3:3.9.5" -> "org.slf4j:slf4j-api:1.7.36"
+    "dev.zio:izumi-reflect-thirdparty-boopickle-shaded_3:2.2.2" -> "org.scala-lang:scala3-library_3:3.2.1"
+    "dev.zio:izumi-reflect_3:2.2.2" -> "dev.zio:izumi-reflect-thirdparty-boopickle-shaded_3:2.2.2"
+    "dev.zio:izumi-reflect_3:2.2.2" -> "org.scala-lang:scala3-library_3:3.2.1"
+    "dev.zio:zio-internal-macros_3:2.0.9" -> "org.scala-lang:scala3-library_3:3.2.0"
+    "dev.zio:zio-stacktracer_3:2.0.9" -> "org.scala-lang:scala3-library_3:3.2.0"
+    "dev.zio:zio-streams_3:2.0.9" -> "dev.zio:zio_3:2.0.9"
+    "dev.zio:zio-streams_3:2.0.9" -> "org.scala-lang:scala3-library_3:3.2.0"
+    "dev.zio:zio_3:2.0.9" -> "dev.zio:izumi-reflect_3:2.2.2"
+    "dev.zio:zio_3:2.0.9" -> "dev.zio:zio-internal-macros_3:2.0.9"
+    "dev.zio:zio_3:2.0.9" -> "dev.zio:zio-stacktracer_3:2.0.9"
+    "dev.zio:zio_3:2.0.9" -> "org.scala-lang:scala3-library_3:3.2.0"
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT" -> "com.thesamet.scalapb.zio-grpc:zio-grpc-core_3:0.6.0-rc5"
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT" -> "com.thesamet.scalapb:scalapb-runtime-grpc_3:0.11.13"
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT" -> "com.thesamet.scalapb:scalapb-runtime_3:0.11.13"
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT" -> "io.grpc:grpc-netty:1.47.1"
+    "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT" -> "com.typesafe.scala-logging:scala-logging_3:3.9.5"
+    "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT" -> "com.typesafe:config:1.4.2"
+    "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT" -> "org.scala-lang.modules:scala-collection-compat_3:2.8.1"
+    "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "fc.xuanwu.star:star-authority-protocol_3:1.0.0-cb74c9ab-SNAPSHOT" -> "fc.xuanwu.star:star-protocol_3:1.0.2-7957f7b7-SNAPSHOT"
+    "fc.xuanwu.star:star-authority-protocol_3:1.0.0-cb74c9ab-SNAPSHOT" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "fc.xuanwu.star:star-protocol_3:1.0.2-7957f7b7-SNAPSHOT" -> "fc.xuanwu.star:engine-grpc-api_3:1.0.2-7957f7b7-SNAPSHOT"
+    "fc.xuanwu.star:star-protocol_3:1.0.2-7957f7b7-SNAPSHOT" -> "fc.xuanwu.star:scala-common_3:1.0.2-7957f7b7-SNAPSHOT"
+    "fc.xuanwu.star:star-protocol_3:1.0.2-7957f7b7-SNAPSHOT" -> "org.scala-lang:scala3-library_3:3.2.2"
+    "io.grpc:grpc-api:1.47.1" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "io.grpc:grpc-api:1.47.1" -> "com.google.errorprone:error_prone_annotations:2.10.0"
+    "io.grpc:grpc-api:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-api:1.47.1" -> "io.grpc:grpc-context:1.47.1"
+    "io.grpc:grpc-api:[1.47.1]" -> "io.grpc:grpc-api:1.47.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-core:1.47.1" -> "com.google.android:annotations:4.1.1.4"
+    "io.grpc:grpc-core:1.47.1" -> "com.google.code.gson:gson:2.9.0"
+    "io.grpc:grpc-core:1.47.1" -> "com.google.errorprone:error_prone_annotations:2.10.0"
+    "io.grpc:grpc-core:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-core:1.47.1" -> "io.grpc:grpc-api:[1.47.1]"
+    "io.grpc:grpc-core:1.47.1" -> "io.perfmark:perfmark-api:0.25.0"
+    "io.grpc:grpc-core:1.47.1" -> "org.codehaus.mojo:animal-sniffer-annotations:1.19"
+    "io.grpc:grpc-core:[1.47.1]" -> "io.grpc:grpc-core:1.47.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-netty:1.47.1" -> "com.google.errorprone:error_prone_annotations:2.10.0"
+    "io.grpc:grpc-netty:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-netty:1.47.1" -> "io.grpc:grpc-core:[1.47.1]"
+    "io.grpc:grpc-netty:1.47.1" -> "io.netty:netty-codec-http2:4.1.72.Final"
+    "io.grpc:grpc-netty:1.47.1" -> "io.netty:netty-handler-proxy:4.1.72.Final"
+    "io.grpc:grpc-netty:1.47.1" -> "io.netty:netty-transport-native-unix-common:4.1.72.Final"
+    "io.grpc:grpc-netty:1.47.1" -> "io.perfmark:perfmark-api:0.25.0"
+    "io.grpc:grpc-protobuf-lite:1.47.1" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "io.grpc:grpc-protobuf-lite:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-protobuf-lite:1.47.1" -> "io.grpc:grpc-api:1.47.1"
+    "io.grpc:grpc-protobuf:1.47.0" -> "io.grpc:grpc-protobuf:1.47.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-protobuf:1.47.1" -> "com.google.api.grpc:proto-google-common-protos:2.0.1"
+    "io.grpc:grpc-protobuf:1.47.1" -> "com.google.code.findbugs:jsr305:3.0.2"
+    "io.grpc:grpc-protobuf:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-protobuf:1.47.1" -> "com.google.protobuf:protobuf-java:3.19.6"
+    "io.grpc:grpc-protobuf:1.47.1" -> "io.grpc:grpc-api:1.47.1"
+    "io.grpc:grpc-protobuf:1.47.1" -> "io.grpc:grpc-protobuf-lite:1.47.1"
+    "io.grpc:grpc-services:1.47.0" -> "com.google.errorprone:error_prone_annotations:2.10.0"
+    "io.grpc:grpc-services:1.47.0" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-services:1.47.0" -> "com.google.protobuf:protobuf-java-util:3.19.2"
+    "io.grpc:grpc-services:1.47.0" -> "io.grpc:grpc-core:1.47.1"
+    "io.grpc:grpc-services:1.47.0" -> "io.grpc:grpc-protobuf:1.47.0"
+    "io.grpc:grpc-services:1.47.0" -> "io.grpc:grpc-stub:1.47.0"
+    "io.grpc:grpc-stub:1.47.0" -> "io.grpc:grpc-stub:1.47.1" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "io.grpc:grpc-stub:1.47.1" -> "com.google.errorprone:error_prone_annotations:2.10.0"
+    "io.grpc:grpc-stub:1.47.1" -> "com.google.guava:guava:31.0.1-android"
+    "io.grpc:grpc-stub:1.47.1" -> "io.grpc:grpc-api:1.47.1"
+    "io.netty:netty-buffer:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-codec-http:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-codec:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-handler:4.1.72.Final"
+    "io.netty:netty-codec-http2:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-codec-http:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-codec-http:4.1.72.Final" -> "io.netty:netty-codec:4.1.72.Final"
+    "io.netty:netty-codec-http:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-codec-http:4.1.72.Final" -> "io.netty:netty-handler:4.1.72.Final"
+    "io.netty:netty-codec-http:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-codec-socks:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-codec-socks:4.1.72.Final" -> "io.netty:netty-codec:4.1.72.Final"
+    "io.netty:netty-codec-socks:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-codec-socks:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-codec:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-codec:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-codec:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-codec-http:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-codec-socks:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-codec:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-handler-proxy:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-codec:4.1.72.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-resolver:4.1.72.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-tcnative-classes:2.0.46.Final"
+    "io.netty:netty-handler:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-resolver:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-transport-native-unix-common:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-transport-native-unix-common:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-transport-native-unix-common:4.1.72.Final" -> "io.netty:netty-transport:4.1.72.Final"
+    "io.netty:netty-transport:4.1.72.Final" -> "io.netty:netty-buffer:4.1.72.Final"
+    "io.netty:netty-transport:4.1.72.Final" -> "io.netty:netty-common:4.1.72.Final"
+    "io.netty:netty-transport:4.1.72.Final" -> "io.netty:netty-resolver:4.1.72.Final"
+    "org.scala-lang.modules:scala-collection-compat_3:2.8.1" -> "org.scala-lang.modules:scala-collection-compat_3:2.9.0" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang.modules:scala-collection-compat_3:2.9.0" -> "org.scala-lang:scala3-library_3:3.1.3"
+    "org.scala-lang:scala3-library_3:3.1.2" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.1.3" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.0" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.1" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+    "org.scala-lang:scala3-library_3:3.2.1" -> "org.scala-lang:scala3-library_3:3.2.2" [label="Evicted By" style="stroke-dasharray: 5,5"]
+}

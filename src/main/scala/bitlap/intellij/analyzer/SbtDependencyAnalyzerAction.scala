@@ -5,7 +5,6 @@ import scala.jdk.CollectionConverters.*
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.externalSystem.dependency.analyzer.*
 import com.intellij.openapi.externalSystem.model.*
@@ -18,7 +17,6 @@ import com.intellij.openapi.externalSystem.view.ExternalSystemNode
 import com.intellij.openapi.externalSystem.view.ModuleNode
 import com.intellij.openapi.externalSystem.view.ProjectNode
 import com.intellij.openapi.module.Module
-import com.intellij.openapi.util.text.StringUtil
 
 /** @author
  *    梦境迷离

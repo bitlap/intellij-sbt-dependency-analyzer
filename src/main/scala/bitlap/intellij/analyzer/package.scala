@@ -1,6 +1,7 @@
 package bitlap.intellij.analyzer
 
 import java.util.Collections
+import java.util.concurrent.atomic.AtomicLong
 
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.project.{ SbtProjectSystem, SbtTaskManager }
@@ -67,53 +68,4 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-extension (sbtTaskManager: SbtTaskManager)
-
-  def runCustomTask(
-    project: Project,
-    executionName: String,
-    projectPath: String,
-    sbtPath: String,
-    progressExecutionMode: ProgressExecutionMode,
-    taskCallback: TaskCallback,
-    toolingExtensionClasses: Set[Class[?]]
-  ): Unit = {
-    val taskName = "dependencyGraphML"
-    val userData = new UserDataHolderBase
-    userData.putUserData(ExternalSystemRunConfiguration.PROGRESS_LISTENER_KEY, classOf[SyncViewManager])
-    val sbtVmOptions = SbtUtil.sbtSettings(project).getVmParameters
-    val settings     = new ExternalSystemTaskExecutionSettings
-    settings.setExecutionName(executionName)
-    settings.setExternalProjectPath(projectPath)
-    val taskPrefix = if (sbtPath.endsWith(":")) sbtPath else sbtPath + ':'
-    settings.setTaskNames(Collections.singletonList(taskPrefix + taskName))
-    settings.setVmOptions(sbtVmOptions)
-    settings.setExternalSystemIdString(SbtProjectSystem.Id.getId)
-    ExternalSystemUtil.runTask(
-      settings,
-      DefaultRunExecutor.EXECUTOR_ID,
-      project,
-      SbtProjectSystem.Id,
-      taskCallback,
-      progressExecutionMode,
-      false,
-      userData
-    )
-  }
-
-  def runCustomTask(
-    project: Project,
-    executionName: String,
-    projectPath: String,
-    sbtPath: String,
-    progressExecutionMode: ProgressExecutionMode,
-    taskCallback: TaskCallback
-  ): Unit = runCustomTask(
-    project,
-    executionName,
-    projectPath,
-    sbtPath,
-    progressExecutionMode,
-    taskCallback,
-    Set.empty
-  )
+val id = new AtomicLong(0)

@@ -1,34 +1,35 @@
 package bitlap.intellij.analyzer
 
-import java.io.File
 import java.util
 import java.util.*
 import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.*
+import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters.*
 
-import org.jetbrains.sbt.{ SbtBundle, SbtUtil }
-import org.jetbrains.sbt.project.SbtProjectSystem
-import org.jetbrains.sbt.project.SbtTaskManager
+import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
+import org.jetbrains.sbt.language.utils.SbtDependencyUtils
+import org.jetbrains.sbt.project.{ SbtProjectSystem, SbtTaskManager }
 import org.jetbrains.sbt.project.data.ModuleNode
+import org.jetbrains.sbt.shell.SbtShellCommunication
+import org.jetbrains.sbt.shell.action.SbtNodeAction
 
+import com.intellij.buildsystem.model.DeclaredDependency
+import com.intellij.externalSystem.ExternalDependencyModificator
 import com.intellij.openapi.Disposable
-import com.intellij.openapi.externalSystem.dependency.analyzer.*
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
+import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.model.task.*
-import com.intellij.openapi.externalSystem.service.execution.ProgressExecutionMode
 import com.intellij.openapi.externalSystem.service.notification.ExternalSystemProgressNotificationManager
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
-import com.intellij.openapi.externalSystem.task.TaskCallback
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
+import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemBundle }
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.util.text.StringUtil
 
 import kotlin.jvm.functions
@@ -41,13 +42,13 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   import SbtDependencyAnalyzerContributor.*
 
-  private val projects              = ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
-  private val configurationNodesMap = ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
-  private val dependencyMap         = ConcurrentHashMap[Long, Dependency]()
+  private lazy val projects              = ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
+  private lazy val configurationNodesMap = ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+  private lazy val dependencyMap         = ConcurrentHashMap[Long, Dependency]()
 
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
-  ): util.List[DependencyAnalyzerDependency] = {
+  ): util.List[Dependency] = {
     val moduleData = projects.get(externalProject)
     if (moduleData == null) Collections.emptyList()
     val scopeNodes = getOrRefreshData(moduleData)
@@ -56,7 +57,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   override def getDependencyScopes(
     externalProject: DependencyAnalyzerProject
-  ): util.List[DependencyAnalyzerDependency.Scope] = {
+  ): util.List[Dependency.Scope] = {
     val moduleData = projects.get(externalProject)
     if (moduleData == null) Collections.emptyList()
     getOrRefreshData(moduleData).asScala.map(_.toScope).asJava
@@ -234,32 +235,61 @@ object SbtDependencyAnalyzerContributor {
     def toScope: DAScope = scope(dependencyScopeNode.getScope)
   }
 
+  private def scopedKey(project: String, scope: DependencyScope, cmd: String): String = {
+    if (project == null || project.isEmpty) s"$scope / $cmd"
+    else s"$project / $scope / $cmd"
+  }
+
+  private def fileName(scope: DependencyScope): String = {
+    s"/target/dependencies-${scope.toString.toLowerCase}.graphml"
+  }
+
+  private def rootNode(dependencyScope: DependencyScope): DependencyScopeNode = {
+    val node = new DependencyScopeNode(
+      id.getAndIncrement(),
+      dependencyScope.toString,
+      dependencyScope.toString,
+      dependencyScope.toString
+    )
+    node.setResolutionState(ResolutionState.RESOLVED)
+    node
+  }
+
   extension (moduleData: ModuleData) {
 
     def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
-      var dependencyScopeNodes = scala.List[DependencyScopeNode]()
-      val sbtTaskManager       = new SbtTaskManager
-      val directoryToRunTask   = moduleData.getProperty("directoryToRunTask")
-      val sbtIdentityPath      = moduleData.getProperty("sbtIdentityPath")
-      val outputFile           = "/target/dependencies-compile.graphml"
-      sbtTaskManager.runCustomTask(
-        project,
-        SbtPluginBundle.message("sbt.dependency.analyzer.loading"),
-        if (directoryToRunTask == null) moduleData.getLinkedExternalProjectPath else directoryToRunTask,
-        if (sbtIdentityPath == null) SbtUtil.getLauncherDir.getAbsolutePath else sbtIdentityPath,
-        ProgressExecutionMode.NO_PROGRESS_SYNC,
-        new TaskCallback {
-          override def onSuccess(): Unit = {
-            val graphml = FileUtil.loadFile(new File(directoryToRunTask + outputFile))
-            // TODO parse graphml
-            val scopeNodes: scala.List[DependencyScopeNode] = ???
-            dependencyScopeNodes = scopeNodes
-          }
+      val module = findModule(project, moduleData)
+      val comms  = SbtShellCommunication.forProject(project)
+      if (moduleData.getModuleName.endsWith("-build")) return Collections.emptyList()
+      val promise = Promise[util.List[DependencyScopeNode]]()
 
-          override def onFailure(): Unit = {}
-        }
-      )
-      dependencyScopeNodes.asJava
+      // todo , check dependencyGraphML is exists
+      // todo , parse outputFile to DependencyScopeNode
+
+      DependencyScope.values.toList.foreach { scope =>
+        val root = rootNode(scope)
+        comms.command(
+          scopedKey(moduleData.getModuleName, scope, "dependencyGraphML"),
+          new StringBuilder(),
+          SbtShellCommunication.listenerAggregator {
+            case SbtShellCommunication.TaskStart =>
+            case SbtShellCommunication.TaskComplete =>
+              val node = new DependencyScopeNode(
+                1,
+                "compile",
+                "Compile",
+                "CompileNode"
+              )
+              node.setResolutionState(ResolutionState.RESOLVED)
+              node.getDependencies.add(new ArtifactDependencyNodeImpl(1, "bitlap", "rolls-core", "0.2.0"))
+              promise.success(scala.List(node).asJava)
+            case SbtShellCommunication.ErrorWaitForInput =>
+              promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.exec")))
+            case SbtShellCommunication.Output(line) =>
+          }
+        )
+      }
+      Await.result(promise.future, Duration.Inf)
     }
   }
 }
