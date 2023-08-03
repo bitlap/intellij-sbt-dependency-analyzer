@@ -22,3 +22,6 @@ jobs:
 
       - name: Build
         run: sbt compile
+        
+      - name: Test
+        run: sbt test  
