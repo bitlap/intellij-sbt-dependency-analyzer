@@ -243,7 +243,7 @@ object SbtDependencyAnalyzerContributor {
   }
 
   private def fileName(scope: DependencyScope): String = {
-    s"/target/dependencies-${scope.toString.toLowerCase}.graphml"
+    s"/target/dependencies-${scope.toString.toLowerCase}.dot"
   }
 
   private def rootNode(dependencyScope: DependencyScope): DependencyScopeNode = {
@@ -275,7 +275,9 @@ object SbtDependencyAnalyzerContributor {
             case SbtShellCommunication.TaskComplete =>
               val root = rootNode(scope)
               root.getDependencies.addAll(
-                DependencyGraphBuilderFactory.getInstance(GraphBuilderEnum.Dot).buildDependencyTree(fileName(scope))
+                DependencyGraphBuilderFactory
+                  .getInstance(GraphBuilderEnum.Dot)
+                  .buildDependencyTree(moduleData.getLinkedExternalProjectPath + fileName(scope))
               )
               promise.success(root)
             case SbtShellCommunication.ErrorWaitForInput =>
