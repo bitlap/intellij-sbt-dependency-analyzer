@@ -2,24 +2,20 @@ package bitlap.sbt.analyzer
 
 import java.util
 import java.util.Collections
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.{ ConcurrentHashMap, Executors }
 import java.util.concurrent.atomic.AtomicLong
-
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ Promise, * }
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
-
 import bitlap.sbt.analyzer.parser.{ GraphBuilderEnum, * }
 import bitlap.sbt.analyzer.parser.GraphBuilderEnum.Dot
-
 import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
 import org.jetbrains.sbt.shell.SbtShellCommunication
 import org.jetbrains.sbt.shell.action.SbtNodeAction
-
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.externalSystem.ExternalDependencyModificator
 import com.intellij.openapi.Disposable
@@ -34,7 +30,6 @@ import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, Externa
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
 import com.intellij.openapi.util.text.StringUtil
-
 import kotlin.jvm.functions
 
 /** @author
@@ -289,7 +284,7 @@ object SbtDependencyAnalyzerContributor {
           }
         )
       }
-      import concurrent.ExecutionContext.Implicits.global
+      implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
       val result = Future.sequence(promiseList.toList.map(_.future))
       Await.result(result.map(_.asJava), 30.minutes)
     }

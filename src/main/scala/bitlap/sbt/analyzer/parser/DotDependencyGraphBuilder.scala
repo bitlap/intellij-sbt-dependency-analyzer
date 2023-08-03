@@ -1,6 +1,9 @@
 package bitlap.sbt.analyzer.parser
 
 import java.io.File
+import java.util
+import java.util.Collections
+import java.util.List as JList
 
 import scala.jdk.CollectionConverters.*
 
@@ -11,9 +14,6 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 import guru.nidi.graphviz.engine.*
 import guru.nidi.graphviz.engine.{ Format, Graphviz }
-import io.circe.*
-import io.circe.generic.auto.*
-import io.circe.parser
 
 /** @author
  *    梦境迷离
@@ -25,15 +25,20 @@ object DotDependencyGraphBuilder {
 
 final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
 
-  override def buildDependencyTree(file: String): java.util.List[DependencyNode] = {
+  val visited = scala.collection.mutable.HashMap[Long, Dependency]()
+
+  override def buildDependencyTree(file: String): JList[DependencyNode] = {
     val (relation, dependencyList) = dependencies(file)
-    dependencyList.foreach { dependency =>
-      val parentId = dependency.getId
-      val children = relation.filter(_.head == parentId).flatMap(f => dependencyList.filter(_.getId == f.id))
-      dependency.getDependencies.addAll(children.asJava)
+    dependencyList.forEach {
+      case dependency: ArtifactDependencyNodeImpl =>
+        val parentId = dependency.getId
+        val children =
+          relation.asScala.filter(_.head == parentId).flatMap(f => dependencyList.asScala.filter(_.getId == f.id))
+        dependency.getDependencies.addAll(children.asJava)
+      case _ =>
     }
 
-    dependencyList.asJava
+    dependencyList
   }
 
   override def toDependencyNode(dep: Dependency): DependencyNode = {
@@ -48,16 +53,30 @@ final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
     else
       Some(
         DependencyRelations(
-          dependencyGraph.objects.map(_.toDependency),
-          dependencyGraph.edges.map(_.toDependencyRelation)
+          Option(dependencyGraph.getObjects)
+            .getOrElse(Collections.emptyList())
+            .asScala
+            .map(d => toDependency(d))
+            .asJava,
+          Option(dependencyGraph.getEdges)
+            .getOrElse(Collections.emptyList())
+            .asScala
+            .map(d => toDependencyRelation(d))
+            .asJava
         )
       )
 
-  private def dependencies(file: String): (List[DependencyRelation], List[DependencyNode]) = {
-    val dprs      = getDependencyRelations(file)
-    val deps      = dprs.map(_.dependencies).getOrElse(List.empty)
-    val relations = dprs.map(_.relations).getOrElse(List.empty)
-    relations -> deps.map(toDependencyNode)
+  private def dependencies(file: String): (JList[DependencyRelation], JList[DependencyNode]) = {
+    val dprs                          = getDependencyRelations(file)
+    val deps                          = dprs.map(_.dependencies.asScala).getOrElse(List.empty)
+    val relations                     = dprs.map(_.relations.asScala).getOrElse(List.empty)
+    val rs: JList[DependencyRelation] = new util.ArrayList[DependencyRelation]()
+    rs.addAll(relations.asJava)
+    val ds: JList[DependencyNode] = new util.ArrayList[DependencyNode]()
+    ds.addAll(deps.map { d =>
+      toDependencyNode(d)
+    }.asJava)
+    rs -> ds
   }
 
 }

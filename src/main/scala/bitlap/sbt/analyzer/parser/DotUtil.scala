@@ -5,8 +5,10 @@ import java.io.File
 import bitlap.sbt.analyzer.model.DependencyGraph
 
 import guru.nidi.graphviz.engine.{ Format, Graphviz }
-import io.circe.generic.auto.*
-import io.circe.parser
+
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 
 /** @author
  *    梦境迷离
@@ -14,15 +16,18 @@ import io.circe.parser
  */
 object DotUtil {
 
+  // not support scala package object in intellij object?
+  final lazy val mapper = JsonMapper
+    .builder()
+    .serializationInclusion(JsonInclude.Include.NON_EMPTY)
+    .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+    .build()
+
   def parse(file: String): DependencyGraph = {
     try {
       val string = Graphviz.fromFile(new File(file)).render(Format.JSON0).toString
-      parser.parse(string) match
-        case Left(value) => null
-        case Right(value) =>
-          value.as[DependencyGraph] match
-            case Left(value)  => null
-            case Right(value) => value
+
+      mapper.readValue(string,classOf[DependencyGraph])
     } catch
       case e: Exception =>
         e.printStackTrace()

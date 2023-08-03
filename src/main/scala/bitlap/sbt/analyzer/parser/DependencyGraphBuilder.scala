@@ -4,6 +4,7 @@ import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.model.Dependency
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
+import java.util.List as JList
 
 /** @author
  *    梦境迷离
@@ -11,7 +12,7 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
  */
 trait DependencyGraphBuilder {
 
-  def buildDependencyTree(file: String): java.util.List[DependencyNode]
+  def buildDependencyTree(file: String): JList[DependencyNode]
   def toDependencyNode(dep: Dependency): DependencyNode
 
 }

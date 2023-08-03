@@ -1,3 +1,5 @@
 package bitlap.sbt.analyzer.model
 
-final case class DependencyRelations(dependencies: List[Dependency], relations: List[DependencyRelation])
+import java.util.List as JList
+
+final case class DependencyRelations(dependencies: JList[Dependency], relations: JList[DependencyRelation])

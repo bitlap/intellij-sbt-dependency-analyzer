@@ -8,6 +8,8 @@ lazy val pluginVersion = s"0.1.0-$intellijVersion-SNAPSHOT"
 
 ThisBuild / version := pluginVersion
 
+lazy val jacksonVersion = "2.13.3"
+
 inThisBuild(
   List(
     homepage := Some(url("https://github.com/bitlap/intellij-sbt-dependency-analyzer")),
@@ -50,10 +52,9 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     commands ++= Commands.value,
     libraryDependencies ++= Seq(
       // FIXME 0.15.1+ Caused by: java.lang.LinkageError: loader constraint violation: when resolving method 'org.slf4j.ILoggerFactory
-      "guru.nidi"      % "graphviz-java" % "0.15.0",
-      "io.circe"      %% "circe-core"    % "0.14.3",
-      "io.circe"      %% "circe-parser"  % "0.14.3",
-      "io.circe"      %% "circe-generic" % "0.14.3",
-      "org.scalatest" %% "scalatest"     % "3.2.16" % Test
+      "guru.nidi"                     % "graphviz-java"        % "0.18.1",
+      "com.fasterxml.jackson.core" % "jackson-core" % jacksonVersion,
+      "org.scalatest"                %% "scalatest"            % "3.2.16" % Test,
+      "ch.qos.logback"                % "logback-classic"      % "1.2.3"
     )
   )
