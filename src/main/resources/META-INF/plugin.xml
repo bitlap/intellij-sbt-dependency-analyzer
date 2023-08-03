@@ -9,7 +9,6 @@
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
-    <depends>com.intellij.modules.java</depends>
     <depends>org.intellij.scala</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.modules.externalSystem</depends>

@@ -1,10 +1,8 @@
 package bitlap.sbt.analyzer.parser
 
 import java.io.File
-
 import bitlap.sbt.analyzer.model.DependencyGraph
-
-import guru.nidi.graphviz.engine.{ Format, Graphviz }
+import guru.nidi.graphviz.engine.{ Format, Graphviz, GraphvizLoader }
 import io.circe.generic.auto.*
 import io.circe.parser
 

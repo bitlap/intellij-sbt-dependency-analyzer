@@ -7,14 +7,14 @@ import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ Promise, * }
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
-import org.jetbrains.sbt.project.{ SbtProjectSystem, SbtTaskManager }
+import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
 import org.jetbrains.sbt.shell.SbtShellCommunication
 import org.jetbrains.sbt.shell.action.SbtNodeAction
@@ -268,7 +268,7 @@ object SbtDependencyAnalyzerContributor {
         val promise = Promise[DependencyScopeNode]()
         promiseList.append(promise)
         comms.command(
-          scopedKey(moduleData.getModuleName, scope, "dependencyDot"),
+          scopedKey(module.getName, scope, "dependencyDot"),
           new StringBuilder(),
           SbtShellCommunication.listenerAggregator {
             case SbtShellCommunication.TaskStart =>
@@ -279,14 +279,14 @@ object SbtDependencyAnalyzerContributor {
               )
               promise.success(root)
             case SbtShellCommunication.ErrorWaitForInput =>
-              promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.exec")))
+              promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
             case SbtShellCommunication.Output(line) =>
           }
         )
       }
       import concurrent.ExecutionContext.Implicits.global
       val result = Future.sequence(promiseList.toList.map(_.future))
-      Await.result(result.map(_.asJava), Duration.Inf)
+      Await.result(result.map(_.asJava), 30.minutes)
     }
   }
 }

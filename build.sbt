@@ -49,7 +49,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     publish / skip := true,
     commands ++= Commands.value,
     libraryDependencies ++= Seq(
-      "guru.nidi"      % "graphviz-java" % "0.18.1",
+      // FIXME 0.15.1+ Caused by: java.lang.LinkageError: loader constraint violation: when resolving method 'org.slf4j.ILoggerFactory
+      "guru.nidi"      % "graphviz-java" % "0.15.0",
       "io.circe"      %% "circe-core"    % "0.14.3",
       "io.circe"      %% "circe-parser"  % "0.14.3",
       "io.circe"      %% "circe-generic" % "0.14.3",
