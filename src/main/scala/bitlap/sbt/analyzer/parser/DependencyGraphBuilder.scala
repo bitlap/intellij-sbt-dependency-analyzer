@@ -1,10 +1,11 @@
 package bitlap.sbt.analyzer.parser
 
+import java.util.List as JList
+
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.model.Dependency
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
-import java.util.List as JList
 
 /** @author
  *    梦境迷离

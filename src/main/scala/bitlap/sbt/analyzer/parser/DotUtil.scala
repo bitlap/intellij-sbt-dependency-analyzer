@@ -4,11 +4,11 @@ import java.io.File
 
 import bitlap.sbt.analyzer.model.DependencyGraph
 
-import guru.nidi.graphviz.engine.{ Format, Graphviz }
-
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
+
+import guru.nidi.graphviz.engine.{ Format, Graphviz }
 
 /** @author
  *    梦境迷离
@@ -27,7 +27,7 @@ object DotUtil {
     try {
       val string = Graphviz.fromFile(new File(file)).render(Format.JSON0).toString
 
-      mapper.readValue(string,classOf[DependencyGraph])
+      mapper.readValue(string, classOf[DependencyGraph])
     } catch
       case e: Exception =>
         e.printStackTrace()
