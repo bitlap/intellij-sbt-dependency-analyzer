@@ -10,7 +10,8 @@ import scala.concurrent.{ Promise, * }
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parser.{ GraphBuilderEnum, * }
+import bitlap.sbt.analyzer.parser.GraphBuilderEnum.Dot
 
 import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
@@ -242,8 +243,10 @@ object SbtDependencyAnalyzerContributor {
     else s"$project / $scope / $cmd"
   }
 
-  private def fileName(scope: DependencyScope): String = {
-    s"/target/dependencies-${scope.toString.toLowerCase}.dot"
+  private def fileName(scope: DependencyScope, graphBuilderEnum: GraphBuilderEnum): String = {
+    graphBuilderEnum match
+      case Dot =>
+        s"/target/dependencies-${scope.toString.toLowerCase}.${Dot.toString.toLowerCase}"
   }
 
   private def rootNode(dependencyScope: DependencyScope): DependencyScopeNode = {
@@ -277,7 +280,7 @@ object SbtDependencyAnalyzerContributor {
               root.getDependencies.addAll(
                 DependencyGraphBuilderFactory
                   .getInstance(GraphBuilderEnum.Dot)
-                  .buildDependencyTree(moduleData.getLinkedExternalProjectPath + fileName(scope))
+                  .buildDependencyTree(moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot))
               )
               promise.success(root)
             case SbtShellCommunication.ErrorWaitForInput =>
