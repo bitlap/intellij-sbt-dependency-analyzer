@@ -174,6 +174,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
+    // FIXME
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
@@ -272,7 +273,8 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
-      if (module.getName == "build") return Collections.emptyList()
+      // FIXME
+      if (module.getName.endsWith("-build")) return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
       implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
       val result = Future {
