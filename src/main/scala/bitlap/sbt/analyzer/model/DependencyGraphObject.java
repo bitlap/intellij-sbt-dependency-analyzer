@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DependencyGraphObject {
-    Long _gvid;
+    Integer _gvid;
     String name;
 
     public DependencyGraphObject() {
     }
 
-    public Long get_gvid() {
+    public Integer get_gvid() {
         return _gvid;
     }
 
-    public void set_gvid(Long _gvid) {
+    public void set_gvid(Integer _gvid) {
         this._gvid = _gvid;
     }
 

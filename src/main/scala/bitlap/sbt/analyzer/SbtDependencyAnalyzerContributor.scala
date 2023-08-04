@@ -2,6 +2,7 @@ package bitlap.sbt.analyzer
 
 import java.util
 import java.util.Collections
+import java.util.List as JList
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
 import java.util.concurrent.atomic.AtomicLong
 
@@ -53,7 +54,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     externalProject: DependencyAnalyzerProject
   ): util.List[Dependency] = {
     val moduleData = projects.get(externalProject)
-    if (moduleData == null) Collections.emptyList()
+    if (moduleData == null) return Collections.emptyList()
     val scopeNodes = getOrRefreshData(moduleData)
     getDependencies(moduleData, scopeNodes)
   }
@@ -62,7 +63,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     externalProject: DependencyAnalyzerProject
   ): util.List[Dependency.Scope] = {
     val moduleData = projects.get(externalProject)
-    if (moduleData == null) Collections.emptyList()
+    if (moduleData == null) return Collections.emptyList()
     getOrRefreshData(moduleData).asScala.map(_.toScope).asJava
   }
 
@@ -248,11 +249,12 @@ object SbtDependencyAnalyzerContributor {
         s"/target/dependencies-${scope.toString.toLowerCase}.${Dot.toString.toLowerCase}"
   }
 
-  private def rootNode(dependencyScope: DependencyScope): DependencyScopeNode = {
+  private def rootNode(dependencyScope: DependencyScope,project:Project): DependencyScopeNode = {
+    val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
     val node = new DependencyScopeNode(
       id.getAndIncrement(),
       dependencyScope.toString,
-      dependencyScope.toString,
+      scopeDisplayName,
       dependencyScope.toString
     )
     node.setResolutionState(ResolutionState.RESOLVED)
@@ -264,33 +266,38 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
-      if (moduleData.getModuleName.endsWith("-build")) return Collections.emptyList()
+      if (module.getName.endsWith("-build")) return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
-      DependencyScope.values.toList.foreach { scope =>
-        val promise = Promise[DependencyScopeNode]()
-        promiseList.append(promise)
-        comms.command(
-          scopedKey(module.getName, scope, "dependencyDot"),
-          new StringBuilder(),
-          SbtShellCommunication.listenerAggregator {
-            case SbtShellCommunication.TaskStart =>
-            case SbtShellCommunication.TaskComplete =>
-              val root = rootNode(scope)
-              root.getDependencies.addAll(
-                DependencyGraphBuilderFactory
-                  .getInstance(GraphBuilderEnum.Dot)
-                  .buildDependencyTree(moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot))
-              )
-              promise.success(root)
-            case SbtShellCommunication.ErrorWaitForInput =>
-              promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
-            case SbtShellCommunication.Output(line) =>
-          }
-        )
-      }
       implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
-      val result      = Future.sequence(promiseList.toList.map(_.future))
-      Await.result(result.map(_.asJava), 30.minutes)
+      val result = Future {
+        DependencyScope.values.toList.foreach { scope =>
+          val promise = Promise[DependencyScopeNode]()
+          promiseList.append(promise)
+          comms.command(
+            scopedKey(module.getName, scope, "dependencyDot"),
+            new StringBuilder(),
+            SbtShellCommunication.listenerAggregator {
+              case SbtShellCommunication.TaskStart =>
+              case SbtShellCommunication.TaskComplete =>
+                val root = rootNode(scope, project)
+                root.getDependencies.addAll(
+                  DependencyGraphBuilderFactory
+                    .getInstance(GraphBuilderEnum.Dot)
+                    .buildDependencyTree(
+                      moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot)
+                    )
+                )
+                promise.success(root)
+              case SbtShellCommunication.ErrorWaitForInput =>
+                promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
+              case SbtShellCommunication.Output(line) =>
+            }
+          )
+        }
+        Future.sequence(promiseList.toList.map(_.future))
+      }
+      val rs = result.flatten
+      Await.result(rs.map(_.asJava), 30.minutes)
     }
   }
 }

@@ -1,19 +1,10 @@
 package bitlap.sbt.analyzer.parser
 
-import java.io.File
-import java.util
-import java.util.Collections
-import java.util.List as JList
-
-import scala.jdk.CollectionConverters.*
-
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.model.{ Dependency, DependencyRelation, DependencyRelations }
-
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
-import guru.nidi.graphviz.engine.*
-import guru.nidi.graphviz.engine.{ Format, Graphviz }
+import java.util.{Collections, List as JList}
+import scala.jdk.CollectionConverters.*
 
 /** @author
  *    梦境迷离
@@ -25,24 +16,13 @@ object DotDependencyGraphBuilder {
 
 final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
 
-  val visited = scala.collection.mutable.HashMap[Long, Dependency]()
-
-  // fixme
   override def buildDependencyTree(file: String): JList[DependencyNode] = {
-    val (relation, dependencyList) = dependencies(file)
-    dependencyList.forEach {
-      case dependency: ArtifactDependencyNodeImpl =>
-        val parentId = dependency.getId
-        val children =
-          relation.asScala.filter(_.head == parentId).flatMap(f => dependencyList.asScala.filter(_.getId == f.id))
-        dependency.getDependencies.addAll(children.asJava)
-      case _ =>
-    }
-
-    dependencyList
+    val tree = buildTree(file)
+    tree.asJava
   }
 
   override def toDependencyNode(dep: Dependency): DependencyNode = {
+    if (dep == null) return null
     val node = new ArtifactDependencyNodeImpl(dep.id, dep.group, dep.artifact, dep.version)
     node.setResolutionState(ResolutionState.RESOLVED)
     node
@@ -67,17 +47,38 @@ final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
         )
       )
 
-  private def dependencies(file: String): (JList[DependencyRelation], JList[DependencyNode]) = {
-    val dprs                          = getDependencyRelations(file)
-    val deps                          = dprs.map(_.dependencies.asScala).getOrElse(List.empty)
-    val relations                     = dprs.map(_.relations.asScala).getOrElse(List.empty)
-    val rs: JList[DependencyRelation] = new util.ArrayList[DependencyRelation]()
-    rs.addAll(relations.asJava)
-    val ds: JList[DependencyNode] = new util.ArrayList[DependencyNode]()
-    ds.addAll(deps.map { d =>
-      toDependencyNode(d)
-    }.asJava)
-    rs -> ds
-  }
+  private def buildTree(file: String): Seq[DependencyNode] = {
+    val data = getDependencyRelations(file)
+    val depMap =
+      data.map(_.dependencies.asScala).getOrElse(List.empty).map(d => d.id -> toDependencyNode(d)).toMap
 
+    val relation                  = data.orNull
+    
+    if(relation == null || relation.relations.size() == 0) return data.map(_.dependencies.asScala.map(d => toDependencyNode(d)).toList).toList.flatten
+      
+    val parentChildren            = scala.collection.mutable.HashMap[Int, JList[Int]]()
+    val graph                     = new Graph(relation.relations.size())
+    
+    relation.relations.forEach(r => graph.addEdge(r.tail, r.head))
+    
+    val objs: Seq[DependencyNode] = depMap.values.toSet.toSeq
+
+    objs.foreach { d =>
+      val path = graph.DFS(d.getId.toInt).asScala.tail.map(_.intValue()).asJava
+      parentChildren.put(d.getId.toInt, path)
+    }
+
+    parentChildren.foreach { (k, v) =>
+      val kd = depMap.get(k)
+      attacheChildNodes(kd, v)
+    }
+
+    def attacheChildNodes(node: Option[DependencyNode], vd: JList[Int]): Unit = {
+      val rs = vd.asScala.toSet.flatMap(l => depMap.get(l).toList).toList.asJava
+      node.map(_.getDependencies.addAll(rs))
+    }
+
+    objs
+
+  }
 }

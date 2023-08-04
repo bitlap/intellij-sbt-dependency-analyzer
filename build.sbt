@@ -53,6 +53,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     libraryDependencies ++= Seq(
       // FIXME 0.15.1+ Caused by: java.lang.LinkageError: loader constraint violation: when resolving method 'org.slf4j.ILoggerFactory
       "guru.nidi"                  % "graphviz-java"   % "0.18.1",
+      "org.graalvm.js" % "js" % "23.0.1",
       "com.fasterxml.jackson.core" % "jackson-core"    % jacksonVersion,
       "org.scalatest"             %% "scalatest"       % "3.2.16" % Test,
       "ch.qos.logback"             % "logback-classic" % "1.2.3"

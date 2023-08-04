@@ -8,34 +8,34 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DependencyGraphEdge {
-    Long _gvid;
-    Long tail;
-    Long head;
+    Integer _gvid;
+    Integer tail;
+    Integer head;
     public DependencyGraphEdge() {
     }
 
 
-    public Long get_gvid() {
+    public Integer get_gvid() {
         return _gvid;
     }
 
-    public void set_gvid(Long _gvid) {
+    public void set_gvid(Integer _gvid) {
         this._gvid = _gvid;
     }
 
-    public Long getTail() {
+    public Integer getTail() {
         return tail;
     }
 
-    public void setTail(Long tail) {
+    public void setTail(Integer tail) {
         this.tail = tail;
     }
 
-    public Long getHead() {
+    public Integer getHead() {
         return head;
     }
 
-    public void setHead(Long head) {
+    public void setHead(Integer head) {
         this.head = head;
     }
 
