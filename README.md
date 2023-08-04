@@ -10,6 +10,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - Java 11
 - Scala 3.3.0
 - Intellij 231.9392.1
+- Depends on `addDependencyTreePlugin` in `plugins.sbt` file
 
 ## Features
 

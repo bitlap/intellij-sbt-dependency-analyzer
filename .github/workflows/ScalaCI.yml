@@ -23,5 +23,8 @@ jobs:
       - name: Build
         run: sbt compile
         
+      - name: Check Style
+        run: sbt check   
+        
       - name: Test
         run: sbt test  
