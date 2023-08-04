@@ -19,12 +19,12 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ### Conflict
 
-[](./docs/dependencyTree1.png)
+![](./docs/dependencyTree1.png)
 
 ### Note 
 
 If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
 
-[](./docs/dependencyTree2.jpg)
+![](./docs/dependencyTree2.jpg)
 
 > The plugin currently has no depth limit, pay attention to memory.
