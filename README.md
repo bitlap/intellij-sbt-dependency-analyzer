@@ -13,4 +13,4 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Features
 
-- TODO 🚧
+- Same features as the official Gradle Dependency Analyzer
