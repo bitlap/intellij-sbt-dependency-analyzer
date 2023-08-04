@@ -1,10 +1,14 @@
 package bitlap.sbt.analyzer.parser
 
-import bitlap.sbt.analyzer.model.*
-import com.intellij.openapi.externalSystem.model.project.dependencies.*
+import java.util.{ Collections, List as JList }
 
-import java.util.{Collections, List as JList}
 import scala.jdk.CollectionConverters.*
+
+import bitlap.sbt.analyzer.DependencyScopeEnum
+import bitlap.sbt.analyzer.DependencyScopeEnum.{ Compile, Provided }
+import bitlap.sbt.analyzer.model.*
+
+import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 /** @author
  *    梦境迷离
@@ -16,16 +20,61 @@ object DotDependencyGraphBuilder {
 
 final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
 
-  override def buildDependencyTree(file: String): JList[DependencyNode] = {
-    val tree = buildTree(file)
-    tree.asJava
-  }
-
-  override def toDependencyNode(dep: Dependency): DependencyNode = {
+  private def toDependencyNode(context: ModuleContext, dep: Dependency): DependencyNode = {
     if (dep == null) return null
     val node = new ArtifactDependencyNodeImpl(dep.id, dep.group, dep.artifact, dep.version)
     node.setResolutionState(ResolutionState.RESOLVED)
     node
+  }
+
+  override def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode = {
+    val file = context.analysisFile
+    val data = getDependencyRelations(file)
+    val depMap =
+      data.map(_.dependencies.asScala).getOrElse(List.empty).map(d => d.id -> toDependencyNode(context, d)).toMap
+
+    val relation = data.orNull
+
+    if (relation == null || relation.relations.size() == 0) return {
+      val dep = data.map(_.dependencies.asScala.map(d => toDependencyNode(context, d)).toList).toList.flatten
+      root.getDependencies.addAll(dep.asJava)
+      root
+    }
+
+    val parentChildren = scala.collection.mutable.HashMap[Int, JList[Int]]()
+    val labelData      = scala.collection.mutable.HashMap[String, String]()
+    val tail           = relation.relations.asScala.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val head           = relation.relations.asScala.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val graph          = new Graph(Math.max(tail, head) + 1)
+
+    relation.relations.forEach { r =>
+      labelData.put(s"${r.tail}-${r.head}", r.label)
+      graph.addEdge(r.tail, r.head)
+    }
+
+    val objs: Seq[DependencyNode] = depMap.values.toSet.toSeq
+
+    objs.foreach { d =>
+      val path = graph.DFS(d.getId.toInt).asScala.tail.map(_.intValue()).asJava
+      parentChildren.put(d.getId.toInt, path)
+    }
+
+    parentChildren.foreach { (k, v) =>
+      val node  = depMap.get(k)
+      val label = v.asScala.map(id => id -> labelData.get(s"$k-$id")).toMap
+      val rs = v.asScala.view.toSet.flatMap { l =>
+        depMap.get(l).toList.map {
+          case a: ArtifactDependencyNodeImpl =>
+            a.setSelectionReason(label.getOrElse(l, None).getOrElse(""))
+            a
+          case b => b
+        }
+      }.toList.asJava
+      node.map(_.getDependencies.addAll(rs))
+    }
+
+    root.getDependencies.addAll(objs.asJava)
+    root
   }
 
   private def getDependencyRelations(file: String): Option[DependencyRelations] =
@@ -47,38 +96,4 @@ final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
         )
       )
 
-  private def buildTree(file: String): Seq[DependencyNode] = {
-    val data = getDependencyRelations(file)
-    val depMap =
-      data.map(_.dependencies.asScala).getOrElse(List.empty).map(d => d.id -> toDependencyNode(d)).toMap
-
-    val relation                  = data.orNull
-    
-    if(relation == null || relation.relations.size() == 0) return data.map(_.dependencies.asScala.map(d => toDependencyNode(d)).toList).toList.flatten
-      
-    val parentChildren            = scala.collection.mutable.HashMap[Int, JList[Int]]()
-    val graph                     = new Graph(relation.relations.size())
-    
-    relation.relations.forEach(r => graph.addEdge(r.tail, r.head))
-    
-    val objs: Seq[DependencyNode] = depMap.values.toSet.toSeq
-
-    objs.foreach { d =>
-      val path = graph.DFS(d.getId.toInt).asScala.tail.map(_.intValue()).asJava
-      parentChildren.put(d.getId.toInt, path)
-    }
-
-    parentChildren.foreach { (k, v) =>
-      val kd = depMap.get(k)
-      attacheChildNodes(kd, v)
-    }
-
-    def attacheChildNodes(node: Option[DependencyNode], vd: JList[Int]): Unit = {
-      val rs = vd.asScala.toSet.flatMap(l => depMap.get(l).toList).toList.asJava
-      node.map(_.getDependencies.addAll(rs))
-    }
-
-    objs
-
-  }
 }

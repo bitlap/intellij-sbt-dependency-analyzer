@@ -11,6 +11,8 @@ public class DependencyGraphEdge {
     Integer _gvid;
     Integer tail;
     Integer head;
+    
+    String label;
     public DependencyGraphEdge() {
     }
 
@@ -39,4 +41,11 @@ public class DependencyGraphEdge {
         this.head = head;
     }
 
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
 }

@@ -34,7 +34,7 @@ public class Graph {
     }
 
     public List<Integer> DFS(int v) {
-        boolean visited[] = new boolean[V];
+        boolean visited[] = new boolean[V+1];
         List<Integer> res = new ArrayList<>();
         DFSUtil(v, visited, res);
         return res;

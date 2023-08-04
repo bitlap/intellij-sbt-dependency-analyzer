@@ -11,6 +11,7 @@ import scala.concurrent.{ Promise, * }
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.{ GraphBuilderEnum, * }
 import bitlap.sbt.analyzer.parser.GraphBuilderEnum.Dot
 
@@ -25,6 +26,7 @@ import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.externalSystem.ExternalDependencyModificator
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
+import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
 import com.intellij.openapi.externalSystem.model.ProjectKeys
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
@@ -65,6 +67,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     val moduleData = projects.get(externalProject)
     if (moduleData == null) return Collections.emptyList()
     getOrRefreshData(moduleData).asScala.map(_.toScope).asJava
+    ////    DependencyScope.values.toList.map(d => scope(d.toString.toLowerCase)).toList.asJava
   }
 
   override def getProjects: util.List[DependencyAnalyzerProject] = {
@@ -146,7 +149,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
         val dependencyData = dependencyNode.getDependencyData(projects)
         if (dependencyData == null) null
         else {
-          val status = dependencyNode.getStatus(dependencyData)
+          val status = dependencyNode.getStatus(usage, dependencyData)
           val dep    = DADependency(dependencyData, scope, usage, status)
           dependencyMap.put(dependencyNode.getId, dep)
           dep
@@ -171,6 +174,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
+    if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
       _ => moduleData.loadDependencies(project)
@@ -208,28 +212,30 @@ object SbtDependencyAnalyzerContributor {
       }
     }
 
-    def getStatus(data: Dependency.Data): util.List[Dependency.Status] = {
+    def getStatus(usage: Dependency, data: Dependency.Data): util.List[Dependency.Status] = {
       val status = ListBuffer[Dependency.Status]()
       if (node.getResolutionState == ResolutionState.UNRESOLVED) {
         val message = ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")
         status.append(DAWarning(message))
       }
       val selectionReason = node.getSelectionReason
-      if (
-        data.isInstanceOf[Dependency.Data.Artifact] && selectionReason != null && selectionReason.startsWith(
-          "between versions"
-        )
-      ) {
-        val idx               = selectionReason.indexOf("and ")
-        val conflictedVersion = selectionReason.substring(idx + 4)
-        if (conflictedVersion.nonEmpty) {
-          val message = ExternalSystemBundle.message(
-            "external.system.dependency.analyzer.warning.version.conflict",
-            conflictedVersion
-          )
-          status.append(DAWarning(message))
-        }
-      }
+      data match
+        case dataArtifact: Data.Artifact if selectionReason == "Evicted By" =>
+          val conflictedVersion = usage.getData match
+            case artifact: Data.Artifact =>
+              if (artifact.getArtifactId == dataArtifact.getArtifactId) {
+                artifact.getVersion
+              } else null
+            case _ => null
+
+          if (conflictedVersion != null) {
+            val message = ExternalSystemBundle.message(
+              "external.system.dependency.analyzer.warning.version.conflict",
+              conflictedVersion
+            )
+            status.append(DAWarning(message))
+          }
+        case _ =>
       status.asJava
     }
   }
@@ -238,18 +244,18 @@ object SbtDependencyAnalyzerContributor {
     def toScope: DAScope = scope(dependencyScopeNode.getScope)
   }
 
-  private def scopedKey(project: String, scope: DependencyScope, cmd: String): String = {
+  private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
     if (project == null || project.isEmpty) s"$scope / $cmd"
     else s"$project / $scope / $cmd"
   }
 
-  private def fileName(scope: DependencyScope, graphBuilderEnum: GraphBuilderEnum): String = {
+  private def fileName(scope: DependencyScopeEnum, graphBuilderEnum: GraphBuilderEnum): String = {
     graphBuilderEnum match
       case Dot =>
         s"/target/dependencies-${scope.toString.toLowerCase}.${Dot.toString.toLowerCase}"
   }
 
-  private def rootNode(dependencyScope: DependencyScope,project:Project): DependencyScopeNode = {
+  private def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
     val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
     val node = new DependencyScopeNode(
       id.getAndIncrement(),
@@ -266,11 +272,11 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
-      if (module.getName.endsWith("-build")) return Collections.emptyList()
+      if (module.getName == "build") return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
       implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
       val result = Future {
-        DependencyScope.values.toList.foreach { scope =>
+        DependencyScopeEnum.values.toList.foreach { scope =>
           val promise = Promise[DependencyScopeNode]()
           promiseList.append(promise)
           comms.command(
@@ -279,14 +285,16 @@ object SbtDependencyAnalyzerContributor {
             SbtShellCommunication.listenerAggregator {
               case SbtShellCommunication.TaskStart =>
               case SbtShellCommunication.TaskComplete =>
-                val root = rootNode(scope, project)
-                root.getDependencies.addAll(
-                  DependencyGraphBuilderFactory
-                    .getInstance(GraphBuilderEnum.Dot)
-                    .buildDependencyTree(
-                      moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot)
-                    )
-                )
+                val root = DependencyGraphBuilderFactory
+                  .getInstance(GraphBuilderEnum.Dot)
+                  .buildDependencyTree(
+                    ModuleContext(
+                      moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot),
+                      module.getName,
+                      scope
+                    ),
+                    rootNode(scope, project)
+                  )
                 promise.success(root)
               case SbtShellCommunication.ErrorWaitForInput =>
                 promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
@@ -296,8 +304,9 @@ object SbtDependencyAnalyzerContributor {
         }
         Future.sequence(promiseList.toList.map(_.future))
       }
-      val rs = result.flatten
-      Await.result(rs.map(_.asJava), 30.minutes)
+      val rs  = result.flatten
+      val res = Await.result(rs.map(_.asJava), 10.minutes)
+      res
     }
   }
 }

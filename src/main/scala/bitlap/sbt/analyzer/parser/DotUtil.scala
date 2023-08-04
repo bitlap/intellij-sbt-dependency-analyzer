@@ -36,12 +36,6 @@ object DotUtil {
       case e: Exception =>
         e.printStackTrace()
         null
-    } finally {
-      try {
-        if (f != null) {
-          f.delete()
-        }
-      } catch case e => {}
     }
 
   }

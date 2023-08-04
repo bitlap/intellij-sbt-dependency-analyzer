@@ -4,6 +4,6 @@ package bitlap.sbt.analyzer
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-enum DependencyScope {
-  case Compile, Provided, Runtime
+enum DependencyScopeEnum {
+  case Compile, Provided, Runtime, Test
 }

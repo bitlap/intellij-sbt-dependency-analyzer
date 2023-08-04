@@ -13,7 +13,6 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
  */
 trait DependencyGraphBuilder {
 
-  def buildDependencyTree(file: String): JList[DependencyNode]
-  def toDependencyNode(dep: Dependency): DependencyNode
+  def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode
 
 }
