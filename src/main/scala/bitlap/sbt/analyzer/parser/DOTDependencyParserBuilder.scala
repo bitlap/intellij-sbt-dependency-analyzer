@@ -5,7 +5,7 @@ import java.util.{ Collections, List as JList }
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyScopeEnum
-import bitlap.sbt.analyzer.DependencyScopeEnum.{ Compile, Provided }
+import bitlap.sbt.analyzer.DependencyScopeEnum.*
 import bitlap.sbt.analyzer.model.*
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
@@ -14,13 +14,13 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DotDependencyGraphBuilder {
-  lazy val instance: DependencyGraphBuilder = new DotDependencyGraphBuilder
+object DOTDependencyParserBuilder {
+  lazy val instance: DependencyParser = new DOTDependencyParserBuilder
 }
 
-final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
+final class DOTDependencyParserBuilder extends DependencyParser {
 
-  private def toDependencyNode(context: ModuleContext, dep: Dependency): DependencyNode = {
+  private def toDependencyNode(context: ModuleContext, dep: Artifact): DependencyNode = {
     if (dep == null) return null
     val node = new ArtifactDependencyNodeImpl(dep.id, dep.group, dep.artifact, dep.version)
     node.setResolutionState(ResolutionState.RESOLVED)
@@ -77,12 +77,12 @@ final class DotDependencyGraphBuilder extends DependencyGraphBuilder {
     root
   }
 
-  private def getDependencyRelations(file: String): Option[DependencyRelations] =
-    val dependencyGraph = DotUtil.parse(file)
+  private def getDependencyRelations(file: String): Option[Dependencies] =
+    val dependencyGraph = DOTUtil.parse(file)
     if (dependencyGraph == null) None
     else
       Some(
-        DependencyRelations(
+        Dependencies(
           Option(dependencyGraph.getObjects)
             .getOrElse(Collections.emptyList())
             .asScala

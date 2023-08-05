@@ -16,7 +16,7 @@ import guru.nidi.graphviz.engine.{ Format, Graphviz }
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DotUtil {
+object DOTUtil {
 
   // not support scala package object in intellij object?
   final lazy val mapper = JsonMapper

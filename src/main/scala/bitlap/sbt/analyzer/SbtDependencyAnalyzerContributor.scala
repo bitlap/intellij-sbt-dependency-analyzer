@@ -7,13 +7,13 @@ import java.util.concurrent.{ ConcurrentHashMap, Executors }
 import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.{ Promise, * }
+import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.ModuleContext
-import bitlap.sbt.analyzer.parser.{ GraphBuilderEnum, * }
-import bitlap.sbt.analyzer.parser.GraphBuilderEnum.Dot
+import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parser.ParserTypeEnum
 
 import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
@@ -250,10 +250,10 @@ object SbtDependencyAnalyzerContributor {
     else s"$project / $scope / $cmd"
   }
 
-  private def fileName(scope: DependencyScopeEnum, graphBuilderEnum: GraphBuilderEnum): String = {
-    graphBuilderEnum match
-      case Dot =>
-        s"/target/dependencies-${scope.toString.toLowerCase}.${Dot.toString.toLowerCase}"
+  private def fileName(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
+    parserTypeEnum match
+      case ParserTypeEnum.DOT =>
+        s"/target/dependencies-${scope.toString.toLowerCase}.${ParserTypeEnum.DOT.toString.toLowerCase}"
   }
 
   private def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
@@ -287,11 +287,11 @@ object SbtDependencyAnalyzerContributor {
             SbtShellCommunication.listenerAggregator {
               case SbtShellCommunication.TaskStart =>
               case SbtShellCommunication.TaskComplete =>
-                val root = DependencyGraphBuilderFactory
-                  .getInstance(GraphBuilderEnum.Dot)
+                val root = DependencyParserFactory
+                  .getInstance(ParserTypeEnum.DOT)
                   .buildDependencyTree(
                     ModuleContext(
-                      moduleData.getLinkedExternalProjectPath + fileName(scope, GraphBuilderEnum.Dot),
+                      moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
                       module.getName,
                       scope
                     ),

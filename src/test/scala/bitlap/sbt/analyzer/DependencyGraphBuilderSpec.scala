@@ -1,7 +1,7 @@
 package bitlap.sbt.analyzer
 
 import bitlap.sbt.analyzer.model.ModuleContext
-import bitlap.sbt.analyzer.parser.{ DependencyGraphBuilderFactory, GraphBuilderEnum }
+import bitlap.sbt.analyzer.parser.{ DependencyParserFactory, ParserTypeEnum }
 
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -21,8 +21,8 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
     val ctx =
       ModuleContext(getClass.getClassLoader.getResource("test.dot").getFile, "test", DependencyScopeEnum.Compile)
 
-    val relations = DependencyGraphBuilderFactory
-      .getInstance(GraphBuilderEnum.Dot)
+    val relations = DependencyParserFactory
+      .getInstance(ParserTypeEnum.Dot)
       .buildDependencyTree(ctx, root)
 
     assert(relations.getDependencies.size() > 0)
