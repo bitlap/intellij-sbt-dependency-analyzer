@@ -1,4 +1,5 @@
 import org.jetbrains.sbtidea.Keys.*
+import org.jetbrains.sbtidea.verifier.FailureLevel
 
 lazy val scala3Version = "3.3.0"
 
@@ -45,6 +46,11 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       privateKeyFile = Some(file("/Users/liguobin/private.pem")) // or via PLUGIN_SIGN_CERT env var
 //      keyPassphrase =
 //        Some("xxx") // or None if password is not set(or via PLUGIN_SIGN_KEY_PWD env var)
+    ),
+    pluginVerifierOptions := pluginVerifierOptions.value.copy(
+      version = "1.301",                                      // use a specific verifier version
+      offline = true,                                         // forbid the verifier from reaching the internet
+      failureLevels = Set(FailureLevel.DEPRECATED_API_USAGES) // only fail if deprecated APIs are used
     ),
     Global / intellijAttachSources := true,
     intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
