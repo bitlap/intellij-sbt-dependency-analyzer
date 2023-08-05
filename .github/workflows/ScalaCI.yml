@@ -48,17 +48,17 @@ jobs:
   #
   #      - name: Upload test coverage report
   #        run: bash <(curl -s https://codecov.io/bash)
+  
+  verification:
 
-  publish:
-    runs-on: ubuntu-20.04
-    needs: [ test ]
-    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout current branch
-        uses: actions/checkout@v3.3.0
-        with:
-          fetch-depth: 0
-      - name: Setup JDK
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
         uses: actions/setup-java@v1
         with:
-          java-version: 17     
+          java-version: 17
+
+      - name: Check Binary Compatibility
+        run: sbt runPluginVerifier

@@ -4,7 +4,7 @@ lazy val scala3Version = "3.3.0"
 
 lazy val intellijVersion =
   "231.9392.1" // https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
-lazy val pluginVersion = s"0.1.0-$intellijVersion-SNAPSHOT"
+lazy val pluginVersion = s"0.1.0-$intellijVersion-M1"
 
 ThisBuild / version := pluginVersion
 
@@ -39,6 +39,13 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     ThisBuild / intellijPluginName := "Sbt Dependency Analyzer",
     ThisBuild / intellijBuild      := intellijVersion,
     ThisBuild / intellijPlatform   := (Global / intellijPlatform).??(IntelliJPlatform.IdeaCommunity).value,
+    signPluginOptions := signPluginOptions.value.copy(
+      enabled = true,
+      certFile = Some(file("/Users/liguobin/chain.crt")),        // or via PLUGIN_SIGN_KEY env var
+      privateKeyFile = Some(file("/Users/liguobin/private.pem")) // or via PLUGIN_SIGN_CERT env var
+//      keyPassphrase =
+//        Some("xxx") // or None if password is not set(or via PLUGIN_SIGN_KEY_PWD env var)
+    ),
     Global / intellijAttachSources := true,
     intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
