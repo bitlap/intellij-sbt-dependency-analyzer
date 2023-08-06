@@ -42,8 +42,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   import SbtDependencyAnalyzerContributor.*
 
-  private lazy val dependencyMap = ConcurrentHashMap[Long, Dependency]()
-
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
   ): util.List[Dependency] = {
@@ -94,6 +92,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) ()
           else if (id.getProjectSystemId != SbtProjectSystem.Id) ()
           else {
+            // cache is static, so after closing view , this update will not be triggered when refreshing the project
+            // if view keep open, changing dependency or refreshing the project both can clear cache and update view.
             projects.clear()
             configurationNodesMap.clear()
             dependencyMap.clear()
@@ -178,13 +178,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 object SbtDependencyAnalyzerContributor {
 
   private def scope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
-
-  final val DefaultConfiguration = scope("default")
+  private final val DefaultConfiguration   = scope("default")
 
   final val Module_Data = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
-  lazy val projects              = ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
-  lazy val configurationNodesMap = ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+  lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
+    ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
+
+  lazy val configurationNodesMap: ConcurrentHashMap[String, util.List[DependencyScopeNode]] =
+    ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+  lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
 
   private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
     if (project == null || project.isEmpty) s"$scope / $cmd"
