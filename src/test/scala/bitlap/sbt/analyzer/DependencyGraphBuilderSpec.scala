@@ -21,8 +21,8 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
     val ctx =
       ModuleContext(getClass.getClassLoader.getResource("test.dot").getFile, "test", DependencyScopeEnum.Compile)
 
-    val relations = DependencyParserFactory
-      .getInstance(ParserTypeEnum.Dot)
+    val relations = DependencyGraphBuilderFactory
+      .getInstance(GraphBuilderEnum.DOT)
       .buildDependencyTree(ctx, root)
 
     assert(relations.getDependencies.size() > 0)
