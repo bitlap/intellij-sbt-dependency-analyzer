@@ -13,6 +13,8 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
  */
 trait DependencyParser {
 
+  val parserType: ParserTypeEnum
+
   def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode
 
 }

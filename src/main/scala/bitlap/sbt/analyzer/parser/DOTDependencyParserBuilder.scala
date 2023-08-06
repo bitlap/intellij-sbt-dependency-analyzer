@@ -6,7 +6,10 @@ import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyScopeEnum
 import bitlap.sbt.analyzer.DependencyScopeEnum.*
+import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
 import bitlap.sbt.analyzer.model.*
+
+import org.jetbrains.plugins.scala.util.ScalaUtil
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
@@ -20,6 +23,10 @@ object DOTDependencyParserBuilder {
 
 final class DOTDependencyParserBuilder extends DependencyParser {
 
+  override val parserType: ParserTypeEnum = ParserTypeEnum.DOT
+
+  /** transforming dependencies data into view data
+   */
   private def toDependencyNode(context: ModuleContext, dep: Artifact): DependencyNode = {
     if (dep == null) return null
     val node = new ArtifactDependencyNodeImpl(dep.id, dep.group, dep.artifact, dep.version)
@@ -27,6 +34,19 @@ final class DOTDependencyParserBuilder extends DependencyParser {
     node
   }
 
+  /** ignore self dependency
+   */
+  private def filterDependencyNode(dn: DependencyNode, context: ModuleContext): Boolean = {
+    dn.getDisplayName match
+      case ArtifactRegex(group, artifact, version) =>
+        // TODO exact matching with group
+        artifact == context.moduleName + "_" + (if (context.isScala3) "3" else "2")
+      case _ => false
+
+  }
+
+  /** build tree for dependency analyzer view
+   */
   override def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode = {
     val file = context.analysisFile
     val data = getDependencyRelations(file)
@@ -37,15 +57,15 @@ final class DOTDependencyParserBuilder extends DependencyParser {
 
     if (relation == null || relation.relations.size() == 0) return {
       val dep = data.map(_.dependencies.asScala.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      root.getDependencies.addAll(dep.asJava)
+      root.getDependencies.addAll(dep.filterNot(d => filterDependencyNode(d, context)).asJava)
       root
     }
 
     val parentChildren = scala.collection.mutable.HashMap[Int, JList[Int]]()
     val labelData      = scala.collection.mutable.HashMap[String, String]()
-    val tail           = relation.relations.asScala.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val head           = relation.relations.asScala.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val graph          = new Graph(Math.max(tail, head) + 1)
+    val tailMax        = relation.relations.asScala.view.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val headMax        = relation.relations.asScala.view.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val graph          = new Graph(Math.max(tailMax, headMax) + 1)
 
     relation.relations.forEach { r =>
       labelData.put(s"${r.tail}-${r.head}", r.label)
@@ -73,10 +93,12 @@ final class DOTDependencyParserBuilder extends DependencyParser {
       node.map(_.getDependencies.addAll(rs))
     }
 
-    root.getDependencies.addAll(objs.asJava)
+    root.getDependencies.addAll(objs.filterNot(d => filterDependencyNode(d, context)).asJava)
     root
   }
 
+  /** parse dot file, get graph data
+   */
   private def getDependencyRelations(file: String): Option[Dependencies] =
     val dependencyGraph = DOTUtil.parse(file)
     if (dependencyGraph == null) None

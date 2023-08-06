@@ -7,10 +7,10 @@ package bitlap.sbt.analyzer.model
 def toDependencyRelation(edge: DependencyGraphEdge): Relation =
   Relation(edge.tail, edge.head, edge.label)
 
-val regex = "(.*):(.*):(.*)".r
+val ArtifactRegex = "(.*):(.*):(.*)".r
 
 def toDependency(obj: DependencyGraphObject): Artifact = {
   obj.name match
-    case regex(group, artifact, version) => Artifact(obj._gvid.toLong, group, artifact, version)
-    case _                               => null
+    case ArtifactRegex(group, artifact, version) => Artifact(obj._gvid.toLong, group, artifact, version)
+    case _                                       => null
 }

@@ -19,10 +19,10 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
     root.setResolutionState(ResolutionState.RESOLVED)
 
     val ctx =
-      ModuleContext(getClass.getClassLoader.getResource("test.dot").getFile, "test", DependencyScopeEnum.Compile)
+      ModuleContext(getClass.getClassLoader.getResource("test.dot").getFile, "test", DependencyScopeEnum.Compile, true)
 
-    val relations = DependencyGraphBuilderFactory
-      .getInstance(GraphBuilderEnum.DOT)
+    val relations = DependencyParserFactory
+      .getInstance(ParserTypeEnum.DOT)
       .buildDependencyTree(ctx, root)
 
     assert(relations.getDependencies.size() > 0)

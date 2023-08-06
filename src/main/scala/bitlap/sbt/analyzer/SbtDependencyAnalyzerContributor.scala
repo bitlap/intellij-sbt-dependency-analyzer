@@ -2,9 +2,7 @@ package bitlap.sbt.analyzer
 
 import java.util
 import java.util.Collections
-import java.util.List as JList
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
-import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
@@ -13,17 +11,13 @@ import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
-import bitlap.sbt.analyzer.parser.ParserTypeEnum
 
-import org.jetbrains.plugins.scala.packagesearch.SbtDependencyModifier
+import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
 import org.jetbrains.sbt.shell.SbtShellCommunication
-import org.jetbrains.sbt.shell.action.SbtNodeAction
 
-import com.intellij.buildsystem.model.DeclaredDependency
-import com.intellij.externalSystem.ExternalDependencyModificator
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
@@ -48,9 +42,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   import SbtDependencyAnalyzerContributor.*
 
-  private lazy val projects              = ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
-  private lazy val configurationNodesMap = ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
-  private lazy val dependencyMap         = ConcurrentHashMap[Long, Dependency]()
+  private lazy val dependencyMap = ConcurrentHashMap[Long, Dependency]()
 
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
@@ -191,6 +183,33 @@ object SbtDependencyAnalyzerContributor {
 
   final val Module_Data = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
+  lazy val projects              = ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
+  lazy val configurationNodesMap = ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+
+  private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
+    if (project == null || project.isEmpty) s"$scope / $cmd"
+    else s"$project / $scope / $cmd"
+  }
+
+  private def fileName(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
+    parserTypeEnum match
+      case ParserTypeEnum.DOT =>
+        s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
+  }
+
+  private def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
+    val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
+    val node = new DependencyScopeNode(
+      id.getAndIncrement(),
+      dependencyScope.toString,
+      scopeDisplayName,
+      dependencyScope.toString
+    )
+    node.setResolutionState(ResolutionState.RESOLVED)
+    node
+  }
+
+  // ===========================================extensions==============================================================
   extension (projectDependencyNode: ProjectDependencyNode) {
 
     def getModuleData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): ModuleData = {
@@ -245,36 +264,14 @@ object SbtDependencyAnalyzerContributor {
     def toScope: DAScope = scope(dependencyScopeNode.getScope)
   }
 
-  private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
-    if (project == null || project.isEmpty) s"$scope / $cmd"
-    else s"$project / $scope / $cmd"
-  }
-
-  private def fileName(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
-    parserTypeEnum match
-      case ParserTypeEnum.DOT =>
-        s"/target/dependencies-${scope.toString.toLowerCase}.${ParserTypeEnum.DOT.toString.toLowerCase}"
-  }
-
-  private def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
-    val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
-    val node = new DependencyScopeNode(
-      id.getAndIncrement(),
-      dependencyScope.toString,
-      scopeDisplayName,
-      dependencyScope.toString
-    )
-    node.setResolutionState(ResolutionState.RESOLVED)
-    node
-  }
-
   extension (moduleData: ModuleData) {
 
     def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
-      // FIXME
-      if (module.getName.endsWith("-build")) return Collections.emptyList()
+      // if module is itself a build module, skip build module
+      val buildModule = SbtDependencyUtils.getBuildModule(module)
+      if (buildModule.isEmpty) return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
       implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
       val result = Future {
@@ -282,7 +279,7 @@ object SbtDependencyAnalyzerContributor {
           val promise = Promise[DependencyScopeNode]()
           promiseList.append(promise)
           comms.command(
-            scopedKey(module.getName, scope, "dependencyDot"),
+            scopedKey(module.getName, scope, ParserTypeEnum.DOT.cmd),
             new StringBuilder(),
             SbtShellCommunication.listenerAggregator {
               case SbtShellCommunication.TaskStart =>
@@ -293,7 +290,8 @@ object SbtDependencyAnalyzerContributor {
                     ModuleContext(
                       moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
                       module.getName,
-                      scope
+                      scope,
+                      module.hasScala3
                     ),
                     rootNode(scope, project)
                   )

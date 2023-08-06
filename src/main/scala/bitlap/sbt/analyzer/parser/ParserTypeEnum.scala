@@ -1,5 +1,5 @@
 package bitlap.sbt.analyzer.parser
 
-enum ParserTypeEnum {
-  case DOT
+enum ParserTypeEnum(val cmd: String, val suffix: String) {
+  case DOT extends ParserTypeEnum("dependencyDot", "dot")
 }
