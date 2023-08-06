@@ -66,7 +66,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     libraryDependencies ++= Seq(
       "guru.nidi"                  % "graphviz-java"   % "0.18.1",
       "org.graalvm.js"             % "js"              % "23.0.1",
-//      "com.fasterxml.jackson.core" % "jackson-core"    % jacksonVersion,
+      "com.fasterxml.jackson.core" % "jackson-core"    % jacksonVersion,
       "org.scalatest"             %% "scalatest"       % "3.2.16" % Test,
       "ch.qos.logback"             % "logback-classic" % "1.2.3"
     )
