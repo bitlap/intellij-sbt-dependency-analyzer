@@ -313,6 +313,14 @@ object SbtDependencyAnalyzerContributor {
               case SbtShellCommunication.ErrorWaitForInput =>
                 promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
               case SbtShellCommunication.Output(line) =>
+                if (line.startsWith(s"[error]") && !promise.isCompleted) {
+                  if (line.contains(s"Not a valid key: ${ParserTypeEnum.DOT.cmd}")) {
+                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
+                  } else {
+                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                  }
+                }
+
             }
           )
         }
