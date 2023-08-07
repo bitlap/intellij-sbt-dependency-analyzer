@@ -19,9 +19,17 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Preview
 
-### Conflict
+### Single Module
 
-![](./docs/dependencyTree1.png)
+![](./docs/dependencyTreeSingleModule.png)
+
+### Multiple Modules
+
+![](./docs/dependencyTreeMultipleModules.png)
+
+### Show Conflicts
+
+![](./docs/dependencyTreeConflicts.png)
 
 ### Note 
 
