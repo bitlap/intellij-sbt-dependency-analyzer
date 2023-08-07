@@ -46,6 +46,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
   private lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
 
+  private lazy val configurationNodesMap: ConcurrentHashMap[String, util.List[DependencyScopeNode]] =
+    ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
   ): util.List[Dependency] = {
@@ -186,9 +189,6 @@ object SbtDependencyAnalyzerContributor {
 
   final val Module_Data = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
-  lazy val configurationNodesMap: ConcurrentHashMap[String, util.List[DependencyScopeNode]] =
-    ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
-
   private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
     if (project == null || project.isEmpty) s"$scope / $cmd"
     else s"$project / $scope / $cmd"
@@ -298,10 +298,14 @@ object SbtDependencyAnalyzerContributor {
                     ),
                     rootNode(scope, project)
                   )
-                val declared = DependencyUtil.getUnifiedCoordinates(module, project)
-                root.getDependencies.removeIf { node =>
-                  !declared.exists(_.getDisplayName == node.getDisplayName)
+                // single module project cannot getUnifiedCoordinates
+                if (module.getName != project.getName) {
+                  val declared = DependencyUtil.getUnifiedCoordinates(module, project)
+                  root.getDependencies.removeIf { node =>
+                    !declared.exists(_.getDisplayName == node.getDisplayName)
+                  }
                 }
+
                 promise.success(root)
               case SbtShellCommunication.ErrorWaitForInput =>
                 promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
