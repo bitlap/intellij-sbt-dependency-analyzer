@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.1.0-231.9392.1-M3</version>
+    <version>0.1.0-231.9392.1-M4</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <idea-version since-build="231.0"/>

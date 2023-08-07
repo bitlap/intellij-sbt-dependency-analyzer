@@ -101,8 +101,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) ()
           else if (id.getProjectSystemId != SbtProjectSystem.Id) ()
           else {
-            // cache is static, so after closing view , this update will not be triggered when refreshing the project
-            // if view keep open, changing dependency or refreshing the project both can clear cache and update view.
             projects.clear()
             configurationNodesMap.clear()
             dependencyMap.clear()
