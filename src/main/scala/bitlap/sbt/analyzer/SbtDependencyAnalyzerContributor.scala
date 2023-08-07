@@ -298,6 +298,10 @@ object SbtDependencyAnalyzerContributor {
                     ),
                     rootNode(scope, project)
                   )
+                val declared = DependencyUtil.getUnifiedCoordinates(module, project)
+                root.getDependencies.removeIf { node =>
+                  !declared.exists(_.getDisplayName == node.getDisplayName)
+                }
                 promise.success(root)
               case SbtShellCommunication.ErrorWaitForInput =>
                 promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))

@@ -44,7 +44,7 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val module      = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
-    val dependencyModifierService = DependencyModifierService.getInstance(project)
-    dependencyModifierService.declaredDependencies(module).asScala.find(_.getCoordinates.equals(coordinates)).orNull
+    val declared = DependencyUtil.getDeclaredDependency(module, project)
+    declared.find(_.getCoordinates.equals(coordinates)).orNull
   }
 }
