@@ -6,6 +6,7 @@ import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyScopeEnum
 import bitlap.sbt.analyzer.DependencyScopeEnum.*
+import bitlap.sbt.analyzer.DependencyUtil
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
 import bitlap.sbt.analyzer.model.*
 
@@ -34,17 +35,6 @@ final class DOTDependencyParserBuilder extends DependencyParser {
     node
   }
 
-  /** ignore self dependency
-   */
-  private def filterDependencyNode(dn: DependencyNode, context: ModuleContext): Boolean = {
-    dn.getDisplayName match
-      case ArtifactRegex(group, artifact, version) =>
-        // TODO exact matching with group
-        artifact == context.moduleName + "_" + (if (context.isScala3) "3" else "2")
-      case _ => false
-
-  }
-
   /** build tree for dependency analyzer view
    */
   override def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode = {
@@ -57,7 +47,7 @@ final class DOTDependencyParserBuilder extends DependencyParser {
 
     if (relation == null || relation.relations.size() == 0) return {
       val dep = data.map(_.dependencies.asScala.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      root.getDependencies.addAll(dep.filterNot(d => filterDependencyNode(d, context)).asJava)
+      root.getDependencies.addAll(dep.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context)).asJava)
       root
     }
 
@@ -93,7 +83,7 @@ final class DOTDependencyParserBuilder extends DependencyParser {
       node.map(_.getDependencies.addAll(rs))
     }
 
-    root.getDependencies.addAll(objs.filterNot(d => filterDependencyNode(d, context)).asJava)
+    root.getDependencies.addAll(objs.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context)).asJava)
     root
   }
 

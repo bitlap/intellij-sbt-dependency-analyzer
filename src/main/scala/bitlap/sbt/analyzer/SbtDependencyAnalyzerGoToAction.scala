@@ -6,6 +6,7 @@ import scala.util.Try
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
+import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.ide.util.PsiNavigationSupport
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.diagnostic.Logger
@@ -39,8 +40,8 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val dependency = e.getData(DependencyAnalyzerView.Companion.getDEPENDENCY)
     if (project == null || dependency == null) return null
 
-    val coordinates = getUnifiedCoordinates(dependency)
-    val module      = getParentModule(project, dependency)
+    val coordinates: UnifiedCoordinates = getUnifiedCoordinates(dependency)
+    val module                          = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
     val declared = DependencyUtil.getDeclaredDependency(module, project)

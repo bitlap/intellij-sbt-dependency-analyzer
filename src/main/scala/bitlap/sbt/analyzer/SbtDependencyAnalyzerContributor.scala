@@ -9,6 +9,7 @@ import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.model.ArtifactRegex
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 
@@ -18,6 +19,7 @@ import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
+import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
@@ -294,16 +296,16 @@ object SbtDependencyAnalyzerContributor {
                       moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
                       module.getName,
                       scope,
-                      module.hasScala3
+                      DependencyUtil.scalaMajorVersion(module)
                     ),
                     rootNode(scope, project)
                   )
-                // single module project cannot getUnifiedCoordinates
-                if (module.getName != project.getName) {
-                  val declared = DependencyUtil.getUnifiedCoordinates(module, project)
-                  root.getDependencies.removeIf { node =>
-                    !declared.exists(_.getDisplayName == node.getDisplayName)
-                  }
+                // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
+                // So we implement and ignore version number, which may filter multiple libraries from different versions.
+                // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
+                val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
+                root.getDependencies.removeIf { node =>
+                  DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
                 }
 
                 promise.success(root)
