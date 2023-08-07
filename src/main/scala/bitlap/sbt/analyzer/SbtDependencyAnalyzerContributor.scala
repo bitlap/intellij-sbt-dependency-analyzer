@@ -303,9 +303,12 @@ object SbtDependencyAnalyzerContributor {
                 // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
                 // So we implement and ignore version number, which may filter multiple libraries from different versions.
                 // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
-                val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
-                root.getDependencies.removeIf { node =>
-                  DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
+                if (project.getBasePath != moduleData.getLinkedExternalProjectPath) {
+                  // TODO single module
+                  val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
+                  root.getDependencies.removeIf { node =>
+                    DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
+                  }
                 }
 
                 promise.success(root)
