@@ -42,6 +42,10 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   import SbtDependencyAnalyzerContributor.*
 
+  private lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
+    ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
+  private lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
+
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
   ): util.List[Dependency] = {
@@ -182,12 +186,8 @@ object SbtDependencyAnalyzerContributor {
 
   final val Module_Data = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
-  lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
-    ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
-
   lazy val configurationNodesMap: ConcurrentHashMap[String, util.List[DependencyScopeNode]] =
     ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
-  lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
 
   private def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
     if (project == null || project.isEmpty) s"$scope / $cmd"

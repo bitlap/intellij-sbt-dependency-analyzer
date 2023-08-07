@@ -25,11 +25,14 @@ object DOTUtil {
     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
     .build()
 
+  final val totalMemory = 1024 * 1024 * 128
+
   def parse(file: String): DependencyGraph = {
     var f: File = null
     try {
       f = new File(file)
-      val string = Graphviz.fromFile(f).render(Format.JSON0).toString
+      // use idea settings
+      val string = Graphviz.fromFile(f).totalMemory(totalMemory).render(Format.JSON0).toString
 
       mapper.readValue(string, classOf[DependencyGraph])
     } catch {
