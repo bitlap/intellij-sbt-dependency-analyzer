@@ -9,8 +9,13 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 ## Features
 
 - Same features as the official Gradle Dependency Analyzer
+  - View Dependency Tree
+  - Show Conflicts
+  - Search Dependencies
+  - Location Dependency (multi-module)
 - Support since Intellij IDEA 231 (231.9392.1)
-  - Depends on `addDependencyTreePlugin` in `plugins.sbt` file
+
+> NOTE: The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.
 
 ## Preview
 
