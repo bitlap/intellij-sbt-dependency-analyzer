@@ -303,10 +303,9 @@ object SbtDependencyAnalyzerContributor {
                 // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
                 // TODO single module cannot get declared dependencies
                 val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
-                if(declared.nonEmpty && root.getDependencies.size() > 100) {
-                  root.getDependencies.removeIf {
-                    node =>
-                      DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
+                if (declared.nonEmpty && root.getDependencies.size() > 100) {
+                  root.getDependencies.removeIf { node =>
+                    DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
                   }
                 }
                 promise.success(root)
