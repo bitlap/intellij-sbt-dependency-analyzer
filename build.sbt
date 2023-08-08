@@ -62,7 +62,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     publish / skip := true,
     commands ++= Commands.value,
     libraryDependencies ++= Seq(
-      "guru.nidi"      % "graphviz-java" % "0.18.1",
-      "org.scalatest" %% "scalatest"     % "3.2.16" % Test
+      "guru.nidi"      % "graphviz-java-min-deps" % "0.18.1",
+      "ch.qos.logback" % "logback-classic"        % "1.2.3",
+      "org.scalatest" %% "scalatest"              % "3.2.16" % Test
     )
   )
