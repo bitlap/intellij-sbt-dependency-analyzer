@@ -12,6 +12,7 @@ import bitlap.sbt.analyzer.model.*
 
 import org.jetbrains.plugins.scala.util.ScalaUtil
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 /** @author
@@ -41,49 +42,62 @@ final class DOTDependencyParserBuilder extends DependencyParser {
     val file = context.analysisFile
     val data = getDependencyRelations(file)
     val depMap =
-      data.map(_.dependencies.asScala).getOrElse(List.empty).map(d => d.id -> toDependencyNode(context, d)).toMap
+      data
+        .map(_.dependencies.asScala)
+        .getOrElse(List.empty)
+        .map(d => d.id.toString -> toDependencyNode(context, d))
+        .toMap
 
     val relation = data.orNull
 
+    // if no relations for dependency object
     if (relation == null || relation.relations.size() == 0) return {
       val dep = data.map(_.dependencies.asScala.map(d => toDependencyNode(context, d)).toList).toList.flatten
       root.getDependencies.addAll(dep.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context)).asJava)
       root
     }
+    val relationMap = relation.relations.asScala.map(r => s"${r.head}-${r.tail}" -> r.label).toMap
 
-    val parentChildren = scala.collection.mutable.HashMap[Int, JList[Int]]()
+    val parentChildren = scala.collection.mutable.HashMap[String, JList[Int]]()
     val labelData      = scala.collection.mutable.HashMap[String, String]()
     val tailMax        = relation.relations.asScala.view.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
     val headMax        = relation.relations.asScala.view.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
     val graph          = new Graph(Math.max(tailMax, headMax) + 1)
 
+    // build graph
     relation.relations.forEach { r =>
-      labelData.put(s"${r.tail}-${r.head}", r.label)
-      graph.addEdge(r.tail, r.head)
+      graph.addEdge(r.head, r.tail)
     }
 
     val objs: Seq[DependencyNode] = depMap.values.toSet.toSeq
 
+    // find children for root nodes
     objs.foreach { d =>
       val path = graph.DFS(d.getId.toInt).asScala.tail.map(_.intValue()).asJava
-      parentChildren.put(d.getId.toInt, path)
+      parentChildren.put(d.getId.toString, path)
     }
 
-    parentChildren.foreach { (k, v) =>
-      val node  = depMap.get(k)
-      val label = v.asScala.map(id => id -> labelData.get(s"$k-$id")).toMap
-      val rs = v.asScala.view.toSet.flatMap { l =>
-        depMap.get(l).toList.map {
-          case a: ArtifactDependencyNodeImpl =>
-            a.setSelectionReason(label.getOrElse(l, None).getOrElse(""))
-            a
-          case b => b
-        }
+    //
+    val filterRoot = objs.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context))
+    filterRoot.foreach { node =>
+      val children = parentChildren.getOrElse(node.getId.toString, Collections.emptyList())
+      val label    = children.asScala.map(id => id.toString -> relationMap.getOrElse(s"${node.getId}-$id", "")).toMap
+      val rs = children.asScala.flatMap { child =>
+        depMap
+          .get(child.toString)
+          .map {
+            case d @ (_: ArtifactDependencyNodeImpl) =>
+              val lb = label.getOrElse(child.toString, "")
+              d.setSelectionReason(lb)
+              d
+            case d @ b => d
+          }
+          .toList
       }.toList.asJava
-      node.map(_.getDependencies.addAll(rs))
+      node.getDependencies.addAll(rs)
     }
 
-    root.getDependencies.addAll(objs.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context)).asJava)
+    root.getDependencies.addAll(filterRoot.asJava)
     root
   }
 

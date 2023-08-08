@@ -5,7 +5,7 @@ package bitlap.sbt.analyzer.model
  *  @version 1.0,2023/8/3
  */
 def toDependencyRelation(edge: DependencyGraphEdge): Relation =
-  Relation(edge.tail, edge.head, edge.label)
+  Relation(edge.head, edge.tail, edge.label)
 
 val ArtifactRegex = "(.*):(.*):(.*)".r
 
