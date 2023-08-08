@@ -301,24 +301,20 @@ object SbtDependencyAnalyzerContributor {
                 // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
                 // So we implement and ignore version number, which may filter multiple libraries from different versions.
                 // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
-                if (project.getBasePath != moduleData.getLinkedExternalProjectPath) {
-                  // TODO single module
-                  val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
-                  root.getDependencies.removeIf { node =>
-                    DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
+                // TODO single module cannot get declared dependencies
+                val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
+                if(declared.nonEmpty && root.getDependencies.size() > 100) {
+                  root.getDependencies.removeIf {
+                    node =>
+                      DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
                   }
                 }
-
                 promise.success(root)
               case SbtShellCommunication.ErrorWaitForInput =>
-                promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
+                promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
               case SbtShellCommunication.Output(line) =>
                 if (line.startsWith(s"[error]") && !promise.isCompleted) {
-                  if (line.contains(s"Not a valid key: ${ParserTypeEnum.DOT.cmd}")) {
-                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
-                  } else {
-                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
-                  }
+                  promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
                 }
 
             }

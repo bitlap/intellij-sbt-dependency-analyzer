@@ -79,7 +79,7 @@ final class DOTDependencyParserBuilder extends DependencyParser {
 
     //
     val filterRoot = objs.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context))
-    filterRoot.foreach { node =>
+    val filteredDependency = filterRoot.map { node =>
       val children = parentChildren.getOrElse(node.getId.toString, Collections.emptyList())
       val label    = children.asScala.map(id => id.toString -> relationMap.getOrElse(s"${node.getId}-$id", "")).toMap
       val rs = children.asScala.flatMap { child =>
@@ -95,9 +95,10 @@ final class DOTDependencyParserBuilder extends DependencyParser {
           .toList
       }.toList.asJava
       node.getDependencies.addAll(rs)
+      node
     }
 
-    root.getDependencies.addAll(filterRoot.asJava)
+    root.getDependencies.addAll(filteredDependency.asJava)
     root
   }
 
