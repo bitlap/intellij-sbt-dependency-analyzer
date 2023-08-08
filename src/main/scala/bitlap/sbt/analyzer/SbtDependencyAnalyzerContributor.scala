@@ -276,13 +276,16 @@ object SbtDependencyAnalyzerContributor {
       val buildModule = SbtDependencyUtils.getBuildModule(module)
       if (buildModule.isEmpty) return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
-      implicit val ec = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))
+      implicit val ec =
+        ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2 * Runtime.getRuntime.availableProcessors()))
+      val moduleId   = moduleData.getId.split(" ")(0)
+      val moduleName = moduleData.getModuleName
       val result = Future {
         DependencyScopeEnum.values.toList.foreach { scope =>
           val promise = Promise[DependencyScopeNode]()
           promiseList.append(promise)
           comms.command(
-            scopedKey(module.getName, scope, ParserTypeEnum.DOT.cmd),
+            scopedKey(moduleId, scope, ParserTypeEnum.DOT.cmd),
             new StringBuilder(),
             SbtShellCommunication.listenerAggregator {
               case SbtShellCommunication.TaskStart =>
@@ -292,7 +295,7 @@ object SbtDependencyAnalyzerContributor {
                   .buildDependencyTree(
                     ModuleContext(
                       moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
-                      module.getName,
+                      moduleName,
                       scope,
                       DependencyUtil.scalaMajorVersion(module)
                     ),
