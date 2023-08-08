@@ -9,14 +9,14 @@ import bitlap.sbt.analyzer.DependencyScopeEnum
 import bitlap.sbt.analyzer.DependencyScopeEnum.*
 import bitlap.sbt.analyzer.DependencyUtil
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
-import bitlap.sbt.analyzer.model.{ Artifact, * }
+import bitlap.sbt.analyzer.model.*
 
 import org.jetbrains.plugins.scala.util.ScalaUtil
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
-import guru.nidi.graphviz.model.{ Link, MutableGraph, MutableNode }
+import guru.nidi.graphviz.model.{ Graph as _, * }
 
 /** @author
  *    梦境迷离
@@ -27,11 +27,11 @@ object DOTDependencyParserBuilder {
 
   final val id = new AtomicInteger(0)
 
-  def createFromArtifact(artifact: Artifact): String = {
+  def artifactAsName(artifact: Artifact): String = {
     s"${artifact.group}:${artifact.artifact}:${artifact.version}"
   }
 
-  def createArtifact(name: String): Option[Artifact] = {
+  def extractArtifactFromName(name: String): Option[Artifact] = {
     name match
       case ArtifactRegex(group, artifact, version) => Some(Artifact(id.incrementAndGet(), group, artifact, version))
       case _                                       => None
@@ -129,12 +129,12 @@ final class DOTDependencyParserBuilder extends DependencyParser {
       val links: java.util.Collection[Link]             = mutableGraph.edges()
 
       val nodes = graphNodes.asScala.map { graphNode =>
-        graphNode.name().value() -> createArtifact(graphNode.name().value())
+        graphNode.name().value() -> extractArtifactFromName(graphNode.name().value())
       }.collect { case (name, Some(value)) =>
         name -> value
       }.toMap
 
-      val idMapping: Map[String, Int] = nodes.map(kv => createFromArtifact(kv._2) -> kv._2.id)
+      val idMapping: Map[String, Int] = nodes.map(kv => artifactAsName(kv._2) -> kv._2.id)
 
       val edges = links.asScala.map { l =>
         val label = l.get("label").asInstanceOf[String]
