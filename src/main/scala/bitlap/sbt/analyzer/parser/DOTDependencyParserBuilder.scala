@@ -87,11 +87,11 @@ final class DOTDependencyParserBuilder extends DependencyParser {
           .get(child.toString)
           .map {
             case d @ (_: ArtifactDependencyNodeImpl) =>
-              val lb           = label.getOrElse(child.toString, "")
-              val copyArtifact = new ArtifactDependencyNodeImpl(d.getId, d.getGroup, d.getModule, d.getVersion)
-              copyArtifact.setResolutionState(d.getResolutionState)
-              copyArtifact.setSelectionReason(lb)
-              copyArtifact
+              val lb = label.getOrElse(child.toString, "")
+              if (lb != null && lb.nonEmpty) {
+                d.setSelectionReason(lb)
+              }
+              d
             case d @ b => d
           }
           .toList
