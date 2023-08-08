@@ -33,13 +33,29 @@ If both the Gradle and SBT plugins are enabled in the environment, two analysis 
 
 ## Preview
 
-### Single Module
+### Show External Dependencies
 
 ![](./docs/dependencyTreeSingleModule.png)
 
-### Multiple Modules
+### Show Declared Dependencies
+
+If the module has declared dependencies and the total number of dependencies exceeds 100, we will not display all dependencies, only the declared dependencies, which will greatly reduce the number of root nodes.
+
+For example: 
+
+There two declared dependencies in `rolls-zio`:
+```scala
+    libraryDependencies ++= Seq(
+      "dev.zio"       %% "zio"       % zioVersion       % Provided,
+      "org.scalatest" %% "scalatest" % scalatestVersion % Test
+    )
+```
+
+Dependency Tree shows this (There are only 2 root nodes here): 
 
 ![](./docs/dependencyTreeMultipleModules.png)
+
+> This project does not have 100 dependencies and is only used to showcase the effect.
 
 ### Show Conflicts
 
