@@ -1,3 +1,3 @@
 package bitlap.sbt.analyzer.model
 
-final case class Relation(tail: Int, head: Int, label: String)
+final case class Relation(head: Int, tail: Int, label: String)
