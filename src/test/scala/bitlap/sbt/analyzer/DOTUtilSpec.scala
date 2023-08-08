@@ -49,7 +49,7 @@ class DOTUtilSpec extends AnyFlatSpec {
       )
     }
 
-    println(s"parse json cost:${System.currentTimeMillis() - start}ms")
+    println(s"parse dot cost:${System.currentTimeMillis() - start}ms")
     assert(nodes.size == 69)
     assert(edges.size == 146)
 
