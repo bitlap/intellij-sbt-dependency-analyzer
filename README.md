@@ -15,7 +15,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
   - Location Dependency (multi-module)
 - Support since Intellij IDEA 231 (231.9392.1)
 
-> NOTE: The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.
+**NOTE**: ***The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.***
 
 ## How to start
 
