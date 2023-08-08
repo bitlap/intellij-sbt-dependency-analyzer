@@ -9,8 +9,6 @@ lazy val pluginVersion = s"0.1.0-$intellijVersion-M5"
 
 ThisBuild / version := pluginVersion
 
-lazy val jacksonVersion = "2.13.3"
-
 inThisBuild(
   List(
     homepage := Some(url("https://github.com/bitlap/intellij-sbt-dependency-analyzer")),
@@ -64,10 +62,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     publish / skip := true,
     commands ++= Commands.value,
     libraryDependencies ++= Seq(
-      "guru.nidi"                  % "graphviz-java"   % "0.18.1",
-      "org.graalvm.js"             % "js"              % "23.0.1",
-      "com.fasterxml.jackson.core" % "jackson-core"    % jacksonVersion,
-      "org.scalatest"             %% "scalatest"       % "3.2.16" % Test,
-      "ch.qos.logback"             % "logback-classic" % "1.2.3"
+      "guru.nidi"      % "graphviz-java" % "0.18.1",
+      "org.scalatest" %% "scalatest"     % "3.2.16" % Test
     )
   )
