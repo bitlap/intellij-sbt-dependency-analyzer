@@ -17,6 +17,20 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 > NOTE: The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.
 
+## How to start
+
+If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
+
+**Entry point one**
+
+![](./docs/gotoAnalyze1.png)
+
+**Entry point two**
+
+![](./docs/gotoAnalyze2.png)
+
+> The plugin currently has no depth limit, pay attention to memory.
+
 ## Preview
 
 ### Single Module
@@ -30,11 +44,3 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 ### Show Conflicts
 
 ![](./docs/dependencyTreeConflicts.png)
-
-### Note 
-
-If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
-
-![](./docs/dependencyTree2.jpg)
-
-> The plugin currently has no depth limit, pay attention to memory.
