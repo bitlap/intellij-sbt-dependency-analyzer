@@ -3,14 +3,15 @@ package bitlap.sbt.analyzer.parser
 import java.io.File
 import java.util.Collections
 
-import bitlap.sbt.analyzer.model.DependencyGraph
-
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
 
+import guru.nidi.graphviz.attribute.validate.ValidatorEngine
 import guru.nidi.graphviz.engine.*
 import guru.nidi.graphviz.engine.{ Format, Graphviz }
+import guru.nidi.graphviz.model.MutableGraph
+import guru.nidi.graphviz.parse.Parser
 
 /** @author
  *    梦境迷离
@@ -27,19 +28,7 @@ object DOTUtil {
 
   final val totalMemory = 1024 * 1024 * 128
 
-  def parse(file: String): DependencyGraph = {
-    var f: File = null
-    try {
-      f = new File(file)
-      // use idea settings
-      val string = Graphviz.fromFile(f).totalMemory(totalMemory).render(Format.JSON0).toString
-
-      mapper.readValue(string, classOf[DependencyGraph])
-    } catch {
-      case e: Exception =>
-        e.printStackTrace()
-        null
-    }
-
+  def parseAsGraph(file: String): MutableGraph = {
+    (new Parser).forEngine(ValidatorEngine.DOT).notValidating().read(new File(file))
   }
 }
