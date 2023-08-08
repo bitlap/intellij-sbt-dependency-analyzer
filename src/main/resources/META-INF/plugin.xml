@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.1.0-231.9392.1-M4</version>
+    <version>0.1.0-231.9392.1-M5</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <idea-version since-build="231.0"/>
@@ -85,10 +85,16 @@
     </description>
     <change-notes>
         <![CDATA[
-        <ul>
-        <li>🔥 First Blood.</li>
+        <ul> 
+            <h1>0.1.0-231.9392.1-M4</h1>
+            <ol>
+                <li>🔥 First Blood.</li>
+            </ol>
+            <h1>0.1.0-231.9392.1-M5</h1>
+            <ol>
+                <li>🔥Significantly improve performance.</li>
+            </ol>
         </ul>
-        <br/>
         ]]>
     </change-notes>
 
