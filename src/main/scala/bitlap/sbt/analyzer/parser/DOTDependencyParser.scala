@@ -118,7 +118,8 @@ final class DOTDependencyParser extends DependencyParser {
     // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
     // So we implement and ignore version number, which may filter multiple libraries from different versions.
     // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
-//    dropDuplicateNodes(root, declared)
+    // dropDuplicateNodes(root, declared)
+    // TODO Traverse from bottom to top
     root
   }
 
