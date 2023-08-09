@@ -343,7 +343,7 @@ object SbtDependencyAnalyzerContributor {
                 // TODO single module cannot get declared dependencies
                 val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
                 val nodeSize = root.getDependencies.asScala.map(node => node.getDependencies.size()).sum
-                if (declared.nonEmpty && nodeSize > 100) {
+                if (declared.nonEmpty && nodeSize > 1000) {
                   root.getDependencies.removeIf { node =>
                     DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
                   }
