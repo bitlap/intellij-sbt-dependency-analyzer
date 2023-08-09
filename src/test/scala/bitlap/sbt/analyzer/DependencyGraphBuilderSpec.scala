@@ -29,7 +29,7 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
 
     val relations = DependencyParserFactory
       .getInstance(ParserTypeEnum.DOT)
-      .buildDependencyTree(ctx, root)
+      .buildDependencyTree(ctx, root, List.empty)
 
     assert(relations.getDependencies.size() > 0)
   }
