@@ -69,6 +69,7 @@ final class DOTDependencyParser extends DependencyParser {
       val excludeSelf = dep.filterNot(d => filterSelfModuleDependency(d, context))
       LOG.info(s"No Relations: $context")
       fixProjectModuleDependencies(root, excludeSelf, context)
+      root
     }
     val relationMap = relation.relations.map(r => s"${r.head}-${r.tail}" -> r.label).toMap
 
@@ -118,11 +119,14 @@ final class DOTDependencyParser extends DependencyParser {
           }
           .toList
       }.toList.asJava
-      node.getDependencies.addAll(rs)
+      fixProjectModuleDependencies(node, rs.asScala.toSeq, context)
     }
 
     val excludeDuplicateNodes =
-      excludeSelf.filterNot(d => childrenIsRootNodes.contains(d.getId) && !isDeclaredDependencies(declared, d))
+      excludeSelf.filterNot(d =>
+        !d.isInstanceOf[ProjectDependencyNodeImpl] &&
+        childrenIsRootNodes.contains(d.getId) && !isDeclaredDependencies(declared, d)
+      )
 
     fixProjectModuleDependencies(root, excludeDuplicateNodes, context)
 

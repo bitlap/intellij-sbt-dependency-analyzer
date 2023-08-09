@@ -88,19 +88,27 @@ object DependencyUtil {
     Some(p)
   }
 
-  def fixProjectModuleDependencies(
-    root: DependencyScopeNode,
+  def fixProjectModuleDependencies[N <: DependencyNode](
+    parentNode: N,
     nodes: Seq[DependencyNode],
     context: ModuleContext
-  ): DependencyScopeNode = {
-    root.getDependencies.addAll(nodes.asJava)
+  ): Unit = {
+    parentNode.getDependencies.addAll(nodes.asJava)
     val moduleDependencies = nodes.filter(d => filterModuleDependency(d, context))
-    root.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
+    parentNode.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
     val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
       value
     }
-    root.getDependencies.addAll(mds.asJava)
-    root
+    parentNode.getDependencies.addAll(mds.asJava)
+
+    mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
+      val artifact   = extractArtifactFromName(None, node.getDisplayName)
+      val artifactId = artifact.map(_.artifact).getOrElse("")
+      val group      = artifact.map(_.group).getOrElse("")
+      if (context.allModulePaths.keys.exists(d => group == context.org && d + "_" + context.scalaMajor == artifactId)) {
+        fixProjectModuleDependencies(node, node.getDependencies.asScala.toList, context)
+      }
+    }
   }
 
   def filterModuleDependency(dn: DependencyNode, context: ModuleContext): Boolean = {
