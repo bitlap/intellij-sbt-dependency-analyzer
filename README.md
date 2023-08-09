@@ -29,33 +29,8 @@ If both the Gradle and SBT plugins are enabled in the environment, two analysis 
 
 ![](./docs/gotoAnalyze2.png)
 
-> The plugin currently has no depth limit, pay attention to memory.
-
-## Preview
-
-### Show External Dependencies
-
-![](./docs/dependencyTreeSingleModule.png)
-
-### Show Declared Dependencies
-
-If the module has declared dependencies and the number of nodes on the first and second layers is greater than 1000, we will only show the declared dependencies in the first layer, which will greatly reduce the number of root nodes.
-
-For example: 
-
-There two declared dependencies in `rolls-zio`:
-```scala
-    libraryDependencies ++= Seq(
-      "dev.zio"       %% "zio"       % zioVersion       % Provided,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-```
-
-Dependency Tree shows this (There are only 2 root nodes here): 
-
-![](./docs/dependencyTreeMultipleModules.png)
-
-> This project does not have 100 dependencies and is only used to showcase the effect.
+1. The plugin currently has no depth limit, pay attention to memory.
+2. If the module has (and it can be obtained) declared dependencies and the number of nodes on the first and second layers is greater than 1000, we will only show the declared dependencies in the first layer.
 
 ### Show Conflicts
 
