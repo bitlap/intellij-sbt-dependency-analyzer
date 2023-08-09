@@ -311,59 +311,52 @@ object SbtDependencyAnalyzerContributor {
       // if module is itself a build module, skip build module
       val buildModule = SbtDependencyUtils.getBuildModule(module)
       if (buildModule.isEmpty) return Collections.emptyList()
-      val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
-      val moduleId    = moduleData.getId.split(" ")(0)
-      val moduleName  = moduleData.getModuleName
-      val result = Future {
-        DependencyScopeEnum.values.toList.foreach { scope =>
-          val promise = Promise[DependencyScopeNode]()
-          promiseList.append(promise)
-          comms.command(
-            scopedKey(moduleId, scope, ParserTypeEnum.DOT.cmd),
-            new StringBuilder(),
-            SbtShellCommunication.listenerAggregator {
-              case SbtShellCommunication.TaskStart =>
-              case SbtShellCommunication.TaskComplete =>
-                val root = DependencyParserFactory
-                  .getInstance(ParserTypeEnum.DOT)
-                  .buildDependencyTree(
-                    ModuleContext(
-                      moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
-                      moduleName,
-                      scope,
-                      DependencyUtil.scalaMajorVersion(module),
-                      org,
-                      allaModulePaths
-                    ),
-                    rootNode(scope, project)
-                  )
-                // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
-                // So we implement and ignore version number, which may filter multiple libraries from different versions.
-                // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
-                // TODO single module cannot get declared dependencies
-                val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
-                val nodeSize = root.getDependencies.asScala.map(node => node.getDependencies.size()).sum
-                if (declared.nonEmpty && nodeSize > 1000) {
-                  root.getDependencies.removeIf { node =>
-                    DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
+      val promiseList    = ListBuffer[Promise[DependencyScopeNode]]()
+      val moduleId       = moduleData.getId.split(" ")(0)
+      val moduleName     = moduleData.getModuleName
+      val declaredFuture = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+      val res = for {
+        declared <- declaredFuture
+        result <- Future {
+          DependencyScopeEnum.values.toList.foreach { scope =>
+            val promise = Promise[DependencyScopeNode]()
+            promiseList.append(promise)
+            comms.command(
+              scopedKey(moduleId, scope, ParserTypeEnum.DOT.cmd),
+              new StringBuilder(),
+              SbtShellCommunication.listenerAggregator {
+                case SbtShellCommunication.TaskStart =>
+                case SbtShellCommunication.TaskComplete =>
+                  val root = DependencyParserFactory
+                    .getInstance(ParserTypeEnum.DOT)
+                    .buildDependencyTree(
+                      ModuleContext(
+                        moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
+                        moduleName,
+                        scope,
+                        DependencyUtil.scalaMajorVersion(module),
+                        org,
+                        allaModulePaths
+                      ),
+                      rootNode(scope, project),
+                      declared
+                    )
+                  promise.success(root)
+                case SbtShellCommunication.ErrorWaitForInput =>
+                  promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                case SbtShellCommunication.Output(line) =>
+                  if (line.startsWith(s"[error]") && !promise.isCompleted) {
+                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
                   }
-                }
-                promise.success(root)
-              case SbtShellCommunication.ErrorWaitForInput =>
-                promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
-              case SbtShellCommunication.Output(line) =>
-                if (line.startsWith(s"[error]") && !promise.isCompleted) {
-                  promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
-                }
 
-            }
-          )
-        }
-        Future.sequence(promiseList.toList.map(_.future))
-      }
-      val rs  = result.flatten
-      val res = Await.result(rs.map(_.asJava), 10.minutes)
-      res
+              }
+            )
+          }
+          Future.sequence(promiseList.toList.map(_.future))
+        }.flatten
+      } yield result
+
+      Await.result(res.map(_.asJava), 10.minutes)
     }
   }
 }

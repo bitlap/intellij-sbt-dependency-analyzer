@@ -13,7 +13,9 @@ import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
 import bitlap.sbt.analyzer.model.*
 
 import org.jetbrains.plugins.scala.util.ScalaUtil
+import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 
+import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
@@ -30,6 +32,9 @@ object DOTDependencyParser {
 }
 
 final class DOTDependencyParser extends DependencyParser {
+
+  private val LOG = Logger.getInstance(classOf[DOTDependencyParser.type])
+
   import DOTDependencyParser.*
 
   override val parserType: ParserTypeEnum = ParserTypeEnum.DOT
@@ -46,23 +51,24 @@ final class DOTDependencyParser extends DependencyParser {
 
   /** build tree for dependency analyzer view
    */
-  override def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode = {
+  override def buildDependencyTree(
+    context: ModuleContext,
+    root: DependencyScopeNode,
+    declared: List[UnifiedCoordinates]
+  ): DependencyScopeNode = {
     val file = context.analysisFile
     val data = getDependencyRelations(file)
     val depMap =
-      data
-        .map(_.dependencies)
-        .getOrElse(List.empty)
-        .map(d => d.id.toString -> toDependencyNode(context, d))
-        .toMap
+      data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(context, a)).toMap).getOrElse(Map.empty)
 
     val relation = data.orNull
 
     // if no relations for dependency object
     if (relation == null || relation.relations.isEmpty) return {
-      val dep = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      root.getDependencies.addAll(dep.filterNot(d => DependencyUtil.filterSelfModuleDependency(d, context)).asJava)
-      root
+      val dep         = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
+      val excludeSelf = dep.filterNot(d => filterSelfModuleDependency(d, context))
+      LOG.info(s"No Relations: $context")
+      fixProjectModuleDependencies(root, excludeSelf, context)
     }
     val relationMap = relation.relations.map(r => s"${r.head}-${r.tail}" -> r.label).toMap
 
@@ -70,7 +76,8 @@ final class DOTDependencyParser extends DependencyParser {
     val labelData      = scala.collection.mutable.HashMap[String, String]()
     val tailMax        = relation.relations.view.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
     val headMax        = relation.relations.view.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val graph          = new Graph(Math.max(tailMax, headMax) + 1)
+    val nodeMax        = depMap.keys.view.map(_.toInt).toList.sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val graph          = new Graph(Math.max(Math.max(tailMax, headMax), nodeMax) + 1)
 
     // build graph
     relation.relations.foreach { r =>
@@ -86,37 +93,65 @@ final class DOTDependencyParser extends DependencyParser {
     }
 
     // ignore self
-    val filterSelf = objs.filterNot(d => DependencyUtil.filterSelfModuleDependency(d, context))
-    filterSelf.foreach { node =>
-      val children = parentChildren.getOrElse(node.getId.toString, Collections.emptyList())
-      val label    = children.asScala.map(id => id.toString -> relationMap.getOrElse(s"${node.getId}-$id", "")).toMap
-      val rs = children.asScala.flatMap { child =>
+    val excludeSelf         = objs.filterNot(d => filterSelfModuleDependency(d, context))
+    val childrenIsRootNodes = scala.collection.mutable.Set[Long]()
+    // append children
+    excludeSelf.foreach { node =>
+      val children = parentChildren.getOrElse(node.getId.toString, Collections.emptyList()).asScala
+      val label    = children.map(id => id.toString -> relationMap.getOrElse(s"${node.getId}-$id", "")).toMap
+      val rs = children.flatMap { child =>
         depMap
           .get(child.toString)
-          .map {
-            case d @ (_: ArtifactDependencyNodeImpl) =>
-              val lb = label.getOrElse(child.toString, "")
-              if (lb != null && lb.nonEmpty) {
-                d.setSelectionReason(lb)
-              }
-              d
-            case d @ b => d
+          .map { dn =>
+            val artifact = dn match
+              case d @ (_: ArtifactDependencyNodeImpl) =>
+                val lb = label.getOrElse(child.toString, "")
+                if (lb != null && lb.nonEmpty) {
+                  d.setSelectionReason(lb)
+                }
+                d
+              case d @ b => d
+            if (excludeSelf.exists(_.getId == artifact.getId)) {
+              childrenIsRootNodes.add(artifact.getId)
+            }
+            artifact
           }
           .toList
       }.toList.asJava
       node.getDependencies.addAll(rs)
     }
 
-    root.getDependencies.addAll(filterSelf.asJava)
+    val excludeDuplicateNodes =
+      excludeSelf.filterNot(d => childrenIsRootNodes.contains(d.getId) && !isDeclaredDependencies(declared, d))
 
-    val moduleDependencies = filterSelf.filter(d => DependencyUtil.filterModuleDependency(d, context))
-    root.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
-    val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
-      value
+    fixProjectModuleDependencies(root, excludeDuplicateNodes, context)
+
+    // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
+    // So we implement and ignore version number, which may filter multiple libraries from different versions.
+    // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
+    // TODO single module cannot get declared dependencies
+    val nodeSize = root.getDependencies.asScala.map(node => node.getDependencies.size()).sum
+    if (declared.nonEmpty && nodeSize > 1000) {
+      root.getDependencies.removeIf { node =>
+        filterNotDeclaredDependency(node, context.scalaMajor, declared)
+      }
     }
 
-    root.getDependencies.addAll(mds.asJava)
     root
+  }
+
+  private def isDeclaredDependencies(declared: List[UnifiedCoordinates], d: DependencyNode): Boolean = {
+    declared.exists { uc =>
+      if (uc.getVersion == SbtDependencyCommon.defaultLibScope) {
+        val artifact = extractArtifactFromName(Some(d.getId.toInt), d.getDisplayName).orNull
+        if (artifact == null) false
+        else {
+          artifact.group == uc.getGroupId && artifact.artifact == uc.getArtifactId
+        }
+      } else {
+        d.getDisplayName == uc.getDisplayName
+      }
+    }
   }
 
   /** parse dot file, get graph data

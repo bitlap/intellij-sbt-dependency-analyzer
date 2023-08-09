@@ -16,13 +16,12 @@ import org.jetbrains.sbt.language.utils.SbtDependencyUtils.GetMode.GetDep
 
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.buildsystem.model.unified.{ UnifiedCoordinates, UnifiedDependency }
-import com.intellij.externalSystem.DependencyModifierService
 import com.intellij.openapi.actionSystem.{ CommonDataKeys, DataContext }
 import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module as OpenapiModule
-import com.intellij.openapi.project.{ DumbService, Project }
+import com.intellij.openapi.project.Project
 
 /** @author
  *    梦境迷离
@@ -41,8 +40,11 @@ object DependencyUtil {
   }
 
   def scalaMajorVersion(module: Module): String = {
-    val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
-    scalaVer.split("\\.").headOption.getOrElse("3")
+    val scalaVer      = SbtDependencyUtils.getScalaVerFromModule(module)
+    val scalaVerRegex = "(.*)(\\.)(.*)(\\.)(.*)".r
+    scalaVer match
+      case scalaVerRegex(major, dot1, minor, dot2, fix) if major == "2" => s"$major.$minor"
+      case _                                                            => "3"
   }
 
   /** ignore self dependency
@@ -63,7 +65,7 @@ object DependencyUtil {
   def extractArtifactFromName(idOpt: Option[Int], name: String): Option[ArtifactInfo] = {
     name match
       case ArtifactRegex(group, artifact, version) =>
-        Some(ArtifactInfo(idOpt.getOrElse(id.incrementAndGet()), group, artifact, version))
+        Some(ArtifactInfo(idOpt.getOrElse(id.getAndIncrement()), group, artifact, version))
       case _ => None
   }
 
@@ -86,6 +88,21 @@ object DependencyUtil {
     Some(p)
   }
 
+  def fixProjectModuleDependencies(
+    root: DependencyScopeNode,
+    nodes: Seq[DependencyNode],
+    context: ModuleContext
+  ): DependencyScopeNode = {
+    root.getDependencies.addAll(nodes.asJava)
+    val moduleDependencies = nodes.filter(d => filterModuleDependency(d, context))
+    root.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
+    val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
+      value
+    }
+    root.getDependencies.addAll(mds.asJava)
+    root
+  }
+
   def filterModuleDependency(dn: DependencyNode, context: ModuleContext): Boolean = {
     // module dependency
     val artifact = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
@@ -100,7 +117,7 @@ object DependencyUtil {
 
   /** ignore topLevel declared Dependencies
    */
-  def filterDeclaredDependency(
+  def filterNotDeclaredDependency(
     dn: DependencyNode,
     scalaMajor: String,
     declared: List[UnifiedCoordinates]
