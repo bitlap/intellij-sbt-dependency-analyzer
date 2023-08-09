@@ -8,6 +8,7 @@ import scala.jdk.CollectionConverters.*
 import bitlap.sbt.analyzer.DependencyScopeEnum
 import bitlap.sbt.analyzer.DependencyScopeEnum.*
 import bitlap.sbt.analyzer.DependencyUtil
+import bitlap.sbt.analyzer.DependencyUtil.*
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
 import bitlap.sbt.analyzer.model.*
 
@@ -22,31 +23,22 @@ import guru.nidi.graphviz.model.{ Graph as _, * }
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DOTDependencyParserBuilder {
-  lazy val instance: DependencyParser = new DOTDependencyParserBuilder
+object DOTDependencyParser {
+  lazy val instance: DependencyParser = new DOTDependencyParser
 
   final val id = new AtomicInteger(0)
-
-  def artifactAsName(artifact: Artifact): String = {
-    s"${artifact.group}:${artifact.artifact}:${artifact.version}"
-  }
-
-  def extractArtifactFromName(name: String): Option[Artifact] = {
-    name match
-      case ArtifactRegex(group, artifact, version) => Some(Artifact(id.incrementAndGet(), group, artifact, version))
-      case _                                       => None
-  }
 }
 
-final class DOTDependencyParserBuilder extends DependencyParser {
-  import DOTDependencyParserBuilder.*
+final class DOTDependencyParser extends DependencyParser {
+  import DOTDependencyParser.*
 
   override val parserType: ParserTypeEnum = ParserTypeEnum.DOT
 
   /** transforming dependencies data into view data
    */
-  private def toDependencyNode(context: ModuleContext, dep: Artifact): DependencyNode = {
+  private def toDependencyNode(context: ModuleContext, dep: ArtifactInfo): DependencyNode = {
     if (dep == null) return null
+    // module dependency
     val node = new ArtifactDependencyNodeImpl(dep.id.toLong, dep.group, dep.artifact, dep.version)
     node.setResolutionState(ResolutionState.RESOLVED)
     node
@@ -69,7 +61,7 @@ final class DOTDependencyParserBuilder extends DependencyParser {
     // if no relations for dependency object
     if (relation == null || relation.relations.isEmpty) return {
       val dep = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      root.getDependencies.addAll(dep.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context)).asJava)
+      root.getDependencies.addAll(dep.filterNot(d => DependencyUtil.filterSelfModuleDependency(d, context)).asJava)
       root
     }
     val relationMap = relation.relations.map(r => s"${r.head}-${r.tail}" -> r.label).toMap
@@ -93,8 +85,8 @@ final class DOTDependencyParserBuilder extends DependencyParser {
       parentChildren.put(d.getId.toString, path)
     }
 
-    //
-    val filterSelf = objs.filterNot(d => DependencyUtil.filterModuleSelfDependency(d, context))
+    // ignore self
+    val filterSelf = objs.filterNot(d => DependencyUtil.filterSelfModuleDependency(d, context))
     filterSelf.foreach { node =>
       val children = parentChildren.getOrElse(node.getId.toString, Collections.emptyList())
       val label    = children.asScala.map(id => id.toString -> relationMap.getOrElse(s"${node.getId}-$id", "")).toMap
@@ -116,6 +108,14 @@ final class DOTDependencyParserBuilder extends DependencyParser {
     }
 
     root.getDependencies.addAll(filterSelf.asJava)
+
+    val moduleDependencies = filterSelf.filter(d => DependencyUtil.filterModuleDependency(d, context))
+    root.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
+    val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
+      value
+    }
+
+    root.getDependencies.addAll(mds.asJava)
     root
   }
 
@@ -129,7 +129,7 @@ final class DOTDependencyParserBuilder extends DependencyParser {
       val links: java.util.Collection[Link]             = mutableGraph.edges()
 
       val nodes = graphNodes.asScala.map { graphNode =>
-        graphNode.name().value() -> extractArtifactFromName(graphNode.name().value())
+        graphNode.name().value() -> extractArtifactFromName(None, graphNode.name().value())
       }.collect { case (name, Some(value)) =>
         name -> value
       }.toMap

@@ -172,12 +172,38 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   }
 
+  private var organization: String = null
+  private val orgRegex             = "(\\[.*\\])(\\r|\\n|\\s\\t)(.*)".r
+
+  private def getOrganization(project: Project): String = {
+    if (organization != null) return organization
+    val comms       = SbtShellCommunication.forProject(project)
+    val outputLines = ListBuffer[String]()
+    val executed = comms.command(
+      "organization",
+      new StringBuilder(),
+      SbtShellCommunication.listenerAggregator {
+        case SbtShellCommunication.Output(line) =>
+          outputLines.append(line)
+        case _ =>
+      }
+    )
+    Await.result(executed, 5.minutes)
+    outputLines.last match
+      case orgRegex(level, space, org) =>
+        organization = org
+      case _ =>
+    organization
+  }
+
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
     // FIXME
+    val org             = getOrganization(project)
+    val allaModulePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project)
+      _ => moduleData.loadDependencies(project, org, allaModulePaths)
     )
   }
 }
@@ -216,7 +242,10 @@ object SbtDependencyAnalyzerContributor {
   extension (projectDependencyNode: ProjectDependencyNode) {
 
     def getModuleData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): ModuleData = {
-      projects.values.asScala.map(_.data).find(_.getId == projectDependencyNode.getProjectPath).orNull
+      projects.values.asScala
+        .map(_.data)
+        .find(_.getLinkedExternalProjectPath == projectDependencyNode.getProjectPath)
+        .orNull
     }
   }
 
@@ -267,19 +296,24 @@ object SbtDependencyAnalyzerContributor {
     def toScope: DAScope = scope(dependencyScopeNode.getScope)
   }
 
+  given ExecutionContext =
+    ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2 * Runtime.getRuntime.availableProcessors()))
+
   extension (moduleData: ModuleData) {
 
-    def loadDependencies(project: Project): util.List[DependencyScopeNode] = {
+    def loadDependencies(
+      project: Project,
+      org: String,
+      allaModulePaths: Map[String, String]
+    ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
       // if module is itself a build module, skip build module
       val buildModule = SbtDependencyUtils.getBuildModule(module)
       if (buildModule.isEmpty) return Collections.emptyList()
       val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
-      implicit val ec =
-        ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2 * Runtime.getRuntime.availableProcessors()))
-      val moduleId   = moduleData.getId.split(" ")(0)
-      val moduleName = moduleData.getModuleName
+      val moduleId    = moduleData.getId.split(" ")(0)
+      val moduleName  = moduleData.getModuleName
       val result = Future {
         DependencyScopeEnum.values.toList.foreach { scope =>
           val promise = Promise[DependencyScopeNode]()
@@ -297,7 +331,9 @@ object SbtDependencyAnalyzerContributor {
                       moduleData.getLinkedExternalProjectPath + fileName(scope, ParserTypeEnum.DOT),
                       moduleName,
                       scope,
-                      DependencyUtil.scalaMajorVersion(module)
+                      DependencyUtil.scalaMajorVersion(module),
+                      org,
+                      allaModulePaths
                     ),
                     rootNode(scope, project)
                   )
@@ -306,7 +342,8 @@ object SbtDependencyAnalyzerContributor {
                 // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
                 // TODO single module cannot get declared dependencies
                 val declared: List[UnifiedCoordinates] = DependencyUtil.getUnifiedCoordinates(module, project)
-                if (declared.nonEmpty && root.getDependencies.size() > 100) {
+                val nodeSize = root.getDependencies.asScala.map(node => node.getDependencies.size()).sum
+                if (declared.nonEmpty && nodeSize > 100) {
                   root.getDependencies.removeIf { node =>
                     DependencyUtil.filterDeclaredDependency(node, DependencyUtil.scalaMajorVersion(module), declared)
                   }

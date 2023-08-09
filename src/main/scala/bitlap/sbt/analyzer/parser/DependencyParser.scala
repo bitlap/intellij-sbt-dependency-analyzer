@@ -3,7 +3,7 @@ package bitlap.sbt.analyzer.parser
 import java.util.List as JList
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.model.Artifact
+import bitlap.sbt.analyzer.model.ArtifactInfo
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 

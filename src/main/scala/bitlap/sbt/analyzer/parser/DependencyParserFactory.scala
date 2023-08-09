@@ -1,6 +1,6 @@
 package bitlap.sbt.analyzer.parser
 
-import bitlap.sbt.analyzer.model.Artifact
+import bitlap.sbt.analyzer.model.ArtifactInfo
 
 /** @author
  *    梦境迷离
@@ -10,7 +10,7 @@ object DependencyParserFactory {
 
   def getInstance(builder: ParserTypeEnum): DependencyParser = {
     builder match
-      case ParserTypeEnum.DOT => DOTDependencyParserBuilder.instance
+      case ParserTypeEnum.DOT => DOTDependencyParser.instance
 
   }
 

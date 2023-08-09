@@ -39,7 +39,7 @@ If both the Gradle and SBT plugins are enabled in the environment, two analysis 
 
 ### Show Declared Dependencies
 
-If the module has declared dependencies and the total number of dependencies exceeds 100, we will not display all dependencies, only the declared dependencies, which will greatly reduce the number of root nodes.
+If the module has declared dependencies and the number of nodes on the first and second layers is greater than 100, we will only show the declared dependencies in the first layer, which will greatly reduce the number of root nodes.
 
 For example: 
 
