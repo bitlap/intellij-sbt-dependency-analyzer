@@ -189,7 +189,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       }
     )
     Await.result(executed, 5.minutes)
-    outputLines.filter(_.startsWith("[info]")).last match
+    outputLines.filter(_.startsWith("[info]")).lastOption.getOrElse("") match
       case orgRegex(level, space, org) =>
         organization = org.trim
       case _ =>

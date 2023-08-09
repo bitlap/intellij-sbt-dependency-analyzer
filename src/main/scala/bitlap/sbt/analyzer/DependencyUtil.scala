@@ -84,7 +84,11 @@ object DependencyUtil {
     } else {
       p.setResolutionState(ResolutionState.RESOLVED)
     }
-    p.getDependencies.addAll(dn.getDependencies)
+    p.getDependencies.addAll(
+      dn.getDependencies.asScala
+        .filterNot(d => filterSelfModuleDependency(d, context.copy(currentModuleName = moduleName)))
+        .asJava
+    )
     Some(p)
   }
 
@@ -106,7 +110,11 @@ object DependencyUtil {
       val artifactId = artifact.map(_.artifact).getOrElse("")
       val group      = artifact.map(_.group).getOrElse("")
       if (context.allModulePaths.keys.exists(d => group == context.org && d + "_" + context.scalaMajor == artifactId)) {
-        fixProjectModuleDependencies(node, node.getDependencies.asScala.toList, context)
+        fixProjectModuleDependencies(
+          node,
+          node.getDependencies.asScala.toList,
+          context
+        )
       }
     }
   }
