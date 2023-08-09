@@ -173,7 +173,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private var organization: String = null
-  private val orgRegex             = "(\\[.*\\])(\\r|\\n|\\s\\t)(.*)".r
+  private val orgRegex             = "(\\[.*\\])(\\s|\\t)(.*)".r
 
   private def getOrganization(project: Project): String = {
     if (organization != null) return organization
@@ -189,9 +189,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       }
     )
     Await.result(executed, 5.minutes)
-    outputLines.last match
+    outputLines.filter(_.startsWith("[info]")).last match
       case orgRegex(level, space, org) =>
-        organization = org
+        organization = org.trim
       case _ =>
     organization
   }
