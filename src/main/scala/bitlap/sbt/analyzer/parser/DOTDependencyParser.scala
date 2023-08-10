@@ -184,7 +184,7 @@ final class DOTDependencyParser extends DependencyParser {
         name -> value
       }.toMap
 
-      val idMapping: Map[String, Int] = nodes.map(kv => artifactAsName(kv._2) -> kv._2.id)
+      val idMapping: Map[String, Int] = nodes.map(kv => kv._2.toString -> kv._2.id)
 
       val edges = links.asScala.map { l =>
         val label = l.get("label").asInstanceOf[String]

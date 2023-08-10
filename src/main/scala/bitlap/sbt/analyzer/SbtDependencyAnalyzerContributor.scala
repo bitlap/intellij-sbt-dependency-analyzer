@@ -3,13 +3,13 @@ package bitlap.sbt.analyzer
 import java.util
 import java.util.Collections
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
+import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.model.ArtifactRegex
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 
@@ -209,7 +209,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 }
 
 object SbtDependencyAnalyzerContributor {
-
+  private val id                           = new AtomicLong(0)
   private def scope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
   private final val DefaultConfiguration   = scope("default")
 
@@ -337,7 +337,9 @@ object SbtDependencyAnalyzerContributor {
                         scope,
                         DependencyUtil.scalaMajorVersion(module),
                         org,
-                        allaModulePaths
+                        allaModulePaths,
+                        module.isScalaJs,
+                        module.isScalaNative
                       ),
                       rootNode(scope, project),
                       declared

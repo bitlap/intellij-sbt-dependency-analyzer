@@ -2,6 +2,8 @@ package bitlap.sbt.analyzer
 
 import java.util.concurrent.atomic.AtomicLong
 
+import bitlap.sbt.analyzer.model.ModuleContext
+
 import org.jetbrains.sbt.project.*
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
@@ -65,4 +67,13 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-val id = new AtomicLong(0)
+private val `scalaVerRegex`        = "(.*)(_)(.*)".r
+private val `scalaJs0.6VerRegex`   = "(.*)(_sjs0\\.6_)(.*)".r
+private val `scalaJs1VerRegex`     = "(.*)(_sjs1_)(.*)".r
+private val `scalaNative1VerRegex` = "(.*)(_native0\\.4_)(.*)".r
+
+final case class PlatformModule(
+  module: String,
+  platform: String,
+  scalaVersion: String
+)

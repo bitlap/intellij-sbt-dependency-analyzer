@@ -29,6 +29,9 @@ import com.intellij.openapi.project.Project
  */
 object DependencyUtil {
 
+  private val ArtifactRegex = "(.*):(.*):(.*)".r
+  private val ScalaVerRegex = "(.*)\\.(.*)\\.(.*)".r
+
   private val LOG = Logger.getInstance(classOf[DependencyUtil.type])
 
   def getDeclaredDependency(module: Module, project: Project): List[DeclaredDependency] = {
@@ -40,11 +43,10 @@ object DependencyUtil {
   }
 
   def scalaMajorVersion(module: Module): String = {
-    val scalaVer      = SbtDependencyUtils.getScalaVerFromModule(module)
-    val scalaVerRegex = "(.*)(\\.)(.*)(\\.)(.*)".r
+    val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
     scalaVer match
-      case scalaVerRegex(major, dot1, minor, dot2, fix) if major == "2" => s"$major.$minor"
-      case _                                                            => "3"
+      case ScalaVerRegex(major, minor, fix) if major == "2" => s"$major.$minor"
+      case _                                                => "3"
   }
 
   /** get self module
@@ -54,12 +56,8 @@ object DependencyUtil {
   def isSelfProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
       case ArtifactRegex(group, artifact, version) =>
-        context.org == group && (artifact == context.currentModuleName ++ "_" + context.scalaMajor)
+        context.org == group && isCurrentModule(artifact, context)
       case _ => false
-  }
-
-  def artifactAsName(artifact: ArtifactInfo): String = {
-    s"${artifact.group}:${artifact.artifact}:${artifact.version}"
   }
 
   def extractArtifactFromName(idOpt: Option[Int], name: String): Option[ArtifactInfo] = {
@@ -69,15 +67,47 @@ object DependencyUtil {
       case _ => None
   }
 
-  def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
-    val artifact = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
-    if (artifact == null) return None
-    val moduleName = artifact.artifact.split("_")(0)
+  def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
+    if (context.isScalaNative) {
+      artifact match
+        case `scalaNative1VerRegex`(module, _, scalaVer) =>
+          context.currentModuleName == module && scalaVer == context.scalaMajor
+        case _ => false
+
+    } else if (context.isScalaJs) {
+      artifact match
+        case `scalaJs0.6VerRegex`(module, _, scalaVer) =>
+          context.currentModuleName == module && scalaVer == context.scalaMajor
+        case `scalaJs1VerRegex`(module, _, scalaVer) =>
+          context.currentModuleName == module && scalaVer == context.scalaMajor
+        case _ => false
+
+    } else {
+      artifact match
+        case `scalaVerRegex`(module, _, scalaVer) =>
+          context.currentModuleName == module && scalaVer == context.scalaMajor
+        case _ => false
+    }
+  }
+
+  def toPlatformModule(artifact: String): PlatformModule = {
+    artifact match
+      case `scalaVerRegex`(module, _, scalaVer)        => PlatformModule(module, "", scalaVer)
+      case `scalaJs0.6VerRegex`(module, _, scalaVer)   => PlatformModule(module, "sjs0.6", scalaVer)
+      case `scalaJs1VerRegex`(module, _, scalaVer)     => PlatformModule(module, "sjs1", scalaVer)
+      case `scalaNative1VerRegex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
+      case _                                           => PlatformModule(artifact, "", "")
+  }
+
+  private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
+    val artifactInfo = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
+    if (artifactInfo == null) return None
+    val moduleName = toPlatformModule(artifactInfo.artifact).module
 
     val p = new ProjectDependencyNodeImpl(
       dn.getId,
       moduleName,
-      context.allModulePaths.getOrElse(moduleName, "")
+      context.allModulePaths.getOrElse(moduleName, Constants.Empty_String)
     )
     if (p.getProjectPath.isEmpty) {
       p.setResolutionState(ResolutionState.UNRESOLVED)
@@ -107,9 +137,12 @@ object DependencyUtil {
 
     mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
       val artifact   = extractArtifactFromName(None, node.getDisplayName)
-      val artifactId = artifact.map(_.artifact).getOrElse("")
-      val group      = artifact.map(_.group).getOrElse("")
-      if (context.allModulePaths.keys.exists(d => group == context.org && d + "_" + context.scalaMajor == artifactId)) {
+      val artifactId = artifact.map(_.artifact).getOrElse(Constants.Empty_String)
+      val group      = artifact.map(_.group).getOrElse(Constants.Empty_String)
+      if (
+        context.allModulePaths.keys
+          .exists(d => group == context.org && toPlatformModule(artifactId).module == d)
+      ) {
         appendChildrenAndFixProjectNodes(
           node,
           node.getDependencies.asScala.toList,
@@ -119,13 +152,13 @@ object DependencyUtil {
     }
   }
 
-  def isProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
+  private def isProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     // module dependency
-    val artifact = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
-    if (artifact == null) return false
-    if (artifact.group != context.org) return false
+    val artifactInfo = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
+    if (artifactInfo == null) return false
+    if (artifactInfo.group != context.org) return false
 
-    val matchModule = context.allModulePaths.keys.filter(m => (m ++ "_" + context.scalaMajor) == artifact.artifact)
+    val matchModule = context.allModulePaths.keys.filter(m => m == toPlatformModule(artifactInfo.artifact).module)
 
     matchModule.nonEmpty
 

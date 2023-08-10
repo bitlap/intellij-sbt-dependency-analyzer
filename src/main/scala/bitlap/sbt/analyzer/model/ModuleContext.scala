@@ -12,9 +12,7 @@ final case class ModuleContext(
   scope: DependencyScopeEnum,
   scalaMajor: String,
   org: String,
-  allModulePaths: Map[String, String] = Map.empty
+  allModulePaths: Map[String, String] = Map.empty,
+  isScalaJs: Boolean = false,
+  isScalaNative: Boolean = false
 )
-
-object ModuleContext {
-  val SELF = "SELF"
-}
