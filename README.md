@@ -23,6 +23,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
 - The plugin currently has no depth limit, pay attention to memory.
 - The plugin needs to execute `organization` to obtain the current module `organization`.
+  - For multi-module projects, the default is to take the last result of the organization command as the groupId.
 
 **Entry point one**
 
