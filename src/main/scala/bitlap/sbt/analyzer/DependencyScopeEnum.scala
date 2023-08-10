@@ -5,5 +5,5 @@ package bitlap.sbt.analyzer
  *  @version 1.0,2023/8/3
  */
 enum DependencyScopeEnum {
-  case Compile, Provided, Runtime, Test
+  case Provided
 }

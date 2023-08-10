@@ -35,8 +35,6 @@ object DOTDependencyParser {
 
 final class DOTDependencyParser extends DependencyParser {
 
-  private val LOG = Logger.getInstance(classOf[DOTDependencyParser.type])
-
   import DOTDependencyParser.*
 
   override val parserType: ParserTypeEnum = ParserTypeEnum.DOT
@@ -62,65 +60,88 @@ final class DOTDependencyParser extends DependencyParser {
     val depMap =
       data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(context, a)).toMap).getOrElse(Map.empty)
 
-    val relation: Dependencies = data.orNull
+    val dependencies: Dependencies = data.orNull
 
     // if no relations for dependency object
-    if (relation == null || relation.relations.isEmpty) return {
-      val dep         = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      val excludeSelf = dep.filterNot(d => filterSelfModuleDependency(d, context))
-      LOG.info(s"No Relations: $context")
-      fixProjectModuleDependencies(root, excludeSelf, context)
+    if (dependencies == null || dependencies.relations.isEmpty) return {
+      val dep             = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
+      val excludeSelfNode = dep.filterNot(d => isSelfProjectModule(d, context))
+      appendChildrenAndFixProjectNodes(root, excludeSelfNode, context)
       root
     }
-    val graph = getGraph(relation, depMap)
+    val graph = getGraph(dependencies, depMap)
 
-    val relationLabelsMap = relation.relations.map { r =>
+    val relationLabelsMap = dependencies.relations.map { r =>
       // build graph
       graph.addEdge(r.head, r.tail)
       s"${r.head}-${r.tail}" -> r.label
     }.toMap
     val parentChildrenMap = mutable.HashMap[String, JList[Int]]()
 
-    val topLevelNodes: Seq[DependencyNode] = depMap.values.toSet.toSeq
-
-    // find children for root nodes
-    topLevelNodes.foreach { d =>
-      val path = graph.DFS(d.getId.toInt).asScala.tail.map(_.intValue()).asJava
-      parentChildrenMap.put(d.getId.toString, path)
+    // find children all nodes nodes,there may be indirect dependencies here.
+    depMap.values.toSet.toSeq.foreach { topNode =>
+      val path = graph
+        .DFS(topNode.getId.toInt)
+        .asScala
+        .tail
+        .map(_.intValue())
+        .filter(childId => filterOnlyDirectlyChild(topNode, childId, dependencies.relations))
+        .asJava
+      parentChildrenMap.put(topNode.getId.toString, path)
     }
 
-    // ignore self
-    val excludeSelf = topLevelNodes.filterNot(d => filterSelfModuleDependency(d, context))
-    // append children
-    excludeSelf.foreach { node =>
-      val children = parentChildrenMap.getOrElse(node.getId.toString, Collections.emptyList()).asScala
-      val label    = children.map(id => id.toString -> relationLabelsMap.getOrElse(s"${node.getId}-$id", "")).toMap
-      val rs = children.flatMap { child =>
-        depMap
-          .get(child.toString)
-          .map {
-            case d @ (_: ArtifactDependencyNodeImpl) =>
-              val lb = label.getOrElse(child.toString, "")
-              if (lb != null && lb.nonEmpty) {
-                d.setSelectionReason(lb)
-              }
-              d
-            case d @ b => d
-          }
-          .toList
-      }.toList.asJava
-      fixProjectModuleDependencies(node, rs.asScala.toSeq, context)
-      node.getDependencies.addAll(rs)
+    // get self
+    val selfNode = depMap.values.toSet.toSeq.filter(d => isSelfProjectModule(d, context))
+    // append children for self
+    selfNode.foreach { node =>
+      toNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
     }
 
-    fixProjectModuleDependencies(root, excludeSelf, context)
-
-    // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
-    // So we implement and ignore version number, which may filter multiple libraries from different versions.
-    // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
-    // dropDuplicateNodes(root, declared)
-    // TODO Traverse from bottom to top
+    // transfer from self to root
+    selfNode.foreach(d => root.getDependencies.addAll(d.getDependencies))
     root
+  }
+
+  /** This is important to filter out non direct dependencies
+   */
+  private def filterOnlyDirectlyChild(parent: DependencyNode, childId: Int, relations: List[Relation]) = {
+    relations.exists(r => r.head == parent.getId && r.tail == childId)
+  }
+
+  /** Recursively create and add child nodes to root
+   */
+  private def toNodes(
+    parentNode: DependencyNode,
+    parentChildrenMap: mutable.HashMap[String, JList[Int]],
+    depMap: Map[String, DependencyNode],
+    relationLabelsMap: Map[String, String],
+    context: ModuleContext,
+    relations: List[Relation]
+  ): Unit = {
+    val childIds = parentChildrenMap
+      .get(parentNode.getId.toString)
+      .map(_.asScala.toList)
+      .getOrElse(List.empty)
+      .filter(cid => filterOnlyDirectlyChild(parentNode, cid, relations))
+    if (childIds.isEmpty) return
+    val childNodes = childIds.flatMap { id =>
+      depMap
+        .get(id.toString)
+        .map {
+          case d @ (_: ArtifactDependencyNodeImpl) =>
+            val label   = relationLabelsMap.getOrElse(s"${parentNode.getId}-$id", "")
+            val newNode = new ArtifactDependencyNodeImpl(d.getId, d.getGroup, d.getModule, d.getVersion)
+            if (label != null && label.nonEmpty) {
+              newNode.setSelectionReason(label)
+            }
+            newNode.setResolutionState(d.getResolutionState)
+            newNode
+          case d @ b => d
+        }
+        .toList
+    }
+    childNodes.foreach(d => toNodes(d, parentChildrenMap, depMap, relationLabelsMap, context, relations))
+    appendChildrenAndFixProjectNodes(parentNode, childNodes, context)
   }
 
   private def getGraph(relation: Dependencies, depMap: Map[String, DependencyNode]): Graph = {
@@ -131,15 +152,9 @@ final class DOTDependencyParser extends DependencyParser {
     graph
   }
 
-  private def dropDuplicateNodes(dependencyNode: DependencyNode, declared: List[UnifiedCoordinates]): Unit = {
-    dependencyNode.getDependencies.removeIf { node =>
-      val ret = dependencyNode.getDependencies.asScala.filterNot(_ == node).exists(_.getDependencies.contains(node))
-        && !isDeclaredDependencies(declared, node)
-      dropDuplicateNodes(node, declared)
-      ret
-    }
-  }
-
+  // if version is val, we cannot getUnifiedCoordinates from intellij-scala `SbtDependencyUtils.declaredDependencies`
+  // So we implement and ignore version number, which may filter multiple libraries from different versions.
+  // Considering that we hope to reduce the number of topLevel nodes, this may be acceptable.
   private def isDeclaredDependencies(declared: List[UnifiedCoordinates], d: DependencyNode): Boolean = {
     declared.exists { uc =>
       if (uc.getVersion == SbtDependencyCommon.defaultLibScope) {

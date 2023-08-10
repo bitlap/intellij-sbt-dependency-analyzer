@@ -21,10 +21,10 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
     val ctx =
       ModuleContext(
         getClass.getClassLoader.getResource("test.dot").getFile,
-        "test",
+        "star-authority-protocol",
         DependencyScopeEnum.Compile,
         "3",
-        "org.bitlap"
+        "fc.xuanwu.star"
       )
 
     val relations = DependencyParserFactory

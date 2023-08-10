@@ -47,11 +47,11 @@ object DependencyUtil {
       case _                                                            => "3"
   }
 
-  /** ignore self dependency
+  /** get self module
    *
    *  self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it.
    */
-  def filterSelfModuleDependency(dn: DependencyNode, context: ModuleContext): Boolean = {
+  def isSelfProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
       case ArtifactRegex(group, artifact, version) =>
         context.org == group && (artifact == context.currentModuleName ++ "_" + context.scalaMajor)
@@ -86,19 +86,19 @@ object DependencyUtil {
     }
     p.getDependencies.addAll(
       dn.getDependencies.asScala
-        .filterNot(d => filterSelfModuleDependency(d, context.copy(currentModuleName = moduleName)))
+        .filterNot(d => isSelfProjectModule(d, context.copy(currentModuleName = moduleName)))
         .asJava
     )
     Some(p)
   }
 
-  def fixProjectModuleDependencies[N <: DependencyNode](
+  def appendChildrenAndFixProjectNodes[N <: DependencyNode](
     parentNode: N,
     nodes: Seq[DependencyNode],
     context: ModuleContext
   ): Unit = {
     parentNode.getDependencies.addAll(nodes.asJava)
-    val moduleDependencies = nodes.filter(d => filterModuleDependency(d, context))
+    val moduleDependencies = nodes.filter(d => isProjectModule(d, context))
     parentNode.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
     val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
       value
@@ -110,7 +110,7 @@ object DependencyUtil {
       val artifactId = artifact.map(_.artifact).getOrElse("")
       val group      = artifact.map(_.group).getOrElse("")
       if (context.allModulePaths.keys.exists(d => group == context.org && d + "_" + context.scalaMajor == artifactId)) {
-        fixProjectModuleDependencies(
+        appendChildrenAndFixProjectNodes(
           node,
           node.getDependencies.asScala.toList,
           context
@@ -119,7 +119,7 @@ object DependencyUtil {
     }
   }
 
-  def filterModuleDependency(dn: DependencyNode, context: ModuleContext): Boolean = {
+  def isProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     // module dependency
     val artifact = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
     if (artifact == null) return false
@@ -129,22 +129,6 @@ object DependencyUtil {
 
     matchModule.nonEmpty
 
-  }
-
-  /** ignore topLevel declared Dependencies
-   */
-  def filterNotDeclaredDependency(
-    dn: DependencyNode,
-    scalaMajor: String,
-    declared: List[UnifiedCoordinates]
-  ): Boolean = {
-    dn.getDisplayName match
-      case ArtifactRegex(group, artifact, version) =>
-        !declared.exists(uc =>
-          group == uc.getGroupId && artifact == uc.getArtifactId ++ "_" + scalaMajor
-          || (group == uc.getGroupId && artifact == uc.getArtifactId)
-        )
-      case _ => false
   }
 
   /** copy from DependencyModifierService, and fix
