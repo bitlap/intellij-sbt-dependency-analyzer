@@ -29,8 +29,18 @@ import com.intellij.openapi.project.Project
  */
 object DependencyUtil {
 
-  private val ArtifactRegex = "(.*):(.*):(.*)".r
-  private val ScalaVerRegex = "(.*)\\.(.*)\\.(.*)".r
+  private val ArtifactRegex                 = "(.*):(.*):(.*)".r
+  private val ScalaVerRegex                 = "(.*)\\.(.*)\\.(.*)".r
+  private val `ModuleWithScalaRegex`        = "(.*)(_)(.*)".r
+  private val `ModuleWithScalaJs0.6Regex`   = "(.*)(_sjs0\\.6_)(.*)".r
+  private val `ModuleWithScalaJs1Regex`     = "(.*)(_sjs1_)(.*)".r
+  private val `ModuleWithScalaNative1Regex` = "(.*)(_native0\\.4_)(.*)".r
+
+  private final case class PlatformModule(
+    module: String,
+    platform: String,
+    scalaVersion: String
+  )
 
   private val LOG = Logger.getInstance(classOf[DependencyUtil.type])
 
@@ -70,33 +80,33 @@ object DependencyUtil {
   def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
     if (context.isScalaNative) {
       artifact match
-        case `scalaNative1VerRegex`(module, _, scalaVer) =>
+        case `ModuleWithScalaNative1Regex`(module, _, scalaVer) =>
           context.currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
 
     } else if (context.isScalaJs) {
       artifact match
-        case `scalaJs0.6VerRegex`(module, _, scalaVer) =>
+        case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer) =>
           context.currentModuleName == module && scalaVer == context.scalaMajor
-        case `scalaJs1VerRegex`(module, _, scalaVer) =>
+        case `ModuleWithScalaJs1Regex`(module, _, scalaVer) =>
           context.currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
 
     } else {
       artifact match
-        case `scalaVerRegex`(module, _, scalaVer) =>
+        case `ModuleWithScalaRegex`(module, _, scalaVer) =>
           context.currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
     }
   }
 
-  def toPlatformModule(artifact: String): PlatformModule = {
+  private def toPlatformModule(artifact: String): PlatformModule = {
     artifact match
-      case `scalaVerRegex`(module, _, scalaVer)        => PlatformModule(module, "", scalaVer)
-      case `scalaJs0.6VerRegex`(module, _, scalaVer)   => PlatformModule(module, "sjs0.6", scalaVer)
-      case `scalaJs1VerRegex`(module, _, scalaVer)     => PlatformModule(module, "sjs1", scalaVer)
-      case `scalaNative1VerRegex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
-      case _                                           => PlatformModule(artifact, "", "")
+      case `ModuleWithScalaRegex`(module, _, scalaVer)        => PlatformModule(module, "", scalaVer)
+      case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer)   => PlatformModule(module, "sjs0.6", scalaVer)
+      case `ModuleWithScalaJs1Regex`(module, _, scalaVer)     => PlatformModule(module, "sjs1", scalaVer)
+      case `ModuleWithScalaNative1Regex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
+      case _                                                  => PlatformModule(artifact, "", "")
   }
 
   private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {

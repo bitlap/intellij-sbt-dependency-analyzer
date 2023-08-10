@@ -66,14 +66,3 @@ def findModule(project: Project, projectPath: String): Module = {
   if (moduleNode == null) return null
   findModule(project, moduleNode.getData)
 }
-
-private val `scalaVerRegex`        = "(.*)(_)(.*)".r
-private val `scalaJs0.6VerRegex`   = "(.*)(_sjs0\\.6_)(.*)".r
-private val `scalaJs1VerRegex`     = "(.*)(_sjs1_)(.*)".r
-private val `scalaNative1VerRegex` = "(.*)(_native0\\.4_)(.*)".r
-
-final case class PlatformModule(
-  module: String,
-  platform: String,
-  scalaVersion: String
-)
