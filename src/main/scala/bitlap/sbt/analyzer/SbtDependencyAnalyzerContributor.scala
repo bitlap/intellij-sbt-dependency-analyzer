@@ -198,12 +198,17 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
     // FIXME
-    val org             = getOrganization(project)
+    val org = getOrganization(project)
+    // Used to link dependencies between modules.
+    // Obtain the mapping of module name to file path.
     val allaModulePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
+    // Cross platform projects have the same artifact but different suffixes.
+    // Obtain the mapping of module name to artifact
+    val nameIdeModuleGroupings = projects.values().asScala.map(d => d.getModuleName -> d.getIdeGrouping).toMap
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project, org, allaModulePaths)
+      _ => moduleData.loadDependencies(project, org, allaModulePaths, nameIdeModuleGroupings)
     )
   }
 }
@@ -305,7 +310,8 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(
       project: Project,
       org: String,
-      allaModulePaths: Map[String, String]
+      allaModulePaths: Map[String, String],
+      nameIdeModuleGroupings: Map[String, String]
     ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
@@ -339,7 +345,8 @@ object SbtDependencyAnalyzerContributor {
                         org,
                         allaModulePaths,
                         module.isScalaJs,
-                        module.isScalaNative
+                        module.isScalaNative,
+                        nameIdeModuleGroupings
                       ),
                       rootNode(scope, project),
                       declared

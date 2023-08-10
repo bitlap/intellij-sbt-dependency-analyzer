@@ -77,47 +77,55 @@ object DependencyUtil {
       case _ => None
   }
 
-  def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
+  private def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
+    // Processing cross platform, module name is not artifact!
+    val currentModuleName =
+      context.moduleNameGroupings.getOrElse(context.currentModuleName, context.currentModuleName)
     if (context.isScalaNative) {
       artifact match
         case `ModuleWithScalaNative1Regex`(module, _, scalaVer) =>
-          context.currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
 
     } else if (context.isScalaJs) {
       artifact match
         case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer) =>
-          context.currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && scalaVer == context.scalaMajor
         case `ModuleWithScalaJs1Regex`(module, _, scalaVer) =>
-          context.currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
 
     } else {
       artifact match
         case `ModuleWithScalaRegex`(module, _, scalaVer) =>
-          context.currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && scalaVer == context.scalaMajor
         case _ => false
     }
   }
 
   private def toPlatformModule(artifact: String): PlatformModule = {
     artifact match
-      case `ModuleWithScalaRegex`(module, _, scalaVer)        => PlatformModule(module, "", scalaVer)
       case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer)   => PlatformModule(module, "sjs0.6", scalaVer)
       case `ModuleWithScalaJs1Regex`(module, _, scalaVer)     => PlatformModule(module, "sjs1", scalaVer)
       case `ModuleWithScalaNative1Regex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
+      case `ModuleWithScalaRegex`(module, _, scalaVer)        => PlatformModule(module, "", scalaVer)
       case _                                                  => PlatformModule(artifact, "", "")
   }
 
   private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
     val artifactInfo = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
     if (artifactInfo == null) return None
-    val moduleName = toPlatformModule(artifactInfo.artifact).module
+    val moduleGroup      = toPlatformModule(artifactInfo.artifact).module
+    val getNameFromGroup = context.moduleNameGroupings.filter(_._2 == moduleGroup).headOption.map(_._1)
 
+    // Processing cross platform, module name is not artifact
+    // This is a project node, we need a module not a artifact to get project path!
     val p = new ProjectDependencyNodeImpl(
       dn.getId,
-      moduleName,
-      context.allModulePaths.getOrElse(moduleName, Constants.Empty_String)
+      moduleGroup,
+      getNameFromGroup
+        .map(m => context.moduleNamePaths.getOrElse(m, Constants.Empty_String))
+        .getOrElse(Constants.Empty_String)
     )
     if (p.getProjectPath.isEmpty) {
       p.setResolutionState(ResolutionState.UNRESOLVED)
@@ -126,7 +134,7 @@ object DependencyUtil {
     }
     p.getDependencies.addAll(
       dn.getDependencies.asScala
-        .filterNot(d => isSelfProjectModule(d, context.copy(currentModuleName = moduleName)))
+        .filterNot(d => isSelfProjectModule(d, context.copy(currentModuleName = moduleGroup)))
         .asJava
     )
     Some(p)
@@ -149,8 +157,9 @@ object DependencyUtil {
       val artifact   = extractArtifactFromName(None, node.getDisplayName)
       val artifactId = artifact.map(_.artifact).getOrElse(Constants.Empty_String)
       val group      = artifact.map(_.group).getOrElse(Constants.Empty_String)
+      // Use artifact to determine whether there are modules in the dependency.
       if (
-        context.allModulePaths.keys
+        context.moduleNameGroupings.values
           .exists(d => group == context.org && toPlatformModule(artifactId).module == d)
       ) {
         appendChildrenAndFixProjectNodes(
@@ -167,8 +176,9 @@ object DependencyUtil {
     val artifactInfo = extractArtifactFromName(Some(dn.getId.toInt), dn.getDisplayName).orNull
     if (artifactInfo == null) return false
     if (artifactInfo.group != context.org) return false
-
-    val matchModule = context.allModulePaths.keys.filter(m => m == toPlatformModule(artifactInfo.artifact).module)
+    // Use artifact to determine whether there are modules in the dependency.
+    val matchModule =
+      context.moduleNameGroupings.values.filter(m => m == toPlatformModule(artifactInfo.artifact).module)
 
     matchModule.nonEmpty
 
