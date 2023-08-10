@@ -273,6 +273,7 @@ object SbtDependencyAnalyzerContributor {
       val selectionReason = node.getSelectionReason
       data match
         case dataArtifact: Data.Artifact if selectionReason == "Evicted By" =>
+          status.append(DAOmitted.INSTANCE)
           val conflictedVersion = usage.getData match
             case artifact: Data.Artifact =>
               if (artifact.getArtifactId == dataArtifact.getArtifactId) {

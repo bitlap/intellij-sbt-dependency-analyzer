@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.1.0-231.9392.1-M6</version>
+    <version>0.1.0-231.9392.1-M7</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <idea-version since-build="231.0"/>
@@ -87,7 +87,11 @@
     </description>
     <change-notes>
         <![CDATA[
-        <ul> 
+        <ul>
+            <h1>0.1.0-231.9392.1-M7</h1>
+            <ol>
+                <li>🔥Show Conflict omitted status.</li>
+            </ol> 
             <h1>0.1.0-231.9392.1-M6</h1>
             <ol>
                 <li>🔥Highlight module dependencies.</li>
