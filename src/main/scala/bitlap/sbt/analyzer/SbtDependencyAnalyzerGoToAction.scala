@@ -3,6 +3,7 @@ package bitlap.sbt.analyzer
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
+import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
@@ -45,6 +46,14 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     if (coordinates == null || module == null) return null
 
     val declared = DependencyUtil.getDeclaredDependency(module, project)
-    declared.find(_.getCoordinates.equals(coordinates)).orNull
+    declared
+      .find(dc =>
+        if (coordinates.getVersion == SbtDependencyCommon.defaultLibScope) {
+          dc.getCoordinates.getArtifactId == coordinates.getArtifactId && dc.getCoordinates.getGroupId == coordinates.getGroupId
+        } else {
+          dc.getCoordinates.equals(coordinates)
+        }
+      )
+      .orNull
   }
 }

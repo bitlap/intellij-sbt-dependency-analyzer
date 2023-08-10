@@ -3,8 +3,9 @@ package bitlap.sbt.analyzer.parser
 import java.util.List as JList
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.model.Artifact
+import bitlap.sbt.analyzer.model.ArtifactInfo
 
+import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 /** @author
@@ -15,6 +16,10 @@ trait DependencyParser {
 
   val parserType: ParserTypeEnum
 
-  def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode
+  def buildDependencyTree(
+    context: ModuleContext,
+    root: DependencyScopeNode,
+    declared: List[UnifiedCoordinates]
+  ): DependencyScopeNode
 
 }

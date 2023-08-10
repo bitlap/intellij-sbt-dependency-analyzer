@@ -1,22 +1,17 @@
 package bitlap.sbt.analyzer
 
-import java.io.File
 import java.util
-import java.util.concurrent.atomic.{ AtomicInteger, AtomicLong }
+import java.util.concurrent.atomic.AtomicInteger
 
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.DependencyUtil
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser
-import bitlap.sbt.analyzer.parser.{ DOTDependencyParserBuilder, DOTUtil }
+import bitlap.sbt.analyzer.parser.DOTUtil
 
 import org.scalatest.flatspec.AnyFlatSpec
 
-import guru.nidi.graphviz.attribute.validate.{ ValidatorEngine, ValidatorFormat }
-import guru.nidi.graphviz.engine.{ Format, Graphviz }
 import guru.nidi.graphviz.model.*
-import guru.nidi.graphviz.parse.Parser
 
 /** @author
  *    梦境迷离
@@ -34,11 +29,11 @@ class DOTUtilSpec extends AnyFlatSpec {
     val links: util.Collection[Link]             = mutableGraph.edges()
 
     val nodes = graphNodes.asScala.map { graphNode =>
-      graphNode.name().value() -> DOTDependencyParserBuilder.extractArtifactFromName(graphNode.name().value())
+      graphNode.name().value() -> DependencyUtil.extractArtifactFromName(None, graphNode.name().value())
     }.collect { case (name, Some(value)) =>
       name -> value
     }.toMap
-    val idMapping: Map[String, Int] = nodes.map(kv => DOTDependencyParserBuilder.artifactAsName(kv._2) -> kv._2.id)
+    val idMapping: Map[String, Int] = nodes.map(kv => DependencyUtil.artifactAsName(kv._2) -> kv._2.id)
 
     val edges = links.asScala.map { l =>
       val label = l.get("label").asInstanceOf[String]

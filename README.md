@@ -13,13 +13,16 @@ Sbt Dependency Analyzer for IntelliJ IDEA
   - Show Conflicts
   - Search Dependencies
   - Location Dependency (multi-module)
+  - Show dependencies between modules
 - Support since Intellij IDEA 231 (231.9392.1)
 
 **NOTE**: ***The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.***
 
 ## How to start
-
-If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
+- Must put `addDependencyTreePlugin` into `plugins.sbt` file.
+- If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
+- The plugin currently has no depth limit, pay attention to memory.
+- The plugin needs to execute `organization` to obtain the current module `organization`.
 
 **Entry point one**
 
@@ -29,33 +32,6 @@ If both the Gradle and SBT plugins are enabled in the environment, two analysis 
 
 ![](./docs/gotoAnalyze2.png)
 
-> The plugin currently has no depth limit, pay attention to memory.
-
-## Preview
-
-### Show External Dependencies
-
-![](./docs/dependencyTreeSingleModule.png)
-
-### Show Declared Dependencies
-
-If the module has declared dependencies and the total number of dependencies exceeds 100, we will not display all dependencies, only the declared dependencies, which will greatly reduce the number of root nodes.
-
-For example: 
-
-There two declared dependencies in `rolls-zio`:
-```scala
-    libraryDependencies ++= Seq(
-      "dev.zio"       %% "zio"       % zioVersion       % Provided,
-      "org.scalatest" %% "scalatest" % scalatestVersion % Test
-    )
-```
-
-Dependency Tree shows this (There are only 2 root nodes here): 
-
-![](./docs/dependencyTreeMultipleModules.png)
-
-> This project does not have 100 dependencies and is only used to showcase the effect.
 
 ### Show Conflicts
 
