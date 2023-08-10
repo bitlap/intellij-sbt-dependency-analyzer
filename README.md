@@ -13,6 +13,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
   - Show Conflicts
   - Search Dependencies
   - Location Dependency (multi-module)
+  - Show dependencies between modules
 - Support since Intellij IDEA 231 (231.9392.1)
 
 **NOTE**: ***The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.***
@@ -21,6 +22,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - Must put `addDependencyTreePlugin` into `plugins.sbt` file.
 - If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
 - The plugin currently has no depth limit, pay attention to memory.
+- The plugin needs to execute `organization` to obtain the current module `organization`.
 
 **Entry point one**
 
