@@ -56,8 +56,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "test" / "resources",
     patchPluginXml := pluginXmlOptions { xml =>
       xml.version = pluginVersion
-      xml.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
-      xml.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change.html")
+//      xml.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
+//      xml.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change.html")
     },
     publish / skip := true,
     commands ++= Commands.value,

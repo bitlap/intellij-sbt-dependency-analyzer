@@ -79,6 +79,7 @@
               <li>Show dependencies between modules</li>
         </ul>
         <br/>
+        Go to Github to obtain how to use this plugin correctly.
         <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer">GitHub</a> |
         <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer/issues">Issues</a>
         <br/>
@@ -87,17 +88,17 @@
     <change-notes>
         <![CDATA[
         <ul> 
-            <h1>0.1.0-231.9392.1-M4</h1>
+            <h1>0.1.0-231.9392.1-M6</h1>
             <ol>
-                <li>🔥 First Blood.</li>
+                <li>🔥Highlight module dependencies.</li>
             </ol>
             <h1>0.1.0-231.9392.1-M5</h1>
             <ol>
                 <li>🔥Significantly improve performance.</li>
             </ol>
-            <h1>0.1.0-231.9392.1-M6</h1>
+            <h1>0.1.0-231.9392.1-M4</h1>
             <ol>
-                <li>🔥Highlight module dependencies.</li>
+                <li>🔥 First Blood.</li>
             </ol>
         </ul>
         ]]>
