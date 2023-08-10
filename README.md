@@ -19,11 +19,12 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 **NOTE**: ***The plugin depends on `addDependencyTreePlugin` in `plugins.sbt` file.***
 
 ## How to start
+
 - Must put `addDependencyTreePlugin` into `plugins.sbt` file.
 - If both the Gradle and SBT plugins are enabled in the environment, two analysis buttons will appear. Please try the latter one. (Generally speaking)
-- The plugin currently has no depth limit, pay attention to memory.
+- The plugin currently has no depth limit, pay attention to memory if the project is particularly large and contains too many dependencies.
 - The plugin needs to execute `organization` to obtain the current module `organization`.
-  - For multi-module projects, the default is to take the last result of the organization command as the groupId.
+  - For multi-module projects, the default is to take the last result of the `organization` command as the groupId. Therefore, the root module must have set `organization`
 
 **Entry point one**
 
