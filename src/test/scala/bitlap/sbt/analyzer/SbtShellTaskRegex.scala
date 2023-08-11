@@ -18,6 +18,11 @@ class SbtShellTaskRegex extends AnyFlatSpec {
       case SbtShellTask.cmdNameRegex(_, _, moduleName, _, _) =>
         assert(moduleName.trim == "rolls-csv")
       case _ => assert(false)
+
+    "[info] moduleName" match
+      case SbtShellTask.rootCmdNameRegex(_, _) =>
+        assert(true)
+      case _ => assert(false)
   }
 
 }

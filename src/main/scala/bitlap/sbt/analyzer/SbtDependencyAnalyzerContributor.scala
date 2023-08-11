@@ -80,7 +80,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              projects.put(externalProject, new ModuleNode(moduleData))
+              if (!DependencyUtil.ignoreModuleAnalysis(module)) {
+                projects.put(externalProject, new ModuleNode(moduleData))
+              }
             }
           }
 
@@ -89,7 +91,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       }
 
     }
-    projects.keys.asScala.toList.asJava
+    projects.keys.asScala.toList.sortBy(_.getModule.getName).asJava
 
   }
 
@@ -186,13 +188,10 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     // Used to link dependencies between modules.
     // Obtain the mapping of module name to file path.
     val moduleNamePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
-    // Cross platform projects have the same artifact but different suffixes.
-    // Obtain the mapping of module name to artifact
-    val moduleNameGroupings = projects.values().asScala.map(d => d.getModuleName -> d.getIdeGrouping).toMap
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project, org, moduleNamePaths, moduleNameGroupings)
+      _ => moduleData.loadDependencies(project, org, moduleNamePaths)
     )
   }
 }
@@ -294,14 +293,12 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(
       project: Project,
       org: String,
-      moduleNamePaths: Map[String, String],
-      moduleNameGroupings: Map[String, String]
+      moduleNamePaths: Map[String, String]
     ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
-      val comms  = SbtShellCommunication.forProject(project)
-      // if module is itself a build module, skip build module
-      val buildModule = SbtDependencyUtils.getBuildModule(module)
-      if (buildModule.isEmpty) return Collections.emptyList()
+      if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
+
+      val comms            = SbtShellCommunication.forProject(project)
       val promiseList      = ListBuffer[Promise[DependencyScopeNode]]()
       val moduleId         = moduleData.getId.split(" ")(0)
       val moduleName       = moduleData.getModuleName
@@ -320,6 +317,14 @@ object SbtDependencyAnalyzerContributor {
               SbtShellCommunication.listenerAggregator {
                 case SbtShellCommunication.TaskStart =>
                 case SbtShellCommunication.TaskComplete =>
+                  val sbtModuleNameMap =
+                    if (sbtModules.isEmpty) Map(moduleId -> module.getName)
+                    else
+                      sbtModules.collect {
+                        case (key, value) if key == SbtShellTask.SingleSbtModule => moduleId -> value
+                        case (key, value) if key == SbtShellTask.RootSbtModule   => moduleId -> value
+                        case (key, value)                                        => key      -> value
+                      }
                   val root = DependencyParserFactory
                     .getInstance(ParserTypeEnum.DOT)
                     .buildDependencyTree(
@@ -332,12 +337,7 @@ object SbtDependencyAnalyzerContributor {
                         moduleNamePaths,
                         module.isScalaJs,
                         module.isScalaNative,
-                        if (sbtModules.isEmpty) Map(moduleId -> module.getName)
-                        else
-                          sbtModules.collect {
-                            case (key, value) if key == SbtShellTask.SingleSbtModule => moduleId -> value
-                            case (key, value)                                        => key      -> value
-                          }
+                        sbtModuleNameMap
                       ),
                       rootNode(scope, project),
                       declared

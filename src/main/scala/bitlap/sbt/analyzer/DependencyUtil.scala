@@ -9,6 +9,7 @@ import bitlap.sbt.analyzer.parser.DOTDependencyParser.id
 
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
+import org.jetbrains.plugins.scala.project.*
 import org.jetbrains.sbt.language.utils.{ SbtDependencyCommon, SbtDependencyUtils }
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils.*
@@ -77,6 +78,14 @@ object DependencyUtil {
       case ArtifactRegex(group, artifact, version) =>
         Some(ArtifactInfo(idOpt.getOrElse(id.getAndIncrement()), group, artifact, version))
       case _ => None
+  }
+
+  /** do not analyze this module
+   */
+  def ignoreModuleAnalysis(module: Module): Boolean = {
+    // if module is itself a build module, skip build module
+    val isBuildModule = module.isBuildModule
+    isBuildModule || module.isSharedSourceModule
   }
 
   private def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
