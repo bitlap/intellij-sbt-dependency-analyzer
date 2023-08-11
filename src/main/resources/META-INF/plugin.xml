@@ -91,6 +91,7 @@
             <h1>0.1.0-231.9392.1-M7</h1>
             <ol>
                 <li>🔥Show Conflict omitted status.</li>
+                <li>🔥Support Scala Js and Scala native.</li>
             </ol> 
             <h1>0.1.0-231.9392.1-M6</h1>
             <ol>
