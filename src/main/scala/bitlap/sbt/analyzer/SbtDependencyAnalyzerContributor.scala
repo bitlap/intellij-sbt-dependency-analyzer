@@ -3,13 +3,13 @@ package bitlap.sbt.analyzer
 import java.util
 import java.util.Collections
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
+import java.util.concurrent.atomic.AtomicLong
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.model.ArtifactRegex
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 
@@ -80,7 +80,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              projects.put(externalProject, new ModuleNode(moduleData))
+              if (!DependencyUtil.ignoreModuleAnalysis(module)) {
+                projects.put(externalProject, new ModuleNode(moduleData))
+              }
             }
           }
 
@@ -89,7 +91,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       }
 
     }
-    projects.keys.asScala.toList.asJava
+    projects.keys.asScala.toList.sortBy(_.getModule.getName).asJava
 
   }
 
@@ -173,43 +175,29 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private var organization: String = null
-  private val orgRegex             = "(\\[.*\\])(\\s|\\t)(.*)".r
 
   private def getOrganization(project: Project): String = {
     if (organization != null) return organization
-    val comms       = SbtShellCommunication.forProject(project)
-    val outputLines = ListBuffer[String]()
-    val executed = comms.command(
-      "organization",
-      new StringBuilder(),
-      SbtShellCommunication.listenerAggregator {
-        case SbtShellCommunication.Output(line) =>
-          outputLines.append(line)
-        case _ =>
-      }
-    )
-    Await.result(executed, 5.minutes)
-    outputLines.filter(_.startsWith("[info]")).lastOption.getOrElse("") match
-      case orgRegex(level, space, org) =>
-        organization = org.trim
-      case _ =>
+    organization = SbtShellTask.organizationTask.executeTask(project)
     organization
   }
 
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
     // FIXME
-    val org             = getOrganization(project)
-    val allaModulePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
+    val org = getOrganization(project)
+    // Used to link dependencies between modules.
+    // Obtain the mapping of module name to file path.
+    val moduleNamePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project, org, allaModulePaths)
+      _ => moduleData.loadDependencies(project, org, moduleNamePaths)
     )
   }
 }
 
 object SbtDependencyAnalyzerContributor {
-
+  private val id                           = new AtomicLong(0)
   private def scope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
   private final val DefaultConfiguration   = scope("default")
 
@@ -305,19 +293,20 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(
       project: Project,
       org: String,
-      allaModulePaths: Map[String, String]
+      moduleNamePaths: Map[String, String]
     ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
-      val comms  = SbtShellCommunication.forProject(project)
-      // if module is itself a build module, skip build module
-      val buildModule = SbtDependencyUtils.getBuildModule(module)
-      if (buildModule.isEmpty) return Collections.emptyList()
-      val promiseList    = ListBuffer[Promise[DependencyScopeNode]]()
-      val moduleId       = moduleData.getId.split(" ")(0)
-      val moduleName     = moduleData.getModuleName
-      val declaredFuture = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+      if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
+
+      val comms            = SbtShellCommunication.forProject(project)
+      val promiseList      = ListBuffer[Promise[DependencyScopeNode]]()
+      val moduleId         = moduleData.getId.split(" ")(0)
+      val moduleName       = moduleData.getModuleName
+      val declaredFuture   = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+      val sbtModulesFuture = Future { SbtShellTask.sbtModuleNamesTask.executeTask(project) }
       val res = for {
-        declared <- declaredFuture
+        sbtModules <- sbtModulesFuture
+        declared   <- declaredFuture
         result <- Future {
           DependencyScopeEnum.values.toList.foreach { scope =>
             val promise = Promise[DependencyScopeNode]()
@@ -328,6 +317,9 @@ object SbtDependencyAnalyzerContributor {
               SbtShellCommunication.listenerAggregator {
                 case SbtShellCommunication.TaskStart =>
                 case SbtShellCommunication.TaskComplete =>
+                  val sbtModuleNameMap =
+                    if (sbtModules.isEmpty) Map(moduleId -> module.getName)
+                    else sbtModules
                   val root = DependencyParserFactory
                     .getInstance(ParserTypeEnum.DOT)
                     .buildDependencyTree(
@@ -337,14 +329,19 @@ object SbtDependencyAnalyzerContributor {
                         scope,
                         DependencyUtil.scalaMajorVersion(module),
                         org,
-                        allaModulePaths
+                        moduleNamePaths,
+                        module.isScalaJs,
+                        module.isScalaNative,
+                        sbtModuleNameMap
                       ),
                       rootNode(scope, project),
                       declared
                     )
                   promise.success(root)
                 case SbtShellCommunication.ErrorWaitForInput =>
-                  promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                  if (!promise.isCompleted) {
+                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                  }
                 case SbtShellCommunication.Output(line) =>
                   if (line.startsWith(s"[error]") && !promise.isCompleted) {
                     promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))

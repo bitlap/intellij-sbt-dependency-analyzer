@@ -2,6 +2,8 @@ package bitlap.sbt.analyzer
 
 import java.util.concurrent.atomic.AtomicLong
 
+import bitlap.sbt.analyzer.model.ModuleContext
+
 import org.jetbrains.sbt.project.*
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
@@ -64,5 +66,3 @@ def findModule(project: Project, projectPath: String): Module = {
   if (moduleNode == null) return null
   findModule(project, moduleNode.getData)
 }
-
-val id = new AtomicLong(0)
