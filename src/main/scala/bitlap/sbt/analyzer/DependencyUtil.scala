@@ -91,7 +91,13 @@ object DependencyUtil {
   private def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
     // Processing cross platform, module name is not artifact!
     val currentModuleName =
-      context.moduleIdSbtModuleNames.getOrElse(context.currentModuleName, context.currentModuleName)
+      context.moduleIdSbtModuleNames.getOrElse(
+        Constants.SingleSbtModule,
+        context.moduleIdSbtModuleNames.getOrElse(
+          context.currentModuleName,
+          context.moduleIdSbtModuleNames.getOrElse(Constants.RootSbtModule, context.currentModuleName)
+        )
+      )
     if (context.isScalaNative) {
       artifact match
         case `ModuleWithScalaNative0.4Regex`(module, _, scalaVer) =>

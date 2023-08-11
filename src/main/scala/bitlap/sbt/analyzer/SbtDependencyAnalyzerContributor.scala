@@ -319,12 +319,7 @@ object SbtDependencyAnalyzerContributor {
                 case SbtShellCommunication.TaskComplete =>
                   val sbtModuleNameMap =
                     if (sbtModules.isEmpty) Map(moduleId -> module.getName)
-                    else
-                      sbtModules.collect {
-                        case (key, value) if key == SbtShellTask.SingleSbtModule => moduleId -> value
-                        case (key, value) if key == SbtShellTask.RootSbtModule   => moduleId -> value
-                        case (key, value)                                        => key      -> value
-                      }
+                    else sbtModules
                   val root = DependencyParserFactory
                     .getInstance(ParserTypeEnum.DOT)
                     .buildDependencyTree(

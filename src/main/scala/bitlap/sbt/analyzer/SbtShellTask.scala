@@ -4,6 +4,8 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.*
 
+import bitlap.sbt.analyzer.Constants.*
+
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.openapi.project.Project
@@ -23,8 +25,6 @@ object SbtShellTask {
   final val shellOutputResultRegex = "(\\[info\\])(\\s|\\t)*(.*)".r
   final val cmdNameRegex           = "(\\[info\\])(\\s|\\t)*(.*)(\\s|\\t)*/(\\s|\\t)*moduleName".r
   final val rootCmdNameRegex       = "(\\[info\\])(\\s|\\t)*moduleName".r
-  final val SingleSbtModule        = "$SingleModule$"
-  final val RootSbtModule          = "$RootModule$"
 
   lazy val sbtModuleNamesTask: SbtShellTask[Map[String, String]] = new SbtShellTask[Map[String, String]]:
 

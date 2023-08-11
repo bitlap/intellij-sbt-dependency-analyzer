@@ -9,4 +9,6 @@ object Constants {
   final val Colon_Separator: String = ":"
   final val Empty_String: String    = ""
 
+  final val SingleSbtModule = "$SingleModule$"
+  final val RootSbtModule   = "$RootModule$"
 }
