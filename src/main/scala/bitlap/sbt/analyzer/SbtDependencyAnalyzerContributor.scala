@@ -201,14 +201,14 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     val org = getOrganization(project)
     // Used to link dependencies between modules.
     // Obtain the mapping of module name to file path.
-    val allaModulePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
+    val moduleNamePaths = projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
     // Cross platform projects have the same artifact but different suffixes.
     // Obtain the mapping of module name to artifact
-    val nameIdeModuleGroupings = projects.values().asScala.map(d => d.getModuleName -> d.getIdeGrouping).toMap
+    val moduleNameGroupings = projects.values().asScala.map(d => d.getModuleName -> d.getIdeGrouping).toMap
     if (moduleData.getModuleName == "project") return Collections.emptyList()
     configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project, org, allaModulePaths, nameIdeModuleGroupings)
+      _ => moduleData.loadDependencies(project, org, moduleNamePaths, moduleNameGroupings)
     )
   }
 }
@@ -310,8 +310,8 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(
       project: Project,
       org: String,
-      allaModulePaths: Map[String, String],
-      nameIdeModuleGroupings: Map[String, String]
+      moduleNamePaths: Map[String, String],
+      moduleNameGroupings: Map[String, String]
     ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       val comms  = SbtShellCommunication.forProject(project)
@@ -343,10 +343,10 @@ object SbtDependencyAnalyzerContributor {
                         scope,
                         DependencyUtil.scalaMajorVersion(module),
                         org,
-                        allaModulePaths,
+                        moduleNamePaths,
                         module.isScalaJs,
                         module.isScalaNative,
-                        nameIdeModuleGroupings
+                        moduleNameGroupings
                       ),
                       rootNode(scope, project),
                       declared
