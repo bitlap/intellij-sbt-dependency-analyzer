@@ -29,7 +29,7 @@ class DOTUtilSpec extends AnyFlatSpec {
     val links: util.Collection[Link]             = mutableGraph.edges()
 
     val nodes = graphNodes.asScala.map { graphNode =>
-      graphNode.name().value() -> DependencyUtil.extractArtifactFromName(None, graphNode.name().value())
+      graphNode.name().value() -> DependencyUtil.getArtifactInfoFromDisplayName(None, graphNode.name().value())
     }.collect { case (name, Some(value)) =>
       name -> value
     }.toMap
