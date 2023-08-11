@@ -15,5 +15,5 @@ final case class ModuleContext(
   moduleNamePaths: Map[String, String] = Map.empty,
   isScalaJs: Boolean = false,
   isScalaNative: Boolean = false,
-  moduleNameGroupings: Map[String, String] = Map.empty
+  moduleIdSbtModuleNames: Map[String, String] = Map.empty
 )

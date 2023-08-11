@@ -173,26 +173,10 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private var organization: String = null
-  private val orgRegex             = "(\\[.*\\])(\\s|\\t)(.*)".r
 
   private def getOrganization(project: Project): String = {
     if (organization != null) return organization
-    val comms       = SbtShellCommunication.forProject(project)
-    val outputLines = ListBuffer[String]()
-    val executed = comms.command(
-      "organization",
-      new StringBuilder(),
-      SbtShellCommunication.listenerAggregator {
-        case SbtShellCommunication.Output(line) =>
-          outputLines.append(line)
-        case _ =>
-      }
-    )
-    Await.result(executed, 5.minutes)
-    outputLines.filter(_.startsWith("[info]")).lastOption.getOrElse("") match
-      case orgRegex(level, space, org) =>
-        organization = org.trim
-      case _ =>
+    organization = SbtShellTask.organizationTask.executeTask(project)
     organization
   }
 
@@ -318,12 +302,14 @@ object SbtDependencyAnalyzerContributor {
       // if module is itself a build module, skip build module
       val buildModule = SbtDependencyUtils.getBuildModule(module)
       if (buildModule.isEmpty) return Collections.emptyList()
-      val promiseList    = ListBuffer[Promise[DependencyScopeNode]]()
-      val moduleId       = moduleData.getId.split(" ")(0)
-      val moduleName     = moduleData.getModuleName
-      val declaredFuture = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+      val promiseList      = ListBuffer[Promise[DependencyScopeNode]]()
+      val moduleId         = moduleData.getId.split(" ")(0)
+      val moduleName       = moduleData.getModuleName
+      val declaredFuture   = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+      val sbtModulesFuture = Future { SbtShellTask.sbtModuleNamesTask.executeTask(project) }
       val res = for {
-        declared <- declaredFuture
+        sbtModules <- sbtModulesFuture
+        declared   <- declaredFuture
         result <- Future {
           DependencyScopeEnum.values.toList.foreach { scope =>
             val promise = Promise[DependencyScopeNode]()
@@ -346,14 +332,21 @@ object SbtDependencyAnalyzerContributor {
                         moduleNamePaths,
                         module.isScalaJs,
                         module.isScalaNative,
-                        moduleNameGroupings
+                        if (sbtModules.isEmpty) Map(moduleId -> module.getName)
+                        else
+                          sbtModules.collect {
+                            case (key, value) if key == SbtShellTask.SingleSbtModule => moduleId -> value
+                            case (key, value)                                        => key      -> value
+                          }
                       ),
                       rootNode(scope, project),
                       declared
                     )
                   promise.success(root)
                 case SbtShellCommunication.ErrorWaitForInput =>
-                  promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                  if (!promise.isCompleted) {
+                    promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+                  }
                 case SbtShellCommunication.Output(line) =>
                   if (line.startsWith(s"[error]") && !promise.isCompleted) {
                     promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
