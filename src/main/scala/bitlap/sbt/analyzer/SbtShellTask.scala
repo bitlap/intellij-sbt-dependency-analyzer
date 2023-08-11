@@ -22,7 +22,7 @@ object SbtShellTask {
 
   final val shellOutputResultRegex = "(\\[info\\])(\\s|\\t)*(.*)".r
   final val cmdNameRegex           = "(\\[info\\])(\\s|\\t)*(.*)(\\s|\\t)*/(\\s|\\t)*moduleName".r
-  final val SingleSbtModule          = "$SingleModule$"
+  final val SingleSbtModule        = "$SingleModule$"
 
   lazy val sbtModuleNamesTask: SbtShellTask[Map[String, String]] = new SbtShellTask[Map[String, String]]:
 
@@ -50,9 +50,9 @@ object SbtShellTask {
 
       moduleIdSbtModuleNameMap.map { (k, v) =>
         val key = k match
-          case cmdNameRegex(_, _, moduleName, _, _) => moduleName.trim 
-          case SingleSbtModule                            => SingleSbtModule
-          case _                                          => Constants.Empty_String
+          case cmdNameRegex(_, _, moduleName, _, _) => moduleName.trim
+          case SingleSbtModule                      => SingleSbtModule
+          case _                                    => Constants.Empty_String
 
         val value = v match
           case shellOutputResultRegex(_, _, sbtModuleName) => sbtModuleName.trim

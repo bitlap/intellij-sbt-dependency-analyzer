@@ -10,7 +10,7 @@ class SbtShellTaskRegex extends AnyFlatSpec {
 
   "regex match" should "ok" in {
     "[info] \torg.bitlap" match
-      case SbtShellTask.shellOutputResultRegex(_,_,org) =>
+      case SbtShellTask.shellOutputResultRegex(_, _, org) =>
         assert(org.trim == "org.bitlap")
       case _ => assert(false)
 
