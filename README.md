@@ -48,4 +48,4 @@ description:
 
 ### Show Conflicts
 
-![](./docs/dependencyTreeConflicts.png)
+![](./docs/scalaJSDependencyTree.png)
