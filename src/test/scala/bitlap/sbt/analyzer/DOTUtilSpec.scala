@@ -19,8 +19,6 @@ import guru.nidi.graphviz.model.*
  */
 class DOTUtilSpec extends AnyFlatSpec {
 
-  val id = new AtomicInteger(0)
-
   "parse file as MutableNode" should "ok" in {
     val start                                    = System.currentTimeMillis()
     val file                                     = getClass.getClassLoader.getResource("test.dot").getFile

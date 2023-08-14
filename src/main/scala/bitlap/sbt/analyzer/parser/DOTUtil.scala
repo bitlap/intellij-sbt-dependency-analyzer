@@ -5,8 +5,6 @@ import java.io.File
 import scala.util.Try
 
 import guru.nidi.graphviz.attribute.validate.ValidatorEngine
-import guru.nidi.graphviz.engine.*
-import guru.nidi.graphviz.engine.{ Format, Graphviz }
 import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
 

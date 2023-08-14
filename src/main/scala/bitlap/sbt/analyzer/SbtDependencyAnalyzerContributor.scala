@@ -14,12 +14,10 @@ import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
-import org.jetbrains.sbt.language.utils.SbtDependencyUtils
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
-import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data

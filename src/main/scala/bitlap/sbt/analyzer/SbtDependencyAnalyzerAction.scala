@@ -17,7 +17,6 @@ import com.intellij.openapi.externalSystem.view.ExternalSystemNode
 import com.intellij.openapi.externalSystem.view.ModuleNode
 import com.intellij.openapi.externalSystem.view.ProjectNode
 import com.intellij.openapi.module.Module
-import com.intellij.openapi.util.registry.Registry
 
 /** @author
  *    梦境迷离
