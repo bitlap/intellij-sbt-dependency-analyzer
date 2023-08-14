@@ -24,6 +24,8 @@ import com.intellij.openapi.module.Module
  */
 final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[ExternalSystemNode[?]] {
 
+  getTemplatePresentation.setText(SbtPluginBundle.message("sbt.dependency.analyzer.action.name"))
+
   override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): String = {
     val node = selectedData.findDependencyNode(classOf[DependencyScopeNode])
     if (node == null) return null
@@ -65,6 +67,9 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
 }
 
 final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module] {
+
+  getTemplatePresentation.setText(SbtPluginBundle.message("sbt.dependency.analyzer.action.name"))
+
   override def getDependencyScope(anActionEvent: AnActionEvent, data: Module): String = null
 
   override def getModule(anActionEvent: AnActionEvent, selectedData: Module): Module = selectedData
@@ -87,6 +92,9 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyz
 }
 
 final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction() {
+
+  getTemplatePresentation.setText(SbtPluginBundle.message("sbt.dependency.analyzer.action.name"))
+
   private val viewAction = ViewDependencyAnalyzerAction()
 
   override def getSystemId(anActionEvent: AnActionEvent): ProjectSystemId = SbtProjectSystem.Id

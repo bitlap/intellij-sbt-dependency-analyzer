@@ -1,25 +1,19 @@
 package bitlap.sbt.analyzer.parser
 
-import java.util.{ Collections, List as JList }
+import java.util.List as JList
 import java.util.concurrent.atomic.*
 
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyScopeEnum
-import bitlap.sbt.analyzer.DependencyScopeEnum.*
 import bitlap.sbt.analyzer.DependencyUtil
 import bitlap.sbt.analyzer.DependencyUtil.*
-import bitlap.sbt.analyzer.SbtDependencyAnalyzerContributor.fileName
 import bitlap.sbt.analyzer.model.*
 
-import org.jetbrains.plugins.scala.util.ScalaUtil
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
-import com.intellij.util.containers.InternalIterator.Collector
 
 import guru.nidi.graphviz.model.{ Graph as _, * }
 
