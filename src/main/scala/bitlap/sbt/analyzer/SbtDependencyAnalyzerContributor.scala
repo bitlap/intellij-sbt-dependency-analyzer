@@ -296,13 +296,13 @@ object SbtDependencyAnalyzerContributor {
       val module = findModule(project, moduleData)
       if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
 
-      val comms            = SbtShellCommunication.forProject(project)
-      val promiseList      = ListBuffer[Promise[DependencyScopeNode]]()
-      val moduleId         = moduleData.getId.split(" ")(0)
-      val moduleName       = moduleData.getModuleName
+      val comms       = SbtShellCommunication.forProject(project)
+      val promiseList = ListBuffer[Promise[DependencyScopeNode]]()
+      val moduleId    = moduleData.getId.split(" ")(0)
+      val moduleName  = moduleData.getModuleName
       val res = for {
         sbtModules <- Future { SbtShellTask.sbtModuleNamesTask.executeTask(project) }
-        declared   <-  Future { DependencyUtil.getUnifiedCoordinates(module, project) }
+        declared   <- Future { DependencyUtil.getUnifiedCoordinates(module, project) }
         result <- Future {
           DependencyScopeEnum.values.toList.foreach { scope =>
             val promise = Promise[DependencyScopeNode]()
