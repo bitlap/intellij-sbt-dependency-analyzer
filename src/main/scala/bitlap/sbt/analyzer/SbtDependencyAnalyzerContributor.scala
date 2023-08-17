@@ -300,11 +300,9 @@ object SbtDependencyAnalyzerContributor {
       val promiseList      = ListBuffer[Promise[DependencyScopeNode]]()
       val moduleId         = moduleData.getId.split(" ")(0)
       val moduleName       = moduleData.getModuleName
-      val declaredFuture   = Future { DependencyUtil.getUnifiedCoordinates(module, project) }
-      val sbtModulesFuture = Future { SbtShellTask.sbtModuleNamesTask.executeTask(project) }
       val res = for {
-        sbtModules <- sbtModulesFuture
-        declared   <- declaredFuture
+        sbtModules <- Future { SbtShellTask.sbtModuleNamesTask.executeTask(project) }
+        declared   <-  Future { DependencyUtil.getUnifiedCoordinates(module, project) }
         result <- Future {
           DependencyScopeEnum.values.toList.foreach { scope =>
             val promise = Promise[DependencyScopeNode]()
