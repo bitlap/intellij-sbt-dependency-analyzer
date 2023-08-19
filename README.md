@@ -51,8 +51,8 @@ _**NOTE**_:
 ## For more details
 
 _**The plugin will use these sbt commands**_:
-1. `organization` get current project `organization`.
-2. `moduleName` get all sbt modules.
+1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
+2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees.
 
 _**Why does it need to use these commands?**_
