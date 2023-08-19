@@ -12,11 +12,14 @@ import com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl
 import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 
 /** @author
  *    梦境迷离
  *  @version 1.0,2023/8/1
  */
+
+lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {
@@ -28,7 +31,7 @@ def getUnifiedCoordinates(data: DependencyAnalyzerDependency.Data.Artifact): Uni
   UnifiedCoordinates(data.getGroupId, data.getArtifactId, data.getVersion)
 
 def getUnifiedCoordinates(data: DependencyAnalyzerDependency.Data.Module): UnifiedCoordinates = {
-  val moduleData = data.getUserData(SbtDependencyAnalyzerContributor.Module_Data)
+  val moduleData = data.getUserData(Module_Data)
   if (moduleData == null) return null
   UnifiedCoordinates(moduleData.getGroup, moduleData.getExternalName, moduleData.getVersion)
 }
@@ -44,7 +47,7 @@ def getParentModule(project: Project, dependency: DependencyAnalyzerDependency):
 }
 
 def getModule(project: Project, data: DependencyAnalyzerDependency.Data.Module): Module = {
-  val moduleData: ModuleData = data.getUserData(SbtDependencyAnalyzerContributor.Module_Data)
+  val moduleData: ModuleData = data.getUserData(Module_Data)
   if (moduleData == null) return null
   findModule(project, moduleData)
 }

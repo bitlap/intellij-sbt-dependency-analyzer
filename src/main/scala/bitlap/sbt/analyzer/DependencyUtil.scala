@@ -1,11 +1,12 @@
 package bitlap.sbt.analyzer
 
 import java.util.Collections
+import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.DOTDependencyParser.id
+import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
@@ -19,16 +20,23 @@ import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.buildsystem.model.unified.{ UnifiedCoordinates, UnifiedDependency }
 import com.intellij.openapi.actionSystem.{ CommonDataKeys, DataContext }
 import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
+import com.intellij.openapi.externalSystem.dependency.analyzer.DAScope
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module as OpenapiModule
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.text.StringUtil
 
 /** @author
  *    梦境迷离
  *  @version 1.0,2023/8/7
  */
 object DependencyUtil {
+
+  final val DefaultConfiguration = toDAScope("default")
+
+  private final val rootId     = new AtomicLong(0)
+  private final val artifactId = new AtomicLong(0)
 
   private val ArtifactRegex                   = "(.*):(.*):(.*)".r
   private val ScalaVerRegex                   = "(.*)\\.(.*)\\.(.*)".r
@@ -76,9 +84,11 @@ object DependencyUtil {
   def getArtifactInfoFromDisplayName(idOpt: Option[Int], displayName: String): Option[ArtifactInfo] = {
     displayName match
       case ArtifactRegex(group, artifact, version) =>
-        Some(ArtifactInfo(idOpt.getOrElse(id.getAndIncrement()), group, artifact, version))
+        Some(ArtifactInfo(idOpt.getOrElse(artifactId.getAndIncrement().toInt), group, artifact, version))
       case _ => None
   }
+
+  def toDAScope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
 
   /** do not analyze this module
    */
@@ -86,6 +96,60 @@ object DependencyUtil {
     // if module is itself a build module, skip build module
     val isBuildModule = module.isBuildModule
     isBuildModule || module.isSharedSourceModule
+  }
+
+  def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
+    if (project == null || project.isEmpty) s"$scope / $cmd"
+    else s"$project / $scope / $cmd"
+  }
+
+  def fileName(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
+    parserTypeEnum match
+      case ParserTypeEnum.DOT =>
+        s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
+  }
+
+  def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
+    val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
+    val node = new DependencyScopeNode(
+      rootId.getAndIncrement(),
+      dependencyScope.toString,
+      scopeDisplayName,
+      dependencyScope.toString
+    )
+    node.setResolutionState(ResolutionState.RESOLVED)
+    node
+  }
+
+  def appendChildrenAndFixProjectNodes[N <: DependencyNode](
+    parentNode: N,
+    nodes: Seq[DependencyNode],
+    context: ModuleContext
+  ): Unit = {
+    parentNode.getDependencies.addAll(nodes.asJava)
+    val moduleDependencies = nodes.filter(d => isProjectModule(d, context))
+    parentNode.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
+    val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
+      value
+    }
+    parentNode.getDependencies.addAll(mds.asJava)
+
+    mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
+      val artifact   = getArtifactInfoFromDisplayName(None, node.getDisplayName)
+      val artifactId = artifact.map(_.artifact).getOrElse(Constants.Empty_String)
+      val group      = artifact.map(_.group).getOrElse(Constants.Empty_String)
+      // Use artifact to determine whether there are modules in the dependency.
+      if (
+        context.moduleIdSbtModuleNames.values
+          .exists(d => group == context.org && toPlatformModule(artifactId).module == d)
+      ) {
+        appendChildrenAndFixProjectNodes(
+          node,
+          node.getDependencies.asScala.toList,
+          context
+        )
+      }
+    }
   }
 
   private def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
@@ -161,37 +225,6 @@ object DependencyUtil {
         .asJava
     )
     Some(p)
-  }
-
-  def appendChildrenAndFixProjectNodes[N <: DependencyNode](
-    parentNode: N,
-    nodes: Seq[DependencyNode],
-    context: ModuleContext
-  ): Unit = {
-    parentNode.getDependencies.addAll(nodes.asJava)
-    val moduleDependencies = nodes.filter(d => isProjectModule(d, context))
-    parentNode.getDependencies.removeIf(node => moduleDependencies.exists(_.getId == node.getId))
-    val mds = moduleDependencies.map(d => toProjectDependencyNode(d, context)).collect { case Some(value) =>
-      value
-    }
-    parentNode.getDependencies.addAll(mds.asJava)
-
-    mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
-      val artifact   = getArtifactInfoFromDisplayName(None, node.getDisplayName)
-      val artifactId = artifact.map(_.artifact).getOrElse(Constants.Empty_String)
-      val group      = artifact.map(_.group).getOrElse(Constants.Empty_String)
-      // Use artifact to determine whether there are modules in the dependency.
-      if (
-        context.moduleIdSbtModuleNames.values
-          .exists(d => group == context.org && toPlatformModule(artifactId).module == d)
-      ) {
-        appendChildrenAndFixProjectNodes(
-          node,
-          node.getDependencies.asScala.toList,
-          context
-        )
-      }
-    }
   }
 
   private def isProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {

@@ -11,4 +11,6 @@ object Constants {
 
   final val SingleSbtModule = "$SingleModule$"
   final val RootSbtModule   = "$RootModule$"
+
+  final val Project = "project"
 }
