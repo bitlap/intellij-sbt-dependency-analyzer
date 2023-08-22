@@ -44,11 +44,12 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask {
       val sbtModuleNameMap =
         if (sbtModules.isEmpty) Map(moduleId -> module.getName)
         else sbtModules
+      val file = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
       DependencyParserFactory
         .getInstance(parserTypeEnum)
         .buildDependencyTree(
           ModuleContext(
-            moduleData.getLinkedExternalProjectPath + fileName(scope, parserTypeEnum),
+            file,
             moduleName,
             scope,
             scalaMajorVersion(module),

@@ -1,5 +1,8 @@
 package bitlap.sbt.analyzer
 
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util
 import java.util.Collections
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
@@ -13,6 +16,7 @@ import scala.jdk.CollectionConverters.*
 import bitlap.sbt.analyzer.DependencyUtil.*
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parser.ParserTypeEnum
 import bitlap.sbt.analyzer.task.{ SbtShellDependencyAnalysisTask, SbtShellOutputAnalysisTask }
 
 import org.jetbrains.plugins.scala.project.ModuleExt
@@ -108,6 +112,13 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) ()
           else if (id.getProjectSystemId != SbtProjectSystem.Id) ()
           else {
+            // if dependencies have changed, we must delete all analysis files (.dot)
+            projects
+              .values()
+              .asScala
+              .map(d => d.getLinkedExternalProjectPath)
+              .foreach(SbtDependencyAnalyzerContributor.deleteExistAnalysisFiles)
+
             projects.clear()
             configurationNodesMap.clear()
             dependencyMap.clear()
@@ -199,8 +210,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
-    // Used to link dependencies between modules.
-    // Obtain the mapping of module name to file path.
+    // use to link dependencies between modules.
+    // obtain the mapping of module name to file path.
     val moduleNamePaths = () =>
       projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
     val org        = () => getOrganization(project)
@@ -216,6 +227,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 }
 
 object SbtDependencyAnalyzerContributor {
+
+  def deleteExistAnalysisFiles(modulePath: String): Unit = {
+    DependencyScopeEnum.values
+      .map(scope => Path.of(modulePath + analysisFilePath(scope, ParserTypeEnum.DOT)))
+      .foreach(p => Files.deleteIfExists(p))
+  }
 
   // ===========================================extensions==============================================================
   extension (projectDependencyNode: ProjectDependencyNode) {
@@ -290,22 +307,61 @@ object SbtDependencyAnalyzerContributor {
     ): util.List[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
-      Await.result(
-        Future
-          .sequence(DependencyScopeEnum.values.toList.map { scope =>
-            SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
-              project,
-              moduleData,
-              scope,
-              organization,
-              moduleNamePaths,
-              sbtModules,
-              declared
-            )
-          })
-          .map(_.asJava),
-        10.minutes
-      )
+
+      // if the analysis files already exist (.dot), use it directly.
+      def executeCommandOrReadExistsFile(
+        parserTypeEnum: ParserTypeEnum,
+        scope: DependencyScopeEnum
+      ): Future[DependencyScopeNode] = {
+        val moduleId   = moduleData.getId.split(" ")(0)
+        val moduleName = moduleData.getModuleName
+        val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
+        if (Files.exists(Path.of(file))) {
+          Future {
+            DependencyParserFactory
+              .getInstance(parserTypeEnum)
+              .buildDependencyTree(
+                ModuleContext(
+                  file,
+                  moduleName,
+                  scope,
+                  scalaMajorVersion(module),
+                  organization,
+                  moduleNamePaths,
+                  module.isScalaJs,
+                  module.isScalaNative,
+                  if (sbtModules.isEmpty) Map(moduleId -> module.getName)
+                  else sbtModules
+                ),
+                rootNode(scope, project),
+                declared
+              )
+          }
+        } else {
+          SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
+            project,
+            moduleData,
+            scope,
+            organization,
+            moduleNamePaths,
+            sbtModules,
+            declared
+          )
+        }
+
+      }
+
+      try {
+        Await.result(
+          Future
+            .sequence(DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _)))
+            .map(_.asJava),
+          10.minutes
+        )
+      } catch {
+        case e: Throwable => throw e
+      }
     }
+
   }
 }

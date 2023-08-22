@@ -103,7 +103,7 @@ object DependencyUtil {
     else s"$project / $scope / $cmd"
   }
 
-  def fileName(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
+  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
     parserTypeEnum match
       case ParserTypeEnum.DOT =>
         s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
