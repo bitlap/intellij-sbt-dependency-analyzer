@@ -90,6 +90,8 @@
             <h1>0.1.0-231.9392.1</h1>
             <ul>
                 <li>Update Action Name.</li>
+                <li>Cache files for one hour.</li>
+                <li>Refactor code.</li>
             </ul>
             
             <h1>0.1.0-231.9392.1-M7</h1>

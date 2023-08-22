@@ -51,12 +51,12 @@ _**NOTE**_:
 ## For more details
 
 _**The plugin will use these sbt commands**_:
-1. `organization` get current project `organization`.
-2. `moduleName` get all sbt modules.
+1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
+2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees.
 
 _**Why does it need to use these commands?**_
-1. The plugin will take the last result of the `organization` command as the `groupId`. Therefore, the module must have set `organization`.</br>
+1. The plugin will take the last result of the `organization` command as the artifact's `groupId`. Therefore, the module must have set `organization`.</br>
 2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization` in order to correctly analyze the dependencies between modules (such as: module A `dependsOn` module B).</br>
 3. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.</br>
 4. The plugin will take the sbt module name to check `artifactId` in dependency trees.</br> 
