@@ -17,12 +17,11 @@ import bitlap.sbt.analyzer.DependencyUtil.*
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.parser.ParserTypeEnum
-import bitlap.sbt.analyzer.task.{ SbtShellDependencyAnalysisTask, SbtShellOutputAnalysisTask }
+import bitlap.sbt.analyzer.task.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
-import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
@@ -37,7 +36,6 @@ import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemBundle }
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
-import com.intellij.openapi.util.text.StringUtil
 
 import kotlin.jvm.functions
 
@@ -113,6 +111,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           else if (id.getProjectSystemId != SbtProjectSystem.Id) ()
           else {
             // if dependencies have changed, we must delete all analysis files (.dot)
+            // however, this can only be used to monitor whether the view is open
             projects
               .values()
               .asScala
@@ -228,6 +227,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
 object SbtDependencyAnalyzerContributor {
 
+  def validFile(file: String): Boolean = {
+    val lifespan     = 1000 * 60 * 60L
+    val lastModified = Path.of(file).toFile.lastModified()
+    System.currentTimeMillis() <= lastModified + lifespan
+  }
+
   def deleteExistAnalysisFiles(modulePath: String): Unit = {
     DependencyScopeEnum.values
       .map(scope => Path.of(modulePath + analysisFilePath(scope, ParserTypeEnum.DOT)))
@@ -316,7 +321,8 @@ object SbtDependencyAnalyzerContributor {
         val moduleId   = moduleData.getId.split(" ")(0)
         val moduleName = moduleData.getModuleName
         val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
-        if (Files.exists(Path.of(file))) {
+        // File cache for one hour
+        if (Files.exists(Path.of(file)) && validFile(file)) {
           Future {
             DependencyParserFactory
               .getInstance(parserTypeEnum)
