@@ -6,6 +6,8 @@ package bitlap.sbt.analyzer
  */
 object Constants {
 
+  final val Line_Separator: String = "\n"
+
   final val Colon_Separator: String = ":"
   final val Empty_String: String    = ""
 
