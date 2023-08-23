@@ -23,20 +23,10 @@ To use this plugin, it is necessary to ensure that the following preparations ar
 2. If the SBT version _**<**_ 1.4, there is no `addDependencyTreePlugin`. You need to manually add `addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")`.
 3. Since version **0.1.1-231.9392.1**, the plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` while jumping into the `project/plugins.sbt`.
 
-_**NOTE**_:
-- Since Gradle is enabled by default in Intellij IDEA, this will appear two analysis buttons. Please try the latter one. (Generally speaking, this is likely an issue with the Intellij IDEA or Intellij Gradle plugin)
-
 <details>
-<summary>Entry point one 👈🏻</summary>
+<summary>Entry point 👈🏻</summary>
 
-![](./docs/gotoAnalyze1.png)
-
-</details>
-
-<details>
-<summary>Entry point two 👈🏻</summary>
-
-![](./docs/gotoAnalyze2.jpg)
+![](./docs/gotoAnalyze1.jpg)
 
 </details>
 
@@ -44,7 +34,7 @@ _**NOTE**_:
 <details>
 <summary>Show Conflicts 👈🏻</summary>
 
-![](./docs/scalaJSDependencyTree.png)
+![](./docs/dependencyTreeConflicts.jpg)
 
 </details>
 
