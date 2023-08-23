@@ -204,7 +204,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] = {
     if (declaredDependencies.nonEmpty) return declaredDependencies
     val module = findModule(project, moduleData)
-    declaredDependencies = DependencyUtil.getUnifiedCoordinates(module, project)
+    declaredDependencies = DependencyUtil.getUnifiedCoordinates(module)
     declaredDependencies
   }
 

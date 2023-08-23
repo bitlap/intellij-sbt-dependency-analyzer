@@ -45,10 +45,10 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val module                          = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
-    val declared = DependencyUtil.getDeclaredDependency(module, project)
+    val declared = DependencyUtil.getDeclaredDependency(module)
     declared
       .find(dc =>
-        if (coordinates.getVersion == SbtDependencyCommon.defaultLibScope) {
+        if (dc.getCoordinates.getVersion == SbtDependencyCommon.defaultLibScope) {
           dc.getCoordinates.getArtifactId == coordinates.getArtifactId && dc.getCoordinates.getGroupId == coordinates.getGroupId
         } else {
           dc.getCoordinates.equals(coordinates)

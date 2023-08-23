@@ -55,12 +55,12 @@ object DependencyUtil {
 
   private val LOG = Logger.getInstance(classOf[DependencyUtil.type])
 
-  def getDeclaredDependency(module: Module, project: Project): List[DeclaredDependency] = {
+  def getDeclaredDependency(module: Module): List[DeclaredDependency] = {
     declaredDependencies(module).asScala.toList
   }
 
-  def getUnifiedCoordinates(module: Module, project: Project): List[UnifiedCoordinates] = {
-    getDeclaredDependency(module, project).map(_.getCoordinates)
+  def getUnifiedCoordinates(module: Module): List[UnifiedCoordinates] = {
+    getDeclaredDependency(module).map(_.getCoordinates)
   }
 
   def scalaMajorVersion(module: Module): String = {
@@ -270,15 +270,22 @@ object DependencyUtil {
           libDepArr.length match {
             case x if x == 2 =>
               val scope = SbtDependencyCommon.defaultLibScope
-              new DeclaredDependency(
-                new UnifiedDependency(
-                  libDepArr(0),
-                  libDepArr(1),
-                  scope, // if version is a val, not a string
-                  scope
-                ),
-                dataContext
-              )
+              // if version is a val, not a string, cannot get it
+              if (isScalaLibraryDependency(libDepInfixAndString._1))
+                new DeclaredDependency(
+                  new UnifiedDependency(
+                    libDepArr(0),
+                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr(0), libDepArr(1), scalaVer),
+                    scope,
+                    scope
+                  ),
+                  dataContext
+                )
+              else
+                new DeclaredDependency(
+                  new UnifiedDependency(libDepArr(0), libDepArr(1), scope, scope),
+                  dataContext
+                )
             case x if x < 3 || x > 4 => null
             case x if x >= 3 =>
               val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
