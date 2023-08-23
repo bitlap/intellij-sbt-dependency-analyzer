@@ -7,5 +7,5 @@ import com.intellij.openapi.util.IconLoader
 /** icons
  */
 object SbtDependencyAnalyzerIcons {
-  val ICON: Icon = IconLoader.getIcon("/icons/sbt_dependency_analyzer.svg", SbtDependencyAnalyzerIcons.getClass)
+  val ICON: Icon = IconLoader.getIcon("/icons/sbt_dependency_analyzer.png", SbtDependencyAnalyzerIcons.getClass)
 }
