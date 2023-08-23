@@ -5,8 +5,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util
 import java.util.Collections
+import java.util.List as JList
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
-import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.{ AtomicBoolean, AtomicLong }
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
@@ -55,12 +56,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
   private lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
 
-  private lazy val configurationNodesMap: ConcurrentHashMap[String, util.List[DependencyScopeNode]] =
-    ConcurrentHashMap[String, util.List[DependencyScopeNode]]()
+  private lazy val configurationNodesMap: ConcurrentHashMap[String, JList[DependencyScopeNode]] =
+    ConcurrentHashMap[String, JList[DependencyScopeNode]]()
 
   override def getDependencies(
     externalProject: DependencyAnalyzerProject
-  ): util.List[Dependency] = {
+  ): JList[Dependency] = {
     val moduleData = projects.get(externalProject)
     if (moduleData == null) return Collections.emptyList()
     val scopeNodes = getOrRefreshData(moduleData)
@@ -69,14 +70,14 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   override def getDependencyScopes(
     externalProject: DependencyAnalyzerProject
-  ): util.List[Dependency.Scope] = {
+  ): JList[Dependency.Scope] = {
     val moduleData = projects.get(externalProject)
     if (moduleData == null) return Collections.emptyList()
     getOrRefreshData(moduleData).asScala.map(_.toScope).asJava
     ////    DependencyScope.values.toList.map(d => scope(d.toString.toLowerCase)).toList.asJava
   }
 
-  override def getProjects: util.List[DependencyAnalyzerProject] = {
+  override def getProjects: JList[DependencyAnalyzerProject] = {
     if (projects.isEmpty) {
       val projectDataManager = ProjectDataManager.getInstance()
       projectDataManager.getExternalProjectsData(project, SbtProjectSystem.Id).asScala.foreach { projectInfo =>
@@ -131,8 +132,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def getDependencies(
     moduleData: ModuleData,
-    scopeNodes: util.List[DependencyScopeNode]
-  ): util.List[Dependency] = {
+    scopeNodes: JList[DependencyScopeNode]
+  ): JList[Dependency] = {
     if (scopeNodes.isEmpty) return Collections.emptyList()
     val dependencies = ListBuffer[Dependency]()
     val root         = DAModule(moduleData.getModuleName)
@@ -208,7 +209,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     declaredDependencies
   }
 
-  private def getOrRefreshData(moduleData: ModuleData): util.List[DependencyScopeNode] = {
+  private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] = {
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
     val moduleNamePaths = () =>
@@ -227,10 +228,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
 object SbtDependencyAnalyzerContributor {
 
-  def validFile(file: String): Boolean = {
-    val lifespan     = 1000 * 60 * 60L
-    val lastModified = Path.of(file).toFile.lastModified()
-    System.currentTimeMillis() <= lastModified + lifespan
+  final val isValid = new AtomicBoolean(true)
+
+  def isValidFile(file: String): Boolean = {
+    if (isValid.get()) {
+      val lifespan     = 1000 * 60 * 60L
+      val lastModified = Path.of(file).toFile.lastModified()
+      System.currentTimeMillis() <= lastModified + lifespan
+    } else {
+      isValid.getAndSet(true)
+    }
   }
 
   def deleteExistAnalysisFiles(modulePath: String): Unit = {
@@ -265,7 +272,7 @@ object SbtDependencyAnalyzerContributor {
       }
     }
 
-    def getStatus(usage: Dependency, data: Dependency.Data): util.List[Dependency.Status] = {
+    def getStatus(usage: Dependency, data: Dependency.Data): JList[Dependency.Status] = {
       val status = ListBuffer[Dependency.Status]()
       if (node.getResolutionState == ResolutionState.UNRESOLVED) {
         val message = ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")
@@ -309,7 +316,7 @@ object SbtDependencyAnalyzerContributor {
       moduleNamePaths: Map[String, String],
       sbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
-    ): util.List[DependencyScopeNode] = {
+    ): JList[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
       if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
 
@@ -322,7 +329,7 @@ object SbtDependencyAnalyzerContributor {
         val moduleName = moduleData.getModuleName
         val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
         // File cache for one hour
-        if (Files.exists(Path.of(file)) && validFile(file)) {
+        if (Files.exists(Path.of(file)) && isValidFile(file)) {
           Future {
             DependencyParserFactory
               .getInstance(parserTypeEnum)
