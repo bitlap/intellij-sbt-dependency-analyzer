@@ -1,15 +1,15 @@
 package bitlap.sbt.analyzer.component
 
-import java.net.URL
 import java.nio.file.Path
 
 import bitlap.sbt.analyzer.{ SbtDependencyAnalyzerBundle, SbtDependencyAnalyzerIcons }
+import bitlap.sbt.analyzer.Constants
 
-import com.intellij.notification.{ Notification, NotificationAction, NotificationGroupManager, NotificationType }
+import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.{ AnAction, AnActionEvent }
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
-import com.intellij.openapi.fileEditor.{ FileDocumentManager, FileEditorManager, OpenFileDescriptor }
+import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 
@@ -28,7 +28,7 @@ object SbtDependencyAnalyzerNotifier {
     // add notification
     val notification = GROUP
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.unknown"),
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error"),
         NotificationType.ERROR
       )
@@ -44,8 +44,9 @@ object SbtDependencyAnalyzerNotifier {
               project,
               new Runnable() {
                 override def run(): Unit = {
+                  notification.expire()
                   doc.setReadOnly(false)
-                  doc.setText(doc.getText + System.lineSeparator() + "addDependencyTreePlugin")
+                  doc.setText(doc.getText + Constants.Line_Separator + "addDependencyTreePlugin")
                   FileEditorManager
                     .getInstance(project)
                     .openTextEditor(new OpenFileDescriptor(project, pluginsSbtFile), true)
