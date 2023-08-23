@@ -96,6 +96,7 @@
             <ul>
                 <li>Fix bug: Goto action can match scala library.</li>
                 <li>Add refresh action.</li>
+                <li>Add bootstrap prompt and automatically add the `addDependencyTreePlugin`.</li>
             </ul>
             
             <h1>0.1.0-231.9392.1</h1>
