@@ -2,9 +2,11 @@ package bitlap.sbt.analyzer
 
 import java.io.IOException
 import java.nio.file.*
-import java.util.{ List as JList, * }
-import java.util.concurrent.*
-import java.util.concurrent.atomic.*
+import java.util
+import java.util.Collections
+import java.util.List as JList
+import java.util.concurrent.{ ConcurrentHashMap, Executors }
+import java.util.concurrent.atomic.{ AtomicBoolean, AtomicLong }
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
