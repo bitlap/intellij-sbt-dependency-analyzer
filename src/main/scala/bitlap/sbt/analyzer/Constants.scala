@@ -13,4 +13,7 @@ object Constants {
   final val RootSbtModule   = "$RootModule$"
 
   final val Project = "project"
+
+  final val Protobuf = "protobuf"
+
 }
