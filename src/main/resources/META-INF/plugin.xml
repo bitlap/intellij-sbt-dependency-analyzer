@@ -95,6 +95,7 @@
             <h1>0.1.1-231.9392.1</h1>
             <ul>
                 <li>Fix bug: Goto action can match scala library.</li>
+                <li>Add refresh action.</li>
             </ul>
             
             <h1>0.1.0-231.9392.1</h1>
