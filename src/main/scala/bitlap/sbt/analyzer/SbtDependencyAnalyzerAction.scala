@@ -9,13 +9,9 @@ import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.externalSystem.dependency.analyzer.*
 import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.*
-import com.intellij.openapi.externalSystem.model.project.dependencies.ArtifactDependencyNode
-import com.intellij.openapi.externalSystem.model.project.dependencies.DependencyScopeNode
-import com.intellij.openapi.externalSystem.model.project.dependencies.ProjectDependencyNode
+import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
-import com.intellij.openapi.externalSystem.view.ExternalSystemNode
-import com.intellij.openapi.externalSystem.view.ModuleNode
-import com.intellij.openapi.externalSystem.view.ProjectNode
+import com.intellij.openapi.externalSystem.view.*
 import com.intellij.openapi.module.Module
 
 /** @author

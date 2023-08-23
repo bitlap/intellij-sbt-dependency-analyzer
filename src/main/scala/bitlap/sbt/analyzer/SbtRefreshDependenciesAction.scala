@@ -1,12 +1,7 @@
 package bitlap.sbt.analyzer
 
-import org.jetbrains.plugins.gradle.util.GradleConstants
-import org.jetbrains.sbt.project.SbtProjectSystem
-
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.action.RefreshAllExternalProjectsAction
-import com.intellij.openapi.externalSystem.model.ProjectSystemId
-import com.intellij.openapi.externalSystem.model.project.AbstractExternalEntityData
 
 /** @author
  *    梦境迷离

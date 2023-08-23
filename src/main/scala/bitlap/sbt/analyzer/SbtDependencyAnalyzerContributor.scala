@@ -1,13 +1,10 @@
 package bitlap.sbt.analyzer
 
 import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
-import java.util
-import java.util.Collections
-import java.util.List as JList
-import java.util.concurrent.{ ConcurrentHashMap, Executors }
-import java.util.concurrent.atomic.{ AtomicBoolean, AtomicLong }
+import java.nio.file.*
+import java.util.{ List as JList, * }
+import java.util.concurrent.*
+import java.util.concurrent.atomic.*
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
@@ -34,7 +31,7 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.model.task.*
 import com.intellij.openapi.externalSystem.service.notification.ExternalSystemProgressNotificationManager
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
-import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemBundle }
+import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.*
 
