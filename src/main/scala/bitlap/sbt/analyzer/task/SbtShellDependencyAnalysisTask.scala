@@ -53,11 +53,11 @@ trait SbtShellDependencyAnalysisTask {
           }
         case SbtShellCommunication.ErrorWaitForInput =>
           if (!promise.isCompleted) {
-            promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error.unknown")))
+            promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")))
           }
         case SbtShellCommunication.Output(line) =>
           if (line.startsWith(s"[error]") && !promise.isCompleted) {
-            promise.failure(new Exception(SbtPluginBundle.message("sbt.dependency.analyzer.error")))
+            promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error")))
           }
         case SbtShellCommunication.TaskStart =>
 

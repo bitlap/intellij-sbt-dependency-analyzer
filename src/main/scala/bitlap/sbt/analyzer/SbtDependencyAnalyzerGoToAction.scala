@@ -3,7 +3,6 @@ package bitlap.sbt.analyzer
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
 
-import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
@@ -48,7 +47,12 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val declared = DependencyUtil.getDeclaredDependency(module)
     declared
       .find(dc =>
-        if (dc.getCoordinates.getVersion == SbtDependencyCommon.defaultLibScope) {
+        if (
+          DependencyScopeEnum.values.exists(d =>
+            d.toString
+              .toLowerCase() == dc.getCoordinates.getVersion.toLowerCase || Constants.Protobuf == dc.getCoordinates.getVersion.toLowerCase
+          )
+        ) {
           dc.getCoordinates.getArtifactId == coordinates.getArtifactId && dc.getCoordinates.getGroupId == coordinates.getGroupId
         } else {
           dc.getCoordinates.equals(coordinates)

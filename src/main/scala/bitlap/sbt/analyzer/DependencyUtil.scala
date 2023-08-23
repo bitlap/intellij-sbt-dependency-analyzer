@@ -11,15 +11,15 @@ import bitlap.sbt.analyzer.parser.*
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.sbt.language.utils.{ SbtDependencyCommon, SbtDependencyUtils }
+import org.jetbrains.sbt.language.utils.*
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils.*
 import org.jetbrains.sbt.language.utils.SbtDependencyUtils.GetMode.GetDep
 
 import com.intellij.buildsystem.model.DeclaredDependency
-import com.intellij.buildsystem.model.unified.{ UnifiedCoordinates, UnifiedDependency }
-import com.intellij.openapi.actionSystem.{ CommonDataKeys, DataContext }
-import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
+import com.intellij.buildsystem.model.unified.*
+import com.intellij.openapi.actionSystem.*
+import com.intellij.openapi.diagnostic.*
 import com.intellij.openapi.externalSystem.dependency.analyzer.DAScope
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.module.Module
