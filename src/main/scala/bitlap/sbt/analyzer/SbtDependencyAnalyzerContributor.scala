@@ -14,6 +14,7 @@ import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyUtil.*
+import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.parser.ParserTypeEnum
@@ -371,9 +372,11 @@ object SbtDependencyAnalyzerContributor {
           10.minutes
         )
       } catch {
-        case e: Throwable => throw e
+        case e: Throwable =>
+          SbtDependencyAnalyzerNotifier.addDependencyTreePlugin(project)
+          // throw e
+          List.empty.asJava
       }
     }
-
   }
 }

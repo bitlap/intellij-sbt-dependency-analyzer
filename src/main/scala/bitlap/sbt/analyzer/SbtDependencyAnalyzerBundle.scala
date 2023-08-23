@@ -6,14 +6,14 @@ import org.jetbrains.annotations.PropertyKey
 
 import com.intellij.DynamicBundle
 
-import SbtPluginBundle.*
+import SbtDependencyAnalyzerBundle.*
 
-final class SbtPluginBundle extends DynamicBundle(BUNDLE)
+final class SbtDependencyAnalyzerBundle extends DynamicBundle(BUNDLE)
 
-object SbtPluginBundle {
+object SbtDependencyAnalyzerBundle {
 
-  final val BUNDLE   = "messages.SbtPluginBundle"
-  final val INSTANCE = new SbtPluginBundle
+  final val BUNDLE   = "messages.SbtDependencyAnalyzerBundle"
+  final val INSTANCE = new SbtDependencyAnalyzerBundle
 
   @Nls def message(@NotNull @PropertyKey(resourceBundle = BUNDLE) key: String, @NotNull params: AnyRef*): String =
     INSTANCE.getMessage(key, params)

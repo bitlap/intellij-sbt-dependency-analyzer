@@ -12,10 +12,11 @@
     <depends>org.intellij.scala</depends>
     <depends>com.intellij.properties</depends>
     <depends>com.intellij.modules.externalSystem</depends>
-    <resource-bundle>messages.SbtPluginBundle</resource-bundle>
+    <resource-bundle>messages.SbtDependencyAnalyzerBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
+        <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
     </extensions>
 
     <actions>
