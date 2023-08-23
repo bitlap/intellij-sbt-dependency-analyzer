@@ -13,7 +13,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - View Dependency Tree
 - Show Conflicts
 - Search Dependencies
-- Location Dependency (multi-module)
+- Locate Dependency (multi-module)
 - Show dependencies between modules
 
 ## How to start
@@ -36,7 +36,7 @@ _**NOTE**_:
 <details>
 <summary>Entry point two 👈🏻</summary>
 
-![](./docs/gotoAnalyze2.png)
+![](./docs/gotoAnalyze2.jpg)
 
 </details>
 

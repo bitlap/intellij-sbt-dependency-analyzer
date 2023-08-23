@@ -78,7 +78,7 @@
               <li>Show Dependency Tree</li>
               <li>Show Conflicts</li>
               <li>Search Dependencies</li>
-              <li>Location Dependency (multi-module)</li>
+              <li>Locate Dependency (multi-module)</li>
               <li>Show dependencies between modules</li>
         </ul>
         <br/>
