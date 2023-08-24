@@ -1,7 +1,5 @@
 package bitlap.sbt.analyzer.task
 
-import bitlap.sbt.analyzer.Constants
-
 import com.intellij.openapi.project.Project
 
 /** Process the `sbt reload` command, get new setting for sbt shell.

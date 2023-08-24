@@ -3,14 +3,13 @@ package bitlap.sbt.analyzer.component
 import java.nio.file.Path
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.Constants
 import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask
 
+import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
-import org.jetbrains.sbt.SbtUtil
 
 import com.intellij.notification.*
-import com.intellij.openapi.actionSystem.{ AnAction, AnActionEvent }
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
 import com.intellij.openapi.fileEditor.*

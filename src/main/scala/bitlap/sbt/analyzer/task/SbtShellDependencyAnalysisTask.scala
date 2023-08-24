@@ -1,14 +1,14 @@
-package bitlap.sbt.analyzer.task
+package bitlap
+package sbt
+package analyzer
+package task
 
 import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.Constants.*
 import bitlap.sbt.analyzer.DependencyUtils.*
-import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 
-import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
@@ -43,27 +43,28 @@ trait SbtShellDependencyAnalysisTask {
     val comms    = SbtShellCommunication.forProject(project)
     val moduleId = moduleData.getId.split(" ")(0)
     val promise  = Promise[DependencyScopeNode]()
-    comms.command(
-      scopedKey(moduleId, scope, parserTypeEnum.cmd),
-      new StringBuilder(),
-      SbtShellCommunication.listenerAggregator {
-        case SbtShellCommunication.TaskComplete =>
-          if (!promise.isCompleted) {
-            promise.success(rootNode)
-          }
-        case SbtShellCommunication.ErrorWaitForInput =>
-          if (!promise.isCompleted) {
-            promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")))
-          }
-        case SbtShellCommunication.Output(line) =>
-          if (line.startsWith(s"[error]") && !promise.isCompleted) {
-            promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error")))
-          }
-        case SbtShellCommunication.TaskStart =>
+    comms
+      .command(
+        scopedKey(moduleId, scope, parserTypeEnum.cmd),
+        new StringBuilder(),
+        SbtShellCommunication.listenerAggregator {
+          case SbtShellCommunication.TaskComplete =>
+            if (!promise.isCompleted) {
+              promise.success(rootNode)
+            }
+          case SbtShellCommunication.ErrorWaitForInput =>
+            if (!promise.isCompleted) {
+              promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")))
+            }
+          case SbtShellCommunication.Output(line) =>
+            if (line.startsWith(s"[error]") && !promise.isCompleted) {
+              promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error")))
+            }
+          case SbtShellCommunication.TaskStart =>
 
-      }
-    )
-    promise.future
+        }
+      )
+      .flatMap(_ => promise.future)
   }
 }
 

@@ -1,8 +1,12 @@
-package bitlap.sbt.analyzer.task
+package bitlap
+package sbt
+package analyzer
+package task
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.Await
+import scala.concurrent.{ Await, Promise }
 import scala.concurrent.duration.*
+import scala.util.{ Failure, Success }
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.Constants.*
@@ -22,17 +26,19 @@ trait SbtShellOutputAnalysisTask[T] {
   protected final def getCommandOutputLines(project: Project, command: String): List[String] = {
     val comms       = SbtShellCommunication.forProject(project)
     val outputLines = ListBuffer[String]()
+    val promise     = Promise[List[String]]
     val executed = comms.command(
       command,
       new StringBuilder(),
       SbtShellCommunication.listenerAggregator {
         case SbtShellCommunication.Output(line) =>
           outputLines.append(line.trim)
+        case SbtShellCommunication.TaskComplete =>
+          promise.success(outputLines.result())
         case _ =>
       }
     )
-    Await.result(executed, 5.minutes)
-    outputLines.toList.filter(_.startsWith("[info]"))
+    Await.result(executed.flatMap(_ => promise.future.map(_.filter(_.startsWith("[info]")))), 5.minutes)
   }
 
   def executeCommand(project: Project): T

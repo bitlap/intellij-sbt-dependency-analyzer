@@ -1,5 +1,7 @@
 package bitlap.sbt.analyzer
 
+import scala.concurrent.ExecutionContext
+
 import org.jetbrains.sbt.project.*
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
@@ -20,6 +22,7 @@ import com.intellij.openapi.util.Key
  */
 
 lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
+given ExecutionContext                = ExecutionContext.global
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {
