@@ -30,7 +30,7 @@ object SbtDependencyAnalyzerNotifier {
       "addDependencyTreePlugin"
     } else {
       if (sbtVersion.major(3) >= Version("0.13.10")) {
-        "addSbtPlugin(\"net.virtual-void\" % \"sbt-dependency-graph\" % \"0.10.0-RC1\")"
+        "addSbtPlugin(\"net.virtual-void\" % \"sbt-dependency-graph\" % \"0.9.2\")"
       } else {
         "addSbtPlugin(\"net.virtual-void\" % \"sbt-dependency-graph\" % \"0.8.2\")"
       }

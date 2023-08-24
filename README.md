@@ -29,7 +29,12 @@ addDependencyTreePlugin
 
 For sbt < 1.3 use:
 ```scala
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.10.0-RC1")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")
+```
+
+For sbt < 0.13.10 use:
+```scala
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 ```
 
 Since version **0.1.1-231.9392.1**, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` while jumping into the `project/plugins.sbt`.
