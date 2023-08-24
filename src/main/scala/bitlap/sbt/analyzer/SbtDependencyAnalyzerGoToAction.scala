@@ -44,7 +44,7 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val module                          = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
-    val declared = DependencyUtil.getDeclaredDependency(module)
+    val declared = DependencyUtils.getDeclaredDependency(module)
     declared
       .find(dc =>
         if (

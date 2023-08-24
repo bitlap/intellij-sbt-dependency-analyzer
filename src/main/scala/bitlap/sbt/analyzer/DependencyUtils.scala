@@ -31,7 +31,7 @@ import com.intellij.openapi.util.text.StringUtil
  *    梦境迷离
  *  @version 1.0,2023/8/7
  */
-object DependencyUtil {
+object DependencyUtils {
 
   final val DefaultConfiguration = toDAScope("default")
 
@@ -53,7 +53,7 @@ object DependencyUtil {
     scalaVersion: String
   )
 
-  private val LOG = Logger.getInstance(classOf[DependencyUtil.type])
+  private val LOG = Logger.getInstance(classOf[DependencyUtils.type])
 
   def getDeclaredDependency(module: Module): List[DeclaredDependency] = {
     declaredDependencies(module).asScala.toList

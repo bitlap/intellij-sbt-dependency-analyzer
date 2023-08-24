@@ -4,7 +4,7 @@ import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.Constants.*
-import bitlap.sbt.analyzer.DependencyUtil.*
+import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.parser.ParserTypeEnum

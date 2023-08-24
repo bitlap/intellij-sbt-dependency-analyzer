@@ -2,8 +2,12 @@ package bitlap.sbt.analyzer.component
 
 import java.nio.file.Path
 
-import bitlap.sbt.analyzer.{ SbtDependencyAnalyzerBundle, SbtDependencyAnalyzerIcons }
+import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.Constants
+import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask
+
+import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.sbt.SbtUtil
 
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.{ AnAction, AnActionEvent }
@@ -19,6 +23,20 @@ object SbtDependencyAnalyzerNotifier {
 
   private lazy val GROUP =
     NotificationGroupManager.getInstance().getNotificationGroup("Sbt.DependencyAnalyzer.Notification")
+
+  private def getTextForAnalyzer(project: Project): String = {
+    val sbtVersion = Version(SbtUtils.getSbtVersion(project))
+    if (sbtVersion.major(2) >= Version("1.4")) {
+      "addDependencyTreePlugin"
+    } else {
+      if (sbtVersion.major(3) >= Version("0.13.10")) {
+        "addSbtPlugin(\"net.virtual-void\" % \"sbt-dependency-graph\" % \"0.10.0-RC1\")"
+      } else {
+        "addSbtPlugin(\"net.virtual-void\" % \"sbt-dependency-graph\" % \"0.8.2\")"
+      }
+
+    }
+  }
 
   def addDependencyTreePlugin(project: Project): Unit = {
     // get project/plugins.sbt
@@ -46,11 +64,15 @@ object SbtDependencyAnalyzerNotifier {
                 override def run(): Unit = {
                   notification.expire()
                   doc.setReadOnly(false)
-                  doc.setText(doc.getText + Constants.Line_Separator + "addDependencyTreePlugin")
+                  // modify plugins.sbt
+                  doc.setText(doc.getText + Constants.Line_Separator + getTextForAnalyzer(project))
                   FileEditorManager
                     .getInstance(project)
                     .openTextEditor(new OpenFileDescriptor(project, pluginsSbtFile), true)
+                  // if Intellij not enable auto-reload
                   ProjectRefreshAction.Companion.refreshProject(project)
+                  // must reload project to enable it
+                  SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
                 }
               }
             )

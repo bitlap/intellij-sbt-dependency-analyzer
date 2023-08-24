@@ -71,6 +71,8 @@ object SbtShellOutputAnalysisTask {
 
   lazy val organizationTask: SbtShellOutputAnalysisTask[String] = new OrganizationTask
 
+  lazy val reloadTask: SbtShellOutputAnalysisTask[Unit] = new ReloadTask
+
   lazy val libraryDependenciesTask: SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]] =
     new LibraryDependenciesTask
 }

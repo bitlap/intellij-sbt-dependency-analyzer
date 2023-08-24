@@ -13,7 +13,7 @@ import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtil.*
+import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
 import bitlap.sbt.analyzer.model.ModuleContext
 import bitlap.sbt.analyzer.parser.*
@@ -88,7 +88,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              if (!DependencyUtil.ignoreModuleAnalysis(module)) {
+              if (!DependencyUtils.ignoreModuleAnalysis(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
             }
@@ -205,7 +205,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] = {
     if (declaredDependencies.nonEmpty) return declaredDependencies
     val module = findModule(project, moduleData)
-    declaredDependencies = DependencyUtil.getUnifiedCoordinates(module)
+    declaredDependencies = DependencyUtils.getUnifiedCoordinates(module)
     declaredDependencies
   }
 
@@ -318,7 +318,7 @@ object SbtDependencyAnalyzerContributor {
       declared: List[UnifiedCoordinates]
     ): JList[DependencyScopeNode] = {
       val module = findModule(project, moduleData)
-      if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
+      if (DependencyUtils.ignoreModuleAnalysis(module)) return Collections.emptyList()
 
       // if the analysis files already exist (.dot), use it directly.
       def executeCommandOrReadExistsFile(
