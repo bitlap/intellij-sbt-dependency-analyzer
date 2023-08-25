@@ -37,7 +37,19 @@ object SbtDependencyAnalyzerNotifier {
     }
   }
 
-  def addDependencyTreePlugin(project: Project): Unit = {
+  def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {
+    // add notification
+    val notification = GROUP
+      .createNotification(
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.unknown", moduleId, scope.toString, command),
+        NotificationType.ERROR
+      )
+      .setIcon(SbtDependencyAnalyzerIcons.ICON)
+    notification.notify(project)
+  }
+
+  def notifyAndAddDependencyTreePlugin(project: Project): Unit = {
     // get project/plugins.sbt
     val projectPath    = VfsUtil.findFile(Path.of(project.getBasePath), true)
     val pluginsSbtFile = VfsUtil.findRelativeFile(projectPath, "project", "plugins.sbt")
@@ -70,8 +82,6 @@ object SbtDependencyAnalyzerNotifier {
                     .openTextEditor(new OpenFileDescriptor(project, pluginsSbtFile), true)
                   // if Intellij not enable auto-reload
                   ProjectRefreshAction.Companion.refreshProject(project)
-                  // must reload project to enable it
-                  SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
                 }
               }
             )

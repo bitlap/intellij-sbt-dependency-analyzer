@@ -7,6 +7,8 @@ import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.DependencyUtils.*
+import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
+import bitlap.sbt.analyzer.model.AnalyzerCommandUnknownException
 import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
@@ -57,8 +59,21 @@ trait SbtShellDependencyAnalysisTask {
               promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")))
             }
           case SbtShellCommunication.Output(line) =>
-            if (line.startsWith(s"[error]") && !promise.isCompleted) {
-              promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error")))
+            if (line.startsWith(s"[error]") && line.contains(parserTypeEnum.cmd) && !promise.isCompleted) {
+              promise.failure(
+                AnalyzerCommandNotFoundException(
+                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                )
+              )
+            } else if (line.startsWith(s"[error]") && !promise.isCompleted) {
+              promise.failure(
+                AnalyzerCommandUnknownException(
+                  parserTypeEnum.cmd,
+                  moduleId,
+                  scope,
+                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                )
+              )
             }
           case SbtShellCommunication.TaskStart =>
 

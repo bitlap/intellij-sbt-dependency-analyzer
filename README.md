@@ -60,14 +60,11 @@ _**The plugin will use these sbt commands**_:
 1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
 2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
-
-_**Why does it need to use these commands?**_
-1. The plugin will take the last result of the `organization` command as the artifact's `groupId`. Therefore, the module must have set `organization`.
-2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization` in order to correctly analyze the dependencies between modules (such as: module A `dependsOn` module B).
-3. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.
-4. The plugin will take the sbt module name to check `artifactId` in dependency trees.
+4. `reload` reload `plugins.sbt` on-demand.
 
 ## Troubleshooting issues
+
+### "Caused by: java.io.IOException: Could not create lock for ..."
 
 Due to the need for the plugin to use sbt shell, when you open the dependency analysis view and start using the Intellij IDEA to reload or build project, it may cause this problem:
 ```
@@ -76,3 +73,11 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 Using sbt shell to load or build the project avoids this issue:
 
 ![](docs/sbtShellUseForReload.jpg)
+
+
+### Can't analyze dependencies between modules?
+
+First, make sure that `organization` has been configured correctly: 
+1. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.
+2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization`.
+3. Please refresh(`Reload All sbt Projects`) the project manually.

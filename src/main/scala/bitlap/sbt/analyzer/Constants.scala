@@ -1,5 +1,7 @@
 package bitlap.sbt.analyzer
 
+import scala.concurrent.duration.*
+
 /** @author
  *    梦境迷离
  *  @version 1.0,2023/8/10
@@ -18,4 +20,7 @@ object Constants {
 
   final val Protobuf = "protobuf"
 
+  final val timeout = 10.minutes
+
+  final val fileLifespan = 1000 * 60 * 60L
 }
