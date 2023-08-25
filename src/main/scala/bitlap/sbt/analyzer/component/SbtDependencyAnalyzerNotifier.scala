@@ -68,8 +68,6 @@ object SbtDependencyAnalyzerNotifier {
                   FileEditorManager
                     .getInstance(project)
                     .openTextEditor(new OpenFileDescriptor(project, pluginsSbtFile), true)
-                  // must reload project to enable it
-                  SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
                   // if Intellij not enable auto-reload
                   ProjectRefreshAction.Companion.refreshProject(project)
                 }

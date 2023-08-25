@@ -228,13 +228,13 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
 object SbtDependencyAnalyzerContributor {
 
-  final val isValid = new AtomicBoolean(true)
+  final val isValid      = new AtomicBoolean(true)
+  final val isRefreshing = new AtomicBoolean(false)
 
   def isValidFile(file: String): Boolean = {
     if (isValid.get()) {
-      val lifespan     = 1000 * 60 * 60L
       val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + lifespan
+      System.currentTimeMillis() <= lastModified + Constants.fileLifespan
     } else {
       isValid.getAndSet(true)
     }
@@ -328,7 +328,7 @@ object SbtDependencyAnalyzerContributor {
         val moduleName = moduleData.getModuleName
         val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
         // File cache for one hour
-        if (Files.exists(Path.of(file)) && isValidFile(file)) {
+        if (!isRefreshing.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
           Future {
             DependencyParserFactory
               .getInstance(parserTypeEnum)
@@ -363,15 +363,25 @@ object SbtDependencyAnalyzerContributor {
       end executeCommandOrReadExistsFile
 
       try {
-        Await.result(
+
+        if (isRefreshing.get()) {
+          // must reload project to enable it
+          SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
+        }
+
+        val result = Await.result(
           Future
             .sequence(DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _)))
             .map(_.asJava),
           Constants.timeout
         )
+        isRefreshing.set(false)
+        result
       } catch {
         case e: Throwable =>
-          SbtDependencyAnalyzerNotifier.addDependencyTreePlugin(project)
+          if (isRefreshing.compareAndSet(false, true)) {
+            SbtDependencyAnalyzerNotifier.addDependencyTreePlugin(project)
+          }
           // throw e
           null
       }
