@@ -11,7 +11,7 @@ final case class ModuleContext(
   currentModuleId: String,
   scope: DependencyScopeEnum,
   scalaMajor: String,
-  org: String,
+  organization: String,
   ideaModuleNamePaths: Map[String, String] = Map.empty,
   isScalaJs: Boolean = false,
   isScalaNative: Boolean = false,

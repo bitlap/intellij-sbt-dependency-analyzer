@@ -77,7 +77,7 @@ object DependencyUtils {
   def isCurrentProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
       case ArtifactRegex(group, artifact, version) =>
-        context.org == group && isCurrentModule(artifact, context)
+        context.organization == group && isCurrentModule(artifact, context)
       case _ => false
   }
 
@@ -141,7 +141,7 @@ object DependencyUtils {
       // Use artifact to determine whether there are modules in the dependency.
       if (
         context.ideaModuleIdSbtModuleNames.values
-          .exists(d => group == context.org && toPlatformModule(artifactId).module == d)
+          .exists(d => group == context.organization && toPlatformModule(artifactId).module == d)
       ) {
         appendChildrenAndFixProjectNodes(
           node,
@@ -235,7 +235,7 @@ object DependencyUtils {
     // module dependency
     val artifactInfo = getArtifactInfoFromDisplayName(Some(dn.getId.toInt), dn.getDisplayName).orNull
     if (artifactInfo == null) return false
-    if (artifactInfo.group != context.org) return false
+    if (artifactInfo.group != context.organization) return false
     // Use artifact to determine whether there are modules in the dependency.
     val matchModule =
       context.ideaModuleIdSbtModuleNames.values.filter(m => m == toPlatformModule(artifactInfo.artifact).module)
