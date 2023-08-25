@@ -312,8 +312,8 @@ object SbtDependencyAnalyzerContributor {
     def loadDependencies(
       project: Project,
       organization: String,
-      moduleNamePaths: Map[String, String],
-      sbtModules: Map[String, String],
+      ideaModuleNamePaths: Map[String, String],
+      ideaModuleIdSbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
     ): JList[DependencyScopeNode] =
       val module = findModule(project, moduleData)
@@ -324,9 +324,8 @@ object SbtDependencyAnalyzerContributor {
         parserTypeEnum: ParserTypeEnum,
         scope: DependencyScopeEnum
       ): Future[DependencyScopeNode] =
-        val moduleId   = moduleData.getId.split(" ")(0)
-        val moduleName = moduleData.getModuleName
-        val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
+        val moduleId = moduleData.getId.split(" ")(0)
+        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
         // File cache for one hour
         if (!isRefreshing.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
           Future {
@@ -335,15 +334,15 @@ object SbtDependencyAnalyzerContributor {
               .buildDependencyTree(
                 ModuleContext(
                   file,
-                  moduleName,
+                  moduleId,
                   scope,
                   scalaMajorVersion(module),
                   organization,
-                  moduleNamePaths,
+                  ideaModuleNamePaths,
                   module.isScalaJs,
                   module.isScalaNative,
-                  if (sbtModules.isEmpty) Map(moduleId -> module.getName)
-                  else sbtModules
+                  if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
+                  else ideaModuleIdSbtModules
                 ),
                 rootNode(scope, project),
                 declared
@@ -355,8 +354,8 @@ object SbtDependencyAnalyzerContributor {
             moduleData,
             scope,
             organization,
-            moduleNamePaths,
-            sbtModules,
+            ideaModuleNamePaths,
+            ideaModuleIdSbtModules,
             declared
           )
         }
