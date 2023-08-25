@@ -37,7 +37,12 @@ trait SbtShellOutputAnalysisTask[T] {
     }
     // see https://github.com/JetBrains/intellij-scala/blob/idea232.x/sbt/sbt-impl/src/org/jetbrains/sbt/shell/communication.scala
     // 1 second between multiple commands
-    Thread.sleep(1000)
+    try {
+      Thread.sleep(1000)
+    } catch {
+      case ignore: Throwable =>
+    }
+
     result
   }
 
