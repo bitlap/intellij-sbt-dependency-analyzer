@@ -25,8 +25,7 @@ import com.intellij.openapi.util.Key
 
 lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
-given ExecutionContext =
-  ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2 * Runtime.getRuntime.availableProcessors()))
+given ExecutionContext = ExecutionContext.Implicits.global
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {
