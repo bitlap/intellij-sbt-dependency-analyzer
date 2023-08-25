@@ -13,7 +13,7 @@ import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
-import bitlap.sbt.analyzer.model.ModuleContext
+import bitlap.sbt.analyzer.model.{ AnalyzerCommandNotFoundException, AnalyzerCommandUnknownException, ModuleContext }
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
 
@@ -379,10 +379,15 @@ object SbtDependencyAnalyzerContributor {
         result
       } catch {
         case e: Throwable =>
-          if (isRefreshing.compareAndSet(false, true)) {
-            SbtDependencyAnalyzerNotifier.addDependencyTreePlugin(project)
-          }
-          // throw e
+          e match
+            case _: AnalyzerCommandNotFoundException =>
+              if (isRefreshing.compareAndSet(false, true)) {
+                SbtDependencyAnalyzerNotifier.notifyAndAddDependencyTreePlugin(project)
+              }
+            case ue: AnalyzerCommandUnknownException =>
+              SbtDependencyAnalyzerNotifier.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
+            case _ =>
+
           null
       }
     end loadDependencies

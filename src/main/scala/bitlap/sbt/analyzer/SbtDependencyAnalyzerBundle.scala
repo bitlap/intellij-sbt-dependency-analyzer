@@ -16,5 +16,5 @@ object SbtDependencyAnalyzerBundle {
   final val INSTANCE = new SbtDependencyAnalyzerBundle
 
   @Nls def message(@NotNull @PropertyKey(resourceBundle = BUNDLE) key: String, @NotNull params: AnyRef*): String =
-    INSTANCE.getMessage(key, params)
+    INSTANCE.getMessage(key, params: _*)
 }
