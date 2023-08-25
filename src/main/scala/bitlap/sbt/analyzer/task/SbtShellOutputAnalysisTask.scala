@@ -31,7 +31,7 @@ trait SbtShellOutputAnalysisTask[T] {
       SbtShellCommunication.messageAggregator
     )
     val res    = Await.result(executed.map(_.result()), Constants.timeout)
-    val result = res.split("\n").toList.filter(_.startsWith("[info]"))
+    val result = res.split(Constants.Line_Separator).toList.filter(_.startsWith("[info]"))
     if (result.isEmpty) {
       log.warn("Sbt Dependency Analyzer cannot find any sbt modules")
     }
