@@ -367,7 +367,7 @@ object SbtDependencyAnalyzerContributor {
           Future
             .sequence(DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _)))
             .map(_.asJava),
-          10.minutes
+          Constants.timeout
         )
       } catch {
         case e: Throwable =>

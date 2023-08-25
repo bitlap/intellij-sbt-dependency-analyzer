@@ -38,7 +38,7 @@ trait SbtShellOutputAnalysisTask[T] {
         case _ =>
       }
     )
-    Await.result(executed.flatMap(_ => promise.future.map(_.filter(_.startsWith("[info]")))), 5.minutes)
+    Await.result(executed.flatMap(_ => promise.future.map(_.filter(_.startsWith("[info]")))), Constants.timeout)
   }
 
   def executeCommand(project: Project): T
