@@ -3,16 +3,15 @@ package sbt
 package analyzer
 package task
 
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.{ Await, Promise }
-import scala.concurrent.duration.*
-import scala.util.{ Failure, Success }
+import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.Constants.*
+import bitlap.sbt.analyzer.SbtUtils.getClass
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 
 /** Tasks depend on the output of the SBT console.
@@ -22,23 +21,21 @@ import com.intellij.openapi.project.Project
  *  @version 1.0,2023/8/11
  */
 trait SbtShellOutputAnalysisTask[T] {
+  private val log = Logger.getInstance(getClass)
 
   protected final def getCommandOutputLines(project: Project, command: String): List[String] = {
-    val comms       = SbtShellCommunication.forProject(project)
-    val outputLines = ListBuffer[String]()
-    val promise     = Promise[List[String]]
-    val executed = comms.command(
+    val comms = SbtShellCommunication.forProject(project)
+    val executed: Future[StringBuilder] = comms.command(
       command,
       new StringBuilder(),
-      SbtShellCommunication.listenerAggregator {
-        case SbtShellCommunication.Output(line) =>
-          outputLines.append(line.trim)
-        case SbtShellCommunication.TaskComplete =>
-          promise.success(outputLines.result())
-        case _ =>
-      }
+      SbtShellCommunication.messageAggregator
     )
-    Await.result(executed.flatMap(_ => promise.future.map(_.filter(_.startsWith("[info]")))), Constants.timeout)
+    val res    = Await.result(executed.map(_.result()), Constants.timeout)
+    val result = res.split("\n").toList.filter(_.startsWith("[info]"))
+    if (result.isEmpty) {
+      log.warn("Sbt Dependency Analyzer cannot find any sbt modules")
+    }
+    result
   }
 
   def executeCommand(project: Project): T
