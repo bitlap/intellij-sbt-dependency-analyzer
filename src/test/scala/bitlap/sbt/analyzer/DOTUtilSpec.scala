@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtil
+import bitlap.sbt.analyzer.DependencyUtils
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.DOTUtil
 
@@ -27,7 +27,7 @@ class DOTUtilSpec extends AnyFlatSpec {
     val links: util.Collection[Link]             = mutableGraph.edges()
 
     val nodes = graphNodes.asScala.map { graphNode =>
-      graphNode.name().value() -> DependencyUtil.getArtifactInfoFromDisplayName(None, graphNode.name().value())
+      graphNode.name().value() -> DependencyUtils.getArtifactInfoFromDisplayName(None, graphNode.name().value())
     }.collect { case (name, Some(value)) =>
       name -> value
     }.toMap

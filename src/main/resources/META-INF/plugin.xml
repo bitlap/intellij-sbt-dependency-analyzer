@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.1.1-231.9392.1</version>
+    <version>0.1.2-231.9392.1</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <idea-version since-build="231.0"/>
@@ -93,6 +93,13 @@
     </description>
     <change-notes>
         <![CDATA[
+            <h1>0.1.2-231.9392.1</h1>
+            <ul>
+                <li>Improving Error Notification.</li>
+                <li>Support for older versions of sbt.</li>
+                <li>Other improvements.</li>
+            </ul>
+            
             <h1>0.1.1-231.9392.1</h1>
             <ul>
                 <li>Fix bug: Goto action can match scala library.</li>

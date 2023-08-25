@@ -1,25 +1,23 @@
 package bitlap.sbt.analyzer
 
-import java.io.IOException
 import java.nio.file.*
 import java.util
-import java.util.Collections
-import java.util.List as JList
+import java.util.{ Collections, List as JList }
 import java.util.concurrent.{ ConcurrentHashMap, Executors }
-import java.util.concurrent.atomic.{ AtomicBoolean, AtomicLong }
+import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtil.*
+import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
-import bitlap.sbt.analyzer.model.ModuleContext
+import bitlap.sbt.analyzer.model.{ AnalyzerCommandNotFoundException, AnalyzerCommandUnknownException, ModuleContext }
 import bitlap.sbt.analyzer.parser.*
-import bitlap.sbt.analyzer.parser.ParserTypeEnum
 import bitlap.sbt.analyzer.task.*
 
+import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
@@ -36,7 +34,6 @@ import com.intellij.openapi.externalSystem.service.notification.ExternalSystemPr
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.*
 
 import kotlin.jvm.functions
 
@@ -48,8 +45,13 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   import SbtDependencyAnalyzerContributor.*
 
-  private var organization: String                           = _
-  private var sbtModules: Map[String, String]                = Map.empty
+  @volatile
+  private var organization: String = _
+
+  @volatile
+  private var ideaModuleIdSbtModules: Map[String, String] = Map.empty
+
+  @volatile
   private var declaredDependencies: List[UnifiedCoordinates] = List.empty
 
   private lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
@@ -88,7 +90,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              if (!DependencyUtil.ignoreModuleAnalysis(module)) {
+              if (!DependencyUtils.ignoreModuleAnalysis(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
             }
@@ -190,51 +192,52 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   }
 
-  private def getOrganization(project: Project): String = {
-    if (organization != null) return organization
+  private def getOrganization(project: Project): String =
+    // When force a refresh, we must re-read the settings, such organization,moduleName
+    if (organization != null && SbtDependencyAnalyzerContributor.isValid.get()) return organization
     organization = SbtShellOutputAnalysisTask.organizationTask.executeCommand(project)
     organization
-  }
 
-  private def getSbtModules(project: Project): Map[String, String] = {
-    if (sbtModules.nonEmpty) return sbtModules
-    sbtModules = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
-    sbtModules
-  }
+  private def getIdeaModuleIdSbtModules(project: Project): Map[String, String] =
+    if (ideaModuleIdSbtModules.nonEmpty && SbtDependencyAnalyzerContributor.isValid.get()) return ideaModuleIdSbtModules
+    ideaModuleIdSbtModules = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
+    ideaModuleIdSbtModules
 
-  private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] = {
-    if (declaredDependencies.nonEmpty) return declaredDependencies
+  private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] =
+    if (declaredDependencies.nonEmpty && SbtDependencyAnalyzerContributor.isValid.get()) return declaredDependencies
     val module = findModule(project, moduleData)
-    declaredDependencies = DependencyUtil.getUnifiedCoordinates(module)
+    declaredDependencies = DependencyUtils.getUnifiedCoordinates(module)
     declaredDependencies
-  }
 
   private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] = {
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
-    val moduleNamePaths = () =>
-      projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap
-    val org        = () => getOrganization(project)
-    val declared   = () => getDeclaredDependencies(project, moduleData)
-    val sbtModules = () => getSbtModules(project)
     if (moduleData.getModuleName == Constants.Project) return Collections.emptyList()
 
-    configurationNodesMap.computeIfAbsent(
+    val result = configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,
-      _ => moduleData.loadDependencies(project, org(), moduleNamePaths(), sbtModules(), declared())
+      _ =>
+        moduleData.loadDependencies(
+          project,
+          getOrganization(project),
+          projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap,
+          getIdeaModuleIdSbtModules(project),
+          getDeclaredDependencies(project, moduleData)
+        )
     )
+    Option(result).getOrElse(Collections.emptyList())
   }
 }
 
 object SbtDependencyAnalyzerContributor {
 
-  final val isValid = new AtomicBoolean(true)
+  final val isValid     = new AtomicBoolean(true)
+  final val isNotifying = new AtomicBoolean(false)
 
   def isValidFile(file: String): Boolean = {
     if (isValid.get()) {
-      val lifespan     = 1000 * 60 * 60L
       val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + lifespan
+      System.currentTimeMillis() <= lastModified + Constants.fileLifespan
     } else {
       isValid.getAndSet(true)
     }
@@ -247,19 +250,20 @@ object SbtDependencyAnalyzerContributor {
   }
 
   // ===========================================extensions==============================================================
-  extension (projectDependencyNode: ProjectDependencyNode) {
+  extension (projectDependencyNode: ProjectDependencyNode)
 
-    def getModuleData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): ModuleData = {
+    def getModuleData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): ModuleData =
       projects.values.asScala
         .map(_.data)
         .find(_.getLinkedExternalProjectPath == projectDependencyNode.getProjectPath)
         .orNull
-    }
-  }
+    end getModuleData
 
-  extension (node: DependencyNode) {
+  end extension
 
-    def getDependencyData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): Dependency.Data = {
+  extension (node: DependencyNode)
+
+    def getDependencyData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): Dependency.Data =
       node match {
         case pdn: ProjectDependencyNode =>
           val data       = DAModule(pdn.getProjectName)
@@ -270,9 +274,9 @@ object SbtDependencyAnalyzerContributor {
           DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
         case _ => null
       }
-    }
+    end getDependencyData
 
-    def getStatus(usage: Dependency, data: Dependency.Data): JList[Dependency.Status] = {
+    def getStatus(usage: Dependency, data: Dependency.Data): JList[Dependency.Status] =
       val status = ListBuffer[Dependency.Status]()
       if (node.getResolutionState == ResolutionState.UNRESOLVED) {
         val message = ExternalSystemBundle.message("external.system.dependency.analyzer.warning.unresolved")
@@ -298,53 +302,50 @@ object SbtDependencyAnalyzerContributor {
           }
         case _ =>
       status.asJava
-    }
-  }
 
-  extension (dependencyScopeNode: DependencyScopeNode) {
-    def toScope: DAScope = toDAScope(dependencyScopeNode.getScope)
-  }
+    end getStatus
 
-  given ExecutionContext =
-    ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(2 * Runtime.getRuntime.availableProcessors()))
+  end extension
 
-  extension (moduleData: ModuleData) {
+  extension (dependencyScopeNode: DependencyScopeNode) def toScope: DAScope = toDAScope(dependencyScopeNode.getScope)
+  end extension
+
+  extension (moduleData: ModuleData)
 
     def loadDependencies(
       project: Project,
       organization: String,
-      moduleNamePaths: Map[String, String],
-      sbtModules: Map[String, String],
+      ideaModuleNamePaths: Map[String, String],
+      ideaModuleIdSbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
-    ): JList[DependencyScopeNode] = {
+    ): JList[DependencyScopeNode] =
       val module = findModule(project, moduleData)
-      if (DependencyUtil.ignoreModuleAnalysis(module)) return Collections.emptyList()
+      if (DependencyUtils.ignoreModuleAnalysis(module)) return Collections.emptyList()
 
       // if the analysis files already exist (.dot), use it directly.
       def executeCommandOrReadExistsFile(
         parserTypeEnum: ParserTypeEnum,
         scope: DependencyScopeEnum
-      ): Future[DependencyScopeNode] = {
-        val moduleId   = moduleData.getId.split(" ")(0)
-        val moduleName = moduleData.getModuleName
-        val file       = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
+      ): Future[DependencyScopeNode] =
+        val moduleId = moduleData.getId.split(" ")(0)
+        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
         // File cache for one hour
-        if (Files.exists(Path.of(file)) && isValidFile(file)) {
+        if (!isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
           Future {
             DependencyParserFactory
               .getInstance(parserTypeEnum)
               .buildDependencyTree(
                 ModuleContext(
                   file,
-                  moduleName,
+                  moduleId,
                   scope,
                   scalaMajorVersion(module),
                   organization,
-                  moduleNamePaths,
+                  ideaModuleNamePaths,
                   module.isScalaJs,
                   module.isScalaNative,
-                  if (sbtModules.isEmpty) Map(moduleId -> module.getName)
-                  else sbtModules
+                  if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
+                  else ideaModuleIdSbtModules
                 ),
                 rootNode(scope, project),
                 declared
@@ -356,27 +357,42 @@ object SbtDependencyAnalyzerContributor {
             moduleData,
             scope,
             organization,
-            moduleNamePaths,
-            sbtModules,
+            ideaModuleNamePaths,
+            ideaModuleIdSbtModules,
             declared
           )
         }
-
-      }
+      end executeCommandOrReadExistsFile
 
       try {
-        Await.result(
+
+        if (isNotifying.get()) {
+          // must reload project to enable it
+          SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
+        }
+
+        val result = Await.result(
           Future
             .sequence(DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _)))
             .map(_.asJava),
-          10.minutes
+          Constants.timeout
         )
+        isNotifying.set(false)
+        result
       } catch {
         case e: Throwable =>
-          SbtDependencyAnalyzerNotifier.addDependencyTreePlugin(project)
-          // throw e
-          List.empty.asJava
+          e match
+            case _: AnalyzerCommandNotFoundException =>
+              if (isNotifying.compareAndSet(false, true)) {
+                SbtDependencyAnalyzerNotifier.notifyAndAddDependencyTreePlugin(project)
+              }
+            case ue: AnalyzerCommandUnknownException =>
+              SbtDependencyAnalyzerNotifier.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
+            case _ =>
+
+          null
       }
-    }
-  }
+    end loadDependencies
+  end extension
+
 }

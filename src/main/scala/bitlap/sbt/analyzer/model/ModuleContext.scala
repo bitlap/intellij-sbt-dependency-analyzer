@@ -8,12 +8,12 @@ import bitlap.sbt.analyzer.DependencyScopeEnum
  */
 final case class ModuleContext(
   analysisFile: String,
-  currentModuleName: String,
+  currentModuleId: String,
   scope: DependencyScopeEnum,
   scalaMajor: String,
-  org: String,
-  moduleNamePaths: Map[String, String] = Map.empty,
+  organization: String,
+  ideaModuleNamePaths: Map[String, String] = Map.empty,
   isScalaJs: Boolean = false,
   isScalaNative: Boolean = false,
-  moduleIdSbtModuleNames: Map[String, String] = Map.empty
+  ideaModuleIdSbtModuleNames: Map[String, String] = Map.empty
 )
