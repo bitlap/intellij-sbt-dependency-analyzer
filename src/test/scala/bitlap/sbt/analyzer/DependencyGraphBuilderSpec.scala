@@ -29,7 +29,7 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
         isScalaJs = false,
         isScalaNative = false,
         ideaModuleIdSbtModuleNames = Map.empty,
-        isTest = false
+        isTest = true
       )
 
     val relations = DependencyParserFactory
