@@ -33,24 +33,22 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask {
     scope: DependencyScopeEnum,
     organization: String,
     moduleNamePaths: Map[String, String],
-    sbtModules: Map[String, String],
+    ideaModuleIdSbtModules: Map[String, String],
     declared: List[UnifiedCoordinates]
-  ): Future[DependencyScopeNode] = {
-    val module     = findModule(project, moduleData)
-    val moduleId   = moduleData.getId.split(" ")(0)
-    val moduleName = moduleData.getModuleName
+  ): DependencyScopeNode = {
+    val module   = findModule(project, moduleData)
+    val moduleId = moduleData.getId.split(" ")(0)
 
-    taskCompleteCallback(project, moduleData, scope) {
+    taskCompleteCallback(project, moduleData, scope) { file =>
       val sbtModuleNameMap =
-        if (sbtModules.isEmpty) Map(moduleId -> module.getName)
-        else sbtModules
-      val file = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
+        if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
+        else ideaModuleIdSbtModules
       DependencyParserFactory
         .getInstance(parserTypeEnum)
         .buildDependencyTree(
           ModuleContext(
             file,
-            moduleName,
+            moduleId,
             scope,
             scalaMajorVersion(module),
             organization,

@@ -3,21 +3,19 @@ package bitlap.sbt.analyzer
 import java.nio.file.*
 import java.util
 import java.util.{ Collections, List as JList }
-import java.util.concurrent.{ ConcurrentHashMap, Executors }
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
-import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.DependencyUtils.*
-import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
-import bitlap.sbt.analyzer.model.{ AnalyzerCommandNotFoundException, AnalyzerCommandUnknownException, ModuleContext }
+import bitlap.sbt.analyzer.component.*
+import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
 
-import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.ModuleNode
@@ -326,31 +324,29 @@ object SbtDependencyAnalyzerContributor {
       def executeCommandOrReadExistsFile(
         parserTypeEnum: ParserTypeEnum,
         scope: DependencyScopeEnum
-      ): Future[DependencyScopeNode] =
+      ): DependencyScopeNode =
         val moduleId = moduleData.getId.split(" ")(0)
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
         // File cache for one hour
         if (!isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
-          Future {
-            DependencyParserFactory
-              .getInstance(parserTypeEnum)
-              .buildDependencyTree(
-                ModuleContext(
-                  file,
-                  moduleId,
-                  scope,
-                  scalaMajorVersion(module),
-                  organization,
-                  ideaModuleNamePaths,
-                  module.isScalaJs,
-                  module.isScalaNative,
-                  if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
-                  else ideaModuleIdSbtModules
-                ),
-                rootNode(scope, project),
-                declared
-              )
-          }
+          DependencyParserFactory
+            .getInstance(parserTypeEnum)
+            .buildDependencyTree(
+              ModuleContext(
+                file,
+                moduleId,
+                scope,
+                scalaMajorVersion(module),
+                organization,
+                ideaModuleNamePaths,
+                module.isScalaJs,
+                module.isScalaNative,
+                if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
+                else ideaModuleIdSbtModules
+              ),
+              rootNode(scope, project),
+              declared
+            )
         } else {
           SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
             project,
@@ -371,14 +367,12 @@ object SbtDependencyAnalyzerContributor {
           SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
         }
 
-        val result = Await.result(
-          Future
-            .sequence(DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _)))
-            .map(_.asJava),
-          Constants.timeout
-        )
+        val result =
+          DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _))
+
         isNotifying.set(false)
-        result
+        result.asJava
+
       } catch {
         case e: Throwable =>
           e match
@@ -389,7 +383,6 @@ object SbtDependencyAnalyzerContributor {
             case ue: AnalyzerCommandUnknownException =>
               SbtDependencyAnalyzerNotifier.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
             case _ =>
-
           null
       }
     end loadDependencies

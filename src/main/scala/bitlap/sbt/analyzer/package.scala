@@ -71,3 +71,11 @@ def findModule(project: Project, projectPath: String): Module = {
   if (moduleNode == null) return null
   findModule(project, moduleNode.getData)
 }
+
+def commandInterval(): Unit = {
+  try {
+    Thread.sleep(Constants.intervalTimeout.toMillis)
+  } catch {
+    case ignore: Throwable =>
+  }
+}

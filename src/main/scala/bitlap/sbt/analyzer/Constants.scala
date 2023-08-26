@@ -22,5 +22,7 @@ object Constants {
 
   final val timeout = 10.minutes
 
+  final val intervalTimeout = 1010.milliseconds
+
   final val fileLifespan = 1000 * 60 * 60L
 }
