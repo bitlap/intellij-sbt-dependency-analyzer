@@ -29,6 +29,11 @@ object DOTUtil {
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
+  def parseAsGraphTestOnly(file: String): MutableGraph = {
+    Try(parser.read(new File(file))).getOrElse(null)
+
+  }
+
   def parseAsGraph(file: String): MutableGraph = {
     var vfsFile = VfsUtil.findFile(Path.of(file), true)
     try {

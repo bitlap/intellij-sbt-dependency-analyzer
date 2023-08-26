@@ -22,7 +22,7 @@ class DOTUtilSpec extends AnyFlatSpec {
   "parse file as MutableNode" should "ok" in {
     val start                                    = System.currentTimeMillis()
     val file                                     = getClass.getClassLoader.getResource("test.dot").getFile
-    val mutableGraph: MutableGraph               = DOTUtil.parseAsGraph(file)
+    val mutableGraph: MutableGraph               = DOTUtil.parseAsGraphTestOnly(file)
     val graphNodes: util.Collection[MutableNode] = mutableGraph.nodes()
     val links: util.Collection[Link]             = mutableGraph.edges()
 
