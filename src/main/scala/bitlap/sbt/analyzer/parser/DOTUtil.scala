@@ -7,6 +7,7 @@ import scala.util.Try
 
 import bitlap.sbt.analyzer.{ Constants, DependencyUtils }
 import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
+import bitlap.sbt.analyzer.model.ModuleContext
 
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
@@ -29,12 +30,14 @@ object DOTUtil {
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
-  def parseAsGraphTestOnly(file: String): MutableGraph = {
+  private def parseAsGraphTestOnly(file: String): MutableGraph = {
     Try(parser.read(new File(file))).getOrElse(null)
 
   }
 
-  def parseAsGraph(file: String): MutableGraph = {
+  def parseAsGraph(context: ModuleContext): MutableGraph = {
+    if (context.isTest) return parseAsGraphTestOnly(context.analysisFile)
+    val file    = context.analysisFile
     var vfsFile = VfsUtil.findFile(Path.of(file), true)
     try {
 

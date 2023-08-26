@@ -24,7 +24,12 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
         "star-authority-protocol",
         DependencyScopeEnum.Compile,
         "3",
-        "fc.xuanwu.star"
+        "fc.xuanwu.star",
+        ideaModuleNamePaths = Map.empty,
+        isScalaJs = false,
+        isScalaNative = false,
+        ideaModuleIdSbtModuleNames = Map.empty,
+        isTest = false
       )
 
     val relations = DependencyParserFactory

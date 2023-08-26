@@ -50,7 +50,7 @@ final class DOTDependencyParser extends DependencyParser {
     root: DependencyScopeNode,
     declared: List[UnifiedCoordinates]
   ): DependencyScopeNode = {
-    val data = getDependencyRelations(context.analysisFile)
+    val data = getDependencyRelations(context)
     val depMap =
       data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(context, a)).toMap).getOrElse(Map.empty)
 
@@ -165,8 +165,8 @@ final class DOTDependencyParser extends DependencyParser {
 
   /** parse dot file, get graph data
    */
-  private def getDependencyRelations(file: String): Option[Dependencies] =
-    val mutableGraph: MutableGraph = DOTUtil.parseAsGraph(file)
+  private def getDependencyRelations(context: ModuleContext): Option[Dependencies] =
+    val mutableGraph: MutableGraph = DOTUtil.parseAsGraph(context)
     if (mutableGraph == null) None
     else
       val graphNodes: java.util.Collection[MutableNode] = mutableGraph.nodes()

@@ -20,9 +20,23 @@ import guru.nidi.graphviz.model.*
 class DOTUtilSpec extends AnyFlatSpec {
 
   "parse file as MutableNode" should "ok" in {
-    val start                                    = System.currentTimeMillis()
-    val file                                     = getClass.getClassLoader.getResource("test.dot").getFile
-    val mutableGraph: MutableGraph               = DOTUtil.parseAsGraphTestOnly(file)
+    val start = System.currentTimeMillis()
+    val file  = getClass.getClassLoader.getResource("test.dot").getFile
+    val ctx =
+      ModuleContext(
+        file,
+        "star-authority-protocol",
+        DependencyScopeEnum.Compile,
+        "3",
+        "fc.xuanwu.star",
+        ideaModuleNamePaths = Map.empty,
+        isScalaJs = false,
+        isScalaNative = false,
+        ideaModuleIdSbtModuleNames = Map.empty,
+        isTest = true
+      )
+
+    val mutableGraph: MutableGraph               = DOTUtil.parseAsGraph(ctx)
     val graphNodes: util.Collection[MutableNode] = mutableGraph.nodes()
     val links: util.Collection[Link]             = mutableGraph.edges()
 

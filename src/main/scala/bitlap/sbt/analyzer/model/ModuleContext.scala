@@ -15,5 +15,6 @@ final case class ModuleContext(
   ideaModuleNamePaths: Map[String, String] = Map.empty,
   isScalaJs: Boolean = false,
   isScalaNative: Boolean = false,
-  ideaModuleIdSbtModuleNames: Map[String, String] = Map.empty
+  ideaModuleIdSbtModuleNames: Map[String, String] = Map.empty,
+  isTest: Boolean = false
 )
