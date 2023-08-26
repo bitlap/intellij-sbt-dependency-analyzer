@@ -7,11 +7,9 @@ import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.DependencyUtils.*
-import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
-import bitlap.sbt.analyzer.model.AnalyzerCommandUnknownException
+import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 
-import org.jetbrains.plugins.scala.inWriteAction
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
@@ -24,7 +22,7 @@ import com.intellij.openapi.project.Project
  *    梦境迷离
  *  @version 1.0,2023/8/11
  */
-trait SbtShellDependencyAnalysisTask {
+trait SbtShellDependencyAnalysisTask:
 
   val parserTypeEnum: ParserTypeEnum
 
@@ -93,8 +91,11 @@ trait SbtShellDependencyAnalysisTask {
     Await.result(result, Constants.timeout)
     rootNode(file)
   }
-}
+
+end SbtShellDependencyAnalysisTask
 
 object SbtShellDependencyAnalysisTask:
 
   lazy val dependencyDotTask: SbtShellDependencyAnalysisTask = new DependencyDotTask
+
+end SbtShellDependencyAnalysisTask

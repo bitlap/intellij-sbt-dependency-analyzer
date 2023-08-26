@@ -18,18 +18,18 @@ import com.intellij.openapi.module.Module
  *    梦境迷离
  *  @version 1.0,2023/8/1
  */
-final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[ExternalSystemNode[?]] {
+final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[ExternalSystemNode[?]]:
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
 
-  override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): String = {
+  override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): String =
     val node = selectedData.findDependencyNode(classOf[DependencyScopeNode])
     if (node == null) return null
     node.getScope
-  }
+  end getDependencyScope
 
-  override def getModule(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): Module = {
+  override def getModule(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): Module =
     val project = anActionEvent.getProject
     if (project == null) return null
     val node = selectedData.findNode(classOf[ModuleNode])
@@ -42,7 +42,7 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
     val projectData = projectNode.getData
     if (projectNode == null) return null
     findModule(project, projectData)
-  }
+  end getModule
 
   override def getSelectedData(anActionEvent: AnActionEvent): ExternalSystemNode[_] =
     anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES).asScala.headOption.orNull
@@ -52,7 +52,7 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
   override def getDependencyData(
     anActionEvent: AnActionEvent,
     selectedData: ExternalSystemNode[_]
-  ): DependencyAnalyzerDependency.Data = {
+  ): DependencyAnalyzerDependency.Data =
     selectedData.getData match
       case pd: ProjectData => DAModule(pd.getInternalName)
       case md: ModuleData  => DAModule(md.getModuleName)
@@ -60,10 +60,12 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
         selectedData.getDependencyNode match
           case pdn: ProjectDependencyNode  => DAModule(pdn.getProjectName)
           case adn: ArtifactDependencyNode => DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
-  }
-}
 
-final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module] {
+  end getDependencyData
+
+end ViewDependencyAnalyzerAction
+
+final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module]:
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -72,14 +74,13 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyz
 
   override def getModule(anActionEvent: AnActionEvent, selectedData: Module): Module = selectedData
 
-  override def getSelectedData(anActionEvent: AnActionEvent): Module = {
+  override def getSelectedData(anActionEvent: AnActionEvent): Module =
     val module = anActionEvent.getData(PlatformCoreDataKeys.MODULE)
     if (module == null) return null
     if (ExternalSystemApiUtil.isExternalSystemAwareModule(SbtProjectSystem.Id, module)) {
       module
     } else null
-
-  }
+  end getSelectedData
 
   override def getSystemId(anActionEvent: AnActionEvent): ProjectSystemId = SbtProjectSystem.Id
 
@@ -87,9 +88,10 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyz
     anActionEvent: AnActionEvent,
     selectedData: Module
   ): DependencyAnalyzerDependency.Data = DAModule(selectedData.getName)
-}
 
-final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction() {
+end ProjectViewDependencyAnalyzerAction
+
+final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction():
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -102,4 +104,5 @@ final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction() {
 
   override def setSelectedState(dependencyAnalyzerView: DependencyAnalyzerView, anActionEvent: AnActionEvent): Unit =
     viewAction.setSelectedState(dependencyAnalyzerView, anActionEvent)
-}
+
+end ToolbarDependencyAnalyzerAction

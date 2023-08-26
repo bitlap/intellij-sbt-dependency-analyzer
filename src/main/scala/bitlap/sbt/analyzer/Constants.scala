@@ -6,7 +6,7 @@ import scala.concurrent.duration.*
  *    梦境迷离
  *  @version 1.0,2023/8/10
  */
-object Constants {
+object Constants:
 
   final val Line_Separator: String = "\n"
 
@@ -25,4 +25,5 @@ object Constants {
   final val intervalTimeout = 1010.milliseconds
 
   final val fileLifespan = 1000 * 60 * 60L
-}
+
+end Constants

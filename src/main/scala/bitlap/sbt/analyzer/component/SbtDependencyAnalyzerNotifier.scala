@@ -3,7 +3,6 @@ package bitlap.sbt.analyzer.component
 import java.nio.file.Path
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version

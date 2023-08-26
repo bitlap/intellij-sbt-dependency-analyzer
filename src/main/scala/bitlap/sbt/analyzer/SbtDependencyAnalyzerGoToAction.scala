@@ -14,11 +14,11 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.*
 import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 
-final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction(SbtProjectSystem.Id) {
+final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction(SbtProjectSystem.Id):
 
   private val LOG = Logger.getInstance(classOf[SbtDependencyAnalyzerGoToAction])
 
-  override def getNavigatable(e: AnActionEvent): Navigatable = {
+  override def getNavigatable(e: AnActionEvent): Navigatable =
     Option(getDeclaredDependency(e)).flatMap { dependency =>
       Try {
         val data = dependency.getDataContext.getData(CommonDataKeys.PSI_ELEMENT.getName)
@@ -33,9 +33,9 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     }
       .map(psiElement => PsiNavigationSupport.getInstance().getDescriptor(psiElement))
       .orNull
-  }
+  end getNavigatable
 
-  private def getDeclaredDependency(e: AnActionEvent): DeclaredDependency = {
+  private def getDeclaredDependency(e: AnActionEvent): DeclaredDependency =
     val project    = e.getProject
     val dependency = e.getData(DependencyAnalyzerView.Companion.getDEPENDENCY)
     if (project == null || dependency == null) return null
@@ -59,5 +59,6 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
         }
       )
       .orNull
-  }
-}
+  end getDeclaredDependency
+
+end SbtDependencyAnalyzerGoToAction

@@ -5,7 +5,7 @@ import java.nio.file.Path
 
 import scala.util.Try
 
-import bitlap.sbt.analyzer.{ Constants, DependencyUtils }
+import bitlap.sbt.analyzer.Constants
 import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
 import bitlap.sbt.analyzer.model.ModuleContext
 
@@ -13,8 +13,7 @@ import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
 
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.vfs.{ LocalFileSystem, VfsUtil }
-import com.intellij.openapi.vfs.newvfs.VfsImplUtil
+import com.intellij.openapi.vfs.VfsUtil
 
 import guru.nidi.graphviz.attribute.validate.ValidatorEngine
 import guru.nidi.graphviz.model.MutableGraph

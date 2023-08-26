@@ -12,9 +12,9 @@ import com.intellij.openapi.project.Project
  *    梦境迷离
  *  @version 1.0,2023/8/19
  */
-final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]] {
+final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]]:
 
-  private def moduleIDArtifact(output: String): Option[LibraryModuleID] = {
+  private def moduleIDArtifact(output: String): Option[LibraryModuleID] =
     output.trim match
       case libraryDependenciesOutput4(group, artifact, revision, _, _) =>
         Some(LibraryModuleID(group.trim, artifact.trim, revision.trim))
@@ -26,9 +26,9 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
         Some(LibraryModuleID(group.trim, artifact.trim, revision.trim))
       case _ =>
         None
-  }
+  end moduleIDArtifact
 
-  override def executeCommand(project: Project): Map[String, List[LibraryModuleID]] = {
+  override def executeCommand(project: Project): Map[String, List[LibraryModuleID]] =
     val outputLines             = getCommandOutputLines(project, "libraryDependencies")
     val moduleIdSbtLibrariesMap = mutable.HashMap[String, String]()
     // single module
@@ -70,7 +70,6 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
     }.collect {
       case (k, v) if k != Empty_String => k -> v
     }.toMap
+  end executeCommand
 
-  }
-
-}
+end LibraryDependenciesTask

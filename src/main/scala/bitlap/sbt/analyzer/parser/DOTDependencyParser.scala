@@ -21,13 +21,14 @@ import guru.nidi.graphviz.model.{ Graph as _, * }
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DOTDependencyParser {
+object DOTDependencyParser:
   lazy val instance: DependencyParser = new DOTDependencyParser
 
   final val id = new AtomicInteger(0)
-}
 
-final class DOTDependencyParser extends DependencyParser {
+end DOTDependencyParser
+
+final class DOTDependencyParser extends DependencyParser:
 
   import DOTDependencyParser.*
 
@@ -196,4 +197,4 @@ final class DOTDependencyParser extends DependencyParser {
         )
       )
 
-}
+end DOTDependencyParser

@@ -1,8 +1,8 @@
 package bitlap.sbt.analyzer
 
-import java.util.concurrent.Executors
-
 import scala.concurrent.ExecutionContext
+
+import bitlap.sbt.analyzer.parser.ParserTypeEnum
 
 import org.jetbrains.sbt.project.*
 
@@ -26,6 +26,8 @@ import com.intellij.openapi.util.Key
 lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
 given ExecutionContext = ExecutionContext.Implicits.global
+
+given ParserTypeEnum = ParserTypeEnum.DOT
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {

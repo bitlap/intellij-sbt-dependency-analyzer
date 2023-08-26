@@ -12,7 +12,7 @@ import com.intellij.openapi.project.Project
  *    梦境迷离
  *  @version 1.0,2023/8/19
  */
-class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]] {
+final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]]:
   import SbtShellOutputAnalysisTask.*
 
   /** {{{
@@ -33,7 +33,7 @@ class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]] {
    *  @param project
    *  @return
    */
-  override def executeCommand(project: Project): Map[String, String] = {
+  override def executeCommand(project: Project): Map[String, String] =
     val mms                      = getCommandOutputLines(project, "moduleName")
     val moduleIdSbtModuleNameMap = mutable.HashMap[String, String]()
     if (mms.size % 2 == 0) {
@@ -56,6 +56,7 @@ class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]] {
       key -> value
 
     }.filter(kv => kv._1 != Empty_String && kv._2 != Empty_String).toMap
-  }
 
-}
+  end executeCommand
+
+end ModuleNameTask

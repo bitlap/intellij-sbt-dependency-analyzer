@@ -8,7 +8,9 @@ object DependencyParserFactory {
 
   def getInstance(builder: ParserTypeEnum): DependencyParser = {
     builder match
-      case ParserTypeEnum.DOT => DOTDependencyParser.instance
+      case ParserTypeEnum.DOT     => DOTDependencyParser.instance
+      case ParserTypeEnum.GraphML => ???
+    // TODO
 
   }
 

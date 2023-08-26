@@ -117,7 +117,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
               .values()
               .asScala
               .map(d => d.getLinkedExternalProjectPath)
-              .foreach(SbtDependencyAnalyzerContributor.deleteExistAnalysisFiles)
+              .foreach(deleteExistAnalysisFiles)
 
             projects.clear()
             configurationNodesMap.clear()
@@ -128,6 +128,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       },
       parentDisposable
     )
+  }
+
+  private def deleteExistAnalysisFiles(modulePath: String)(using ParserTypeEnum): Unit = {
+    DependencyScopeEnum.values
+      .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[ParserTypeEnum])))
+      .foreach(p => Files.deleteIfExists(p))
   }
 
   private def getDependencies(
@@ -207,7 +213,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     declaredDependencies = DependencyUtils.getUnifiedCoordinates(module)
     declaredDependencies
 
-  private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] = {
+  private def getOrRefreshData(moduleData: ModuleData)(using ParserTypeEnum): JList[DependencyScopeNode] = {
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
     if (moduleData.getModuleName == Constants.Project) return Collections.emptyList()
@@ -227,24 +233,18 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 }
 
-object SbtDependencyAnalyzerContributor {
+object SbtDependencyAnalyzerContributor:
 
-  final val isValid     = new AtomicBoolean(true)
-  final val isNotifying = new AtomicBoolean(false)
+  final val isValid             = new AtomicBoolean(true)
+  private final val isNotifying = new AtomicBoolean(false)
 
-  def isValidFile(file: String): Boolean = {
+  private def isValidFile(file: String): Boolean = {
     if (isValid.get()) {
       val lastModified = Path.of(file).toFile.lastModified()
       System.currentTimeMillis() <= lastModified + Constants.fileLifespan
     } else {
       isValid.getAndSet(true)
     }
-  }
-
-  def deleteExistAnalysisFiles(modulePath: String): Unit = {
-    DependencyScopeEnum.values
-      .map(scope => Path.of(modulePath + analysisFilePath(scope, ParserTypeEnum.DOT)))
-      .foreach(p => Files.deleteIfExists(p))
   }
 
   // ===========================================extensions==============================================================
@@ -316,21 +316,20 @@ object SbtDependencyAnalyzerContributor {
       ideaModuleNamePaths: Map[String, String],
       ideaModuleIdSbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
-    ): JList[DependencyScopeNode] =
+    )(using ParserTypeEnum): JList[DependencyScopeNode] =
       val module = findModule(project, moduleData)
       if (DependencyUtils.ignoreModuleAnalysis(module)) return Collections.emptyList()
 
       // if the analysis files already exist (.dot), use it directly.
       def executeCommandOrReadExistsFile(
-        parserTypeEnum: ParserTypeEnum,
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
         val moduleId = moduleData.getId.split(" ")(0)
-        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, ParserTypeEnum.DOT)
+        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
         // File cache for one hour
         if (!isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
           DependencyParserFactory
-            .getInstance(parserTypeEnum)
+            .getInstance(summon[ParserTypeEnum])
             .buildDependencyTree(
               ModuleContext(
                 file,
@@ -344,7 +343,7 @@ object SbtDependencyAnalyzerContributor {
                 if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
                 else ideaModuleIdSbtModules
               ),
-              rootNode(scope, project),
+              createRootScopeNode(scope, project),
               declared
             )
         } else {
@@ -368,7 +367,7 @@ object SbtDependencyAnalyzerContributor {
         }
 
         val result =
-          DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile(ParserTypeEnum.DOT, _))
+          DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile)
 
         isNotifying.set(false)
         result.asJava
@@ -388,4 +387,4 @@ object SbtDependencyAnalyzerContributor {
     end loadDependencies
   end extension
 
-}
+end SbtDependencyAnalyzerContributor
