@@ -99,7 +99,13 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       }
 
     }
-    projects.keys.asScala.toList.sortBy(_.getModule.getName).asJava
+
+    // root -> top
+    // this will result in the plugin always executing the root/dependencyDot when attempting to open the view for the first time,
+    // and generating dot files for all modules by default.
+    // TODO: Problem: Problem: It will be slow when used for the first time, Exclude root module?
+    val (root, others) = projects.asScala.partition(_._2.getLinkedExternalProjectPath == project.getBasePath)
+    (root.keys.toList ++ others.keys.toList.sortBy(_.getModule.getName)).asJava
 
   }
 
