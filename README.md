@@ -18,9 +18,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Usage Instructions
 
-To use this Intellij plugin, you must enable the `sbt-dependency-graph` plugin which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
-
-Please put this line into `project/plugins.sbt` of your project:
+To use this Intellij IDEA plugin, please put this line into `project/plugins.sbt` of your project:
 
 For sbt 1.4+ use:
 ```scala
@@ -37,12 +35,15 @@ For sbt < 0.13.10 use:
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 ```
 
-Since version **0.1.1-231.9392.1**, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` while jumping into the `project/plugins.sbt`.
+What is the meaning of this line of code?
 
-Entry point 👈🏻:
+Because this Intellij IDEA plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+
+Just click on the icon and wait for the analysis:
 
 ![](./docs/gotoAnalyze1.jpg)
 
+When the analysis is complete:
 
 <details>
 <summary>Show Conflicts 👈🏻</summary>
@@ -51,9 +52,12 @@ Entry point 👈🏻:
 
 </details>
 
+If the above is not done, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) while jumping into the `project/plugins.sbt`:
+
+![](docs/notifyAndGoto.jpg)
+
 ## For more details
 
-_**The plugin will use these sbt commands**_:
 1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
 2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
