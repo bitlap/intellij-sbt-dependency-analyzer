@@ -39,12 +39,9 @@ addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
 
 Since version **0.1.1-231.9392.1**, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` while jumping into the `project/plugins.sbt`.
 
-<details>
-<summary>Entry point 👈🏻</summary>
+Entry point 👈🏻:
 
 ![](./docs/gotoAnalyze1.jpg)
-
-</details>
 
 
 <details>

@@ -36,7 +36,7 @@ object SbtDependencyAnalyzerNotifier {
     }
   }
 
-  def parseFileError(file: String): Unit = {
+  def notifyParseFileError(file: String): Unit = {
     // add notification when gets vfsFile timeout
     val notification = GROUP
       .createNotification(

@@ -49,7 +49,7 @@ object DOTUtil {
         } else {
           if (System.currentTimeMillis() - start > Constants.timeout.toMillis) {
             LOG.error(s"Cannot get dot file: $file")
-            SbtDependencyAnalyzerNotifier.parseFileError(file)
+            SbtDependencyAnalyzerNotifier.notifyParseFileError(file)
             return null
           }
         }
@@ -61,7 +61,7 @@ object DOTUtil {
 
     } catch {
       case e: Throwable =>
-        SbtDependencyAnalyzerNotifier.parseFileError(file)
+        SbtDependencyAnalyzerNotifier.notifyParseFileError(file)
         LOG.error(s"Cannot parse dot file: $file", e)
         null
     }
