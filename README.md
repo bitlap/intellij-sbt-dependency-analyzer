@@ -67,7 +67,7 @@ Due to the need for the plugin to use sbt shell, when you open the dependency an
 ```
 Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load5964714308503584069_lock, error 5
 ```
-Using sbt shell to load or build the project avoids this issue:
+Using sbt shell to reload or build the project avoids this issue:
 
 ![](docs/sbtShellUseForReload.jpg)
 
