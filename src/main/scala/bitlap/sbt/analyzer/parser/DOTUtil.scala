@@ -1,8 +1,19 @@
 package bitlap.sbt.analyzer.parser
 
 import java.io.File
+import java.nio.file.Path
 
 import scala.util.Try
+
+import bitlap.sbt.analyzer.Constants
+import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
+import bitlap.sbt.analyzer.model.ModuleContext
+
+import org.jetbrains.plugins.scala.extensions.inReadAction
+import org.jetbrains.plugins.scala.project.VirtualFileExt
+
+import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.vfs.VfsUtil
 
 import guru.nidi.graphviz.attribute.validate.ValidatorEngine
 import guru.nidi.graphviz.model.MutableGraph
@@ -14,7 +25,45 @@ import guru.nidi.graphviz.parse.Parser
  */
 object DOTUtil {
 
-  def parseAsGraph(file: String): MutableGraph = {
-    Try((new Parser).forEngine(ValidatorEngine.DOT).notValidating().read(new File(file))).getOrElse(null)
+  private val LOG = Logger.getInstance(classOf[DOTUtil.type])
+
+  private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
+
+  private def parseAsGraphTestOnly(file: String): MutableGraph = {
+    Try(parser.read(new File(file))).getOrElse(null)
+
+  }
+
+  def parseAsGraph(context: ModuleContext): MutableGraph = {
+    if (context.isTest) return parseAsGraphTestOnly(context.analysisFile)
+    val file    = context.analysisFile
+    var vfsFile = VfsUtil.findFile(Path.of(file), true)
+    try {
+
+      val start = System.currentTimeMillis()
+      // TODO Tried all kinds of refreshes but nothing works.
+      while (vfsFile == null) {
+        vfsFile = VfsUtil.findFile(Path.of(file), true)
+        if (vfsFile != null) {
+          VfsUtil.markDirtyAndRefresh(false, false, false, vfsFile)
+        } else {
+          if (System.currentTimeMillis() - start > Constants.timeout.toMillis) {
+            LOG.error(s"Cannot get dot file: $file")
+            SbtDependencyAnalyzerNotifier.parseFileError(file)
+            return null
+          }
+        }
+      }
+      inReadAction {
+        val f = vfsFile.findDocument.map(_.getImmutableCharSequence.toString).orNull
+        parser.read(f)
+      }
+
+    } catch {
+      case e: Throwable =>
+        SbtDependencyAnalyzerNotifier.parseFileError(file)
+        LOG.error(s"Cannot parse dot file: $file", e)
+        null
+    }
   }
 }

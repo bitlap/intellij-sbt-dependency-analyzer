@@ -8,11 +8,12 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyze
 import com.intellij.openapi.externalSystem.model.ProjectSystemId
 import com.intellij.openapi.project.Project
 
-final class SbtDependencyAnalyzerExtension extends DependencyAnalyzerExtension {
+final class SbtDependencyAnalyzerExtension extends DependencyAnalyzerExtension:
 
   override def isApplicable(systemId: ProjectSystemId): Boolean =
     systemId == SbtProjectSystem.Id
 
   override def createContributor(project: Project, parentDisposable: Disposable): DependencyAnalyzerContributor =
     SbtDependencyAnalyzerContributor(project)
-}
+
+end SbtDependencyAnalyzerExtension

@@ -7,8 +7,7 @@ import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.DependencyUtils.*
-import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
-import bitlap.sbt.analyzer.model.AnalyzerCommandUnknownException
+import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
@@ -23,7 +22,7 @@ import com.intellij.openapi.project.Project
  *    梦境迷离
  *  @version 1.0,2023/8/11
  */
-trait SbtShellDependencyAnalysisTask {
+trait SbtShellDependencyAnalysisTask:
 
   val parserTypeEnum: ParserTypeEnum
 
@@ -35,28 +34,36 @@ trait SbtShellDependencyAnalysisTask {
     moduleNamePaths: Map[String, String],
     sbtModules: Map[String, String],
     declared: List[UnifiedCoordinates]
-  ): Future[DependencyScopeNode]
+  ): DependencyScopeNode
 
   protected final def taskCompleteCallback(
     project: Project,
     moduleData: ModuleData,
     scope: DependencyScopeEnum
-  )(rootNode: => DependencyScopeNode): Future[DependencyScopeNode] = {
+  )(rootNode: String => DependencyScopeNode): DependencyScopeNode = {
     val comms    = SbtShellCommunication.forProject(project)
     val moduleId = moduleData.getId.split(" ")(0)
-    val promise  = Promise[DependencyScopeNode]()
-    comms
+    val promise  = Promise[Boolean]()
+    val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
+    val result = comms
       .command(
         scopedKey(moduleId, scope, parserTypeEnum.cmd),
         new StringBuilder(),
         SbtShellCommunication.listenerAggregator {
           case SbtShellCommunication.TaskComplete =>
             if (!promise.isCompleted) {
-              promise.success(rootNode)
+              promise.success(true)
             }
           case SbtShellCommunication.ErrorWaitForInput =>
             if (!promise.isCompleted) {
-              promise.failure(new Exception(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")))
+              promise.failure(
+                AnalyzerCommandUnknownException(
+                  parserTypeEnum.cmd,
+                  moduleId,
+                  scope,
+                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                )
+              )
             }
           case SbtShellCommunication.Output(line) =>
             if (line.startsWith(s"[error]") && line.contains(parserTypeEnum.cmd) && !promise.isCompleted) {
@@ -80,9 +87,15 @@ trait SbtShellDependencyAnalysisTask {
         }
       )
       .flatMap(_ => promise.future)
+
+    Await.result(result, Constants.timeout)
+    rootNode(file)
   }
-}
+
+end SbtShellDependencyAnalysisTask
 
 object SbtShellDependencyAnalysisTask:
 
   lazy val dependencyDotTask: SbtShellDependencyAnalysisTask = new DependencyDotTask
+
+end SbtShellDependencyAnalysisTask

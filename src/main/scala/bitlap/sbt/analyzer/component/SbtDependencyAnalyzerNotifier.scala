@@ -3,7 +3,6 @@ package bitlap.sbt.analyzer.component
 import java.nio.file.Path
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
@@ -35,6 +34,18 @@ object SbtDependencyAnalyzerNotifier {
       }
 
     }
+  }
+
+  def parseFileError(file: String): Unit = {
+    // add notification when gets vfsFile timeout
+    val notification = GROUP
+      .createNotification(
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.parse", file),
+        NotificationType.ERROR
+      )
+      .setIcon(SbtDependencyAnalyzerIcons.ICON)
+    notification.notify(null)
   }
 
   def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {

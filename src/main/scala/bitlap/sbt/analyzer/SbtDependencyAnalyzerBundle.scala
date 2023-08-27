@@ -10,11 +10,12 @@ import SbtDependencyAnalyzerBundle.*
 
 final class SbtDependencyAnalyzerBundle extends DynamicBundle(BUNDLE)
 
-object SbtDependencyAnalyzerBundle {
+object SbtDependencyAnalyzerBundle:
 
   final val BUNDLE   = "messages.SbtDependencyAnalyzerBundle"
   final val INSTANCE = new SbtDependencyAnalyzerBundle
 
   @Nls def message(@NotNull @PropertyKey(resourceBundle = BUNDLE) key: String, @NotNull params: AnyRef*): String =
     INSTANCE.getMessage(key, params: _*)
-}
+
+end SbtDependencyAnalyzerBundle

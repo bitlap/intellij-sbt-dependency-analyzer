@@ -103,13 +103,10 @@ object DependencyUtils {
     else s"$project / $scope / $cmd"
   }
 
-  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String = {
-    parserTypeEnum match
-      case ParserTypeEnum.DOT =>
-        s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
-  }
+  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String =
+    s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
 
-  def rootNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
+  def createRootScopeNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
     val scopeDisplayName = "project " + project.getBasePath + " (" + dependencyScope.toString + ")"
     val node = new DependencyScopeNode(
       rootId.getAndIncrement(),

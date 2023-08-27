@@ -21,13 +21,14 @@ import guru.nidi.graphviz.model.{ Graph as _, * }
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DOTDependencyParser {
+object DOTDependencyParser:
   lazy val instance: DependencyParser = new DOTDependencyParser
 
   final val id = new AtomicInteger(0)
-}
 
-final class DOTDependencyParser extends DependencyParser {
+end DOTDependencyParser
+
+final class DOTDependencyParser extends DependencyParser:
 
   import DOTDependencyParser.*
 
@@ -50,7 +51,7 @@ final class DOTDependencyParser extends DependencyParser {
     root: DependencyScopeNode,
     declared: List[UnifiedCoordinates]
   ): DependencyScopeNode = {
-    val data = getDependencyRelations(context.analysisFile)
+    val data = getDependencyRelations(context)
     val depMap =
       data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(context, a)).toMap).getOrElse(Map.empty)
 
@@ -165,8 +166,8 @@ final class DOTDependencyParser extends DependencyParser {
 
   /** parse dot file, get graph data
    */
-  private def getDependencyRelations(file: String): Option[Dependencies] =
-    val mutableGraph: MutableGraph = DOTUtil.parseAsGraph(file)
+  private def getDependencyRelations(context: ModuleContext): Option[Dependencies] =
+    val mutableGraph: MutableGraph = DOTUtil.parseAsGraph(context)
     if (mutableGraph == null) None
     else
       val graphNodes: java.util.Collection[MutableNode] = mutableGraph.nodes()
@@ -196,4 +197,4 @@ final class DOTDependencyParser extends DependencyParser {
         )
       )
 
-}
+end DOTDependencyParser

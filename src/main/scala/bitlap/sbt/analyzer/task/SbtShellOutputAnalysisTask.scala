@@ -20,10 +20,10 @@ import com.intellij.openapi.project.Project
  *    梦境迷离
  *  @version 1.0,2023/8/11
  */
-trait SbtShellOutputAnalysisTask[T] {
+trait SbtShellOutputAnalysisTask[T]:
   private val log = Logger.getInstance(getClass)
 
-  protected final def getCommandOutputLines(project: Project, command: String): List[String] = {
+  protected final def getCommandOutputLines(project: Project, command: String): List[String] =
     val comms = SbtShellCommunication.forProject(project)
     val executed: Future[StringBuilder] = comms.command(
       command,
@@ -37,20 +37,16 @@ trait SbtShellOutputAnalysisTask[T] {
     }
     // see https://github.com/JetBrains/intellij-scala/blob/idea232.x/sbt/sbt-impl/src/org/jetbrains/sbt/shell/communication.scala
     // 1 second between multiple commands
-    try {
-      Thread.sleep(1000)
-    } catch {
-      case ignore: Throwable =>
-    }
+    commandInterval()
 
     result
-  }
+  end getCommandOutputLines
 
   def executeCommand(project: Project): T
 
-}
+end SbtShellOutputAnalysisTask
 
-object SbtShellOutputAnalysisTask {
+object SbtShellOutputAnalysisTask:
 
   final case class LibraryModuleID(
     organization: String,
@@ -86,4 +82,5 @@ object SbtShellOutputAnalysisTask {
 
   lazy val libraryDependenciesTask: SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]] =
     new LibraryDependenciesTask
-}
+
+end SbtShellOutputAnalysisTask
