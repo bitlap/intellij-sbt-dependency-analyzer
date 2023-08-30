@@ -88,7 +88,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              if (!DependencyUtils.ignoreModuleAnalysis(module)) {
+              if (!DependencyUtils.canIgnoreModule(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
             }
@@ -216,7 +216,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] =
     if (declaredDependencies.nonEmpty && SbtDependencyAnalyzerContributor.isValid.get()) return declaredDependencies
     val module = findModule(project, moduleData)
-    declaredDependencies = DependencyUtils.getUnifiedCoordinates(module)
+    declaredDependencies = DependencyUtils.getDeclaredDependency(module).map(_.getCoordinates)
     declaredDependencies
 
   private def getOrRefreshData(moduleData: ModuleData)(using ParserTypeEnum): JList[DependencyScopeNode] = {
@@ -324,7 +324,7 @@ object SbtDependencyAnalyzerContributor:
       declared: List[UnifiedCoordinates]
     )(using ParserTypeEnum): JList[DependencyScopeNode] =
       val module = findModule(project, moduleData)
-      if (DependencyUtils.ignoreModuleAnalysis(module)) return Collections.emptyList()
+      if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
       // if the analysis files already exist (.dot), use it directly.
       def executeCommandOrReadExistsFile(
@@ -341,7 +341,6 @@ object SbtDependencyAnalyzerContributor:
                 file,
                 moduleId,
                 scope,
-                getAllScalaVersions(project),
                 organization,
                 ideaModuleNamePaths,
                 module.isScalaJs,

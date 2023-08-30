@@ -60,7 +60,7 @@ final class DOTDependencyParser extends DependencyParser:
     // if no relations for dependency object
     if (dependencies == null || dependencies.relations.isEmpty) return {
       val dep             = data.map(_.dependencies.map(d => toDependencyNode(context, d)).toList).toList.flatten
-      val excludeSelfNode = dep.filterNot(d => isCurrentProjectModule(d, context))
+      val excludeSelfNode = dep.filterNot(d => isSelfModule(d, context))
       appendChildrenAndFixProjectNodes(root, excludeSelfNode, context)
       root
     }
@@ -86,7 +86,7 @@ final class DOTDependencyParser extends DependencyParser:
     }
 
     // get self
-    val selfNode = depMap.values.toSet.toSeq.filter(d => isCurrentProjectModule(d, context))
+    val selfNode = depMap.values.toSet.toSeq.filter(d => isSelfModule(d, context))
     // append children for self
     selfNode.foreach { node =>
       toNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
