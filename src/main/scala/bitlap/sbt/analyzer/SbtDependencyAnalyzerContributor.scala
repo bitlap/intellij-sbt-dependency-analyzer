@@ -341,7 +341,7 @@ object SbtDependencyAnalyzerContributor:
                 file,
                 moduleId,
                 scope,
-                scalaMajorVersion(module),
+                getAllScalaVersions(project),
                 organization,
                 ideaModuleNamePaths,
                 module.isScalaJs,

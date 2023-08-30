@@ -63,6 +63,13 @@ object DependencyUtils {
     getDeclaredDependency(module).map(_.getCoordinates)
   }
 
+  def getAllScalaVersions(project: Project): List[String] = {
+    SbtDependencyUtils.getAllScalaVers(project).map {
+      case ScalaVerRegex(major, minor, fix) if major == "2" => s"$major.$minor"
+      case _                                                => "3"
+    }
+  }
+
   def scalaMajorVersion(module: Module): String = {
     val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
     scalaVer match
@@ -160,28 +167,32 @@ object DependencyUtils {
         )
       )
 
+    // when there are multiple Scala versions in the project, this is cross-build,
+    // and the default and artifact only need to be judged roughly.
+    // only one of these version may be used in the current module at compile time?.
+    // or don't determine the Scala version number? because this method only determines the current module.
     if (context.isScalaNative) {
       artifact match
         case `ModuleWithScalaNative0.4Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case `ModuleWithScalaNative0.3Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case `ModuleWithScalaNative0.2Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case _ => false
 
     } else if (context.isScalaJs) {
       artifact match
         case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case `ModuleWithScalaJs1Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case _ => false
 
     } else {
       artifact match
         case `ModuleWithScalaRegex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+          currentModuleName == module && context.allScalaMajorVersions.contains(scalaVer)
         case _ => false
     }
   }
