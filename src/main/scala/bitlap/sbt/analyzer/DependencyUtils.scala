@@ -168,7 +168,7 @@ object DependencyUtils {
       )
 
     // when there are multiple Scala versions in the project, this is cross-build,
-    // and the default and artifact only need to be judged roughly.
+    // and artifact only need to be judged roughly.
     // only one of these version may be used in the current module at compile time?.
     // or don't determine the Scala version number? because this method only determines the current module.
     if (context.isScalaNative) {
