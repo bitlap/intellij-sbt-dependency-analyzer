@@ -364,31 +364,37 @@ object SbtDependencyAnalyzerContributor:
         }
       end executeCommandOrReadExistsFile
 
-      try {
+      if (isNotifying.get()) {
+        // must reload project to enable it
+        SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
+        isNotifying.compareAndSet(true, false)
+      }
 
-        if (isNotifying.get()) {
-          // must reload project to enable it
-          SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
-        }
-
-        val result =
-          DependencyScopeEnum.values.toList.map(executeCommandOrReadExistsFile)
-
-        isNotifying.set(false)
-        result.asJava
-
-      } catch {
-        case e: Throwable =>
-          e match
+      val result = ListBuffer[DependencyScopeNode]()
+      import scala.util.control.Breaks.*
+      // break, no more commands will be executed
+      breakable(
+        for (scope <- DependencyScopeEnum.values) {
+          var node: DependencyScopeNode = null
+          try {
+            node = executeCommandOrReadExistsFile(scope)
+            result.append(node)
+          } catch {
             case _: AnalyzerCommandNotFoundException =>
               if (isNotifying.compareAndSet(false, true)) {
                 SbtDependencyAnalyzerNotifier.notifyAndAddDependencyTreePlugin(project)
               }
+              break()
             case ue: AnalyzerCommandUnknownException =>
               SbtDependencyAnalyzerNotifier.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
-            case _ =>
-          null
-      }
+              break()
+            case e =>
+              throw e
+          }
+        }
+      )
+
+      result.toList.asJava
     end loadDependencies
   end extension
 
