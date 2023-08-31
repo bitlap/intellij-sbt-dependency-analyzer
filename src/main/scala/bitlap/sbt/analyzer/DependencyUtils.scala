@@ -39,7 +39,6 @@ object DependencyUtils {
   private final val artifactId = new AtomicLong(0)
 
   private val ArtifactRegex                   = "(.*):(.*):(.*)".r
-  private val ScalaVerRegex                   = "(.*)\\.(.*)\\.(.*)".r
   private val `ModuleWithScalaRegex`          = "(.*)(_)(.*)".r
   private val `ModuleWithScalaJs0.6Regex`     = "(.*)(_sjs0\\.6_)(.*)".r
   private val `ModuleWithScalaJs1Regex`       = "(.*)(_sjs1_)(.*)".r
@@ -59,25 +58,13 @@ object DependencyUtils {
     declaredDependencies(module).asScala.toList
   }
 
-  def getUnifiedCoordinates(module: Module): List[UnifiedCoordinates] = {
-    getDeclaredDependency(module).map(_.getCoordinates)
-  }
-
-  def scalaMajorVersion(module: Module): String = {
-    val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
-    scalaVer match
-      case ScalaVerRegex(major, minor, fix) if major == "2" => s"$major.$minor"
-      case _                                                => "3"
-  }
-
-  /** filter current module
-   *
-   *  self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it.
+  /** self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it. This is
+   *  important, for dependency graphs/trees, this is the root node.
    */
-  def isCurrentProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
+  def isSelfModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
       case ArtifactRegex(group, artifact, version) =>
-        context.organization == group && isCurrentModule(artifact, context)
+        context.organization == group && isSelfArtifact(artifact, context)
       case _ => false
   }
 
@@ -92,13 +79,13 @@ object DependencyUtils {
 
   /** do not analyze this module
    */
-  def ignoreModuleAnalysis(module: Module): Boolean = {
+  def canIgnoreModule(module: Module): Boolean = {
     // if module is itself a build module, skip build module
     val isBuildModule = module.isBuildModule
     isBuildModule || module.isSharedSourceModule
   }
 
-  def scopedKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
+  def getScopedCommandKey(project: String, scope: DependencyScopeEnum, cmd: String): String = {
     if (project == null || project.isEmpty) s"$scope / $cmd"
     else s"$project / $scope / $cmd"
   }
@@ -149,40 +136,42 @@ object DependencyUtils {
     }
   }
 
-  private def isCurrentModule(artifact: String, context: ModuleContext): Boolean = {
+  private def isSelfArtifact(artifact: String, context: ModuleContext): Boolean = {
     // Processing cross platform, module name is not artifact!
     val currentModuleName =
       context.ideaModuleIdSbtModuleNames.getOrElse(
         context.currentModuleId,
         context.ideaModuleIdSbtModuleNames.getOrElse(
-          Constants.RootSbtModule,
-          context.ideaModuleIdSbtModuleNames.getOrElse(Constants.SingleSbtModule, context.currentModuleId)
+          Constants.SingleSbtModule,
+          context.ideaModuleIdSbtModuleNames.getOrElse(Constants.RootSbtModule, context.currentModuleId)
         )
       )
 
+    // NOTE: we don't determine the Scala version number.
     if (context.isScalaNative) {
       artifact match
-        case `ModuleWithScalaNative0.4Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
-        case `ModuleWithScalaNative0.3Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
-        case `ModuleWithScalaNative0.2Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+        case `ModuleWithScalaNative0.4Regex`(module, _, _) =>
+          currentModuleName == module
+        case `ModuleWithScalaNative0.3Regex`(module, _, _) =>
+          currentModuleName == module
+        case `ModuleWithScalaNative0.2Regex`(module, _, _) =>
+          currentModuleName == module
         case _ => false
 
     } else if (context.isScalaJs) {
       artifact match
-        case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
-        case `ModuleWithScalaJs1Regex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
+        case `ModuleWithScalaJs0.6Regex`(module, _, _) =>
+          currentModuleName == module
+        case `ModuleWithScalaJs1Regex`(module, _, _) =>
+          currentModuleName == module
         case _ => false
 
     } else {
       artifact match
-        case `ModuleWithScalaRegex`(module, _, scalaVer) =>
-          currentModuleName == module && scalaVer == context.scalaMajor
-        case _ => false
+        case `ModuleWithScalaRegex`(module, _, _) =>
+          currentModuleName == module
+        // it is a java project
+        case _ => artifact == currentModuleName
     }
   }
 
@@ -222,7 +211,7 @@ object DependencyUtils {
     }
     p.getDependencies.addAll(
       dn.getDependencies.asScala
-        .filterNot(d => isCurrentProjectModule(d, context.copy(currentModuleId = sbtModuleName)))
+        .filterNot(d => isSelfModule(d, context.copy(currentModuleId = sbtModuleName)))
         .asJava
     )
     Some(p)
@@ -244,19 +233,14 @@ object DependencyUtils {
   /** copy from DependencyModifierService, and fix
    */
   def declaredDependencies(module: OpenapiModule.Module): java.util.List[DeclaredDependency] = try {
-
     // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
-//    if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
-
-    val libDeps = SbtDependencyUtils
-      .getLibraryDependenciesOrPlaces(getSbtFileOpt(module), module.getProject, module, GetDep)
-      .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
-
-    implicit val project: Project = module.getProject
-
+    // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
     val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
 
     inReadAction({
+      val libDeps = SbtDependencyUtils
+        .getLibraryDependenciesOrPlaces(getSbtFileOpt(module), module.getProject, module, GetDep)
+        .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
       libDeps
         .map(libDepInfixAndString => {
           val libDepArr = SbtDependencyUtils

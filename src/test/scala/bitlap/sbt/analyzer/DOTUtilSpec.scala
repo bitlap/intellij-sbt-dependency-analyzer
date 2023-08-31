@@ -27,7 +27,6 @@ class DOTUtilSpec extends AnyFlatSpec {
         file,
         "star-authority-protocol",
         DependencyScopeEnum.Compile,
-        "3",
         "fc.xuanwu.star",
         ideaModuleNamePaths = Map.empty,
         isScalaJs = false,

@@ -23,7 +23,6 @@ class DependencyGraphBuilderSpec extends AnyFlatSpec {
         getClass.getClassLoader.getResource("test.dot").getFile,
         "star-authority-protocol",
         DependencyScopeEnum.Compile,
-        "3",
         "fc.xuanwu.star",
         ideaModuleNamePaths = Map.empty,
         isScalaJs = false,

@@ -10,7 +10,6 @@ final case class ModuleContext(
   analysisFile: String,
   currentModuleId: String,
   scope: DependencyScopeEnum,
-  scalaMajor: String,
   organization: String,
   ideaModuleNamePaths: Map[String, String] = Map.empty,
   isScalaJs: Boolean = false,

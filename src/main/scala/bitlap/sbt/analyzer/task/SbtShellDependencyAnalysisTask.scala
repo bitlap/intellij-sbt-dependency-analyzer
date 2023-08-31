@@ -47,7 +47,7 @@ trait SbtShellDependencyAnalysisTask:
     val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
     val result = comms
       .command(
-        scopedKey(moduleId, scope, parserTypeEnum.cmd),
+        getScopedCommandKey(moduleId, scope, parserTypeEnum.cmd),
         new StringBuilder(),
         SbtShellCommunication.listenerAggregator {
           case SbtShellCommunication.TaskComplete =>

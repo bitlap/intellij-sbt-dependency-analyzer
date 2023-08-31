@@ -45,7 +45,6 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
             file,
             moduleId,
             scope,
-            scalaMajorVersion(module),
             organization,
             moduleNamePaths,
             module.isScalaJs,
