@@ -233,19 +233,14 @@ object DependencyUtils {
   /** copy from DependencyModifierService, and fix
    */
   def declaredDependencies(module: OpenapiModule.Module): java.util.List[DeclaredDependency] = try {
-
     // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
-//    if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
-
-    val libDeps = SbtDependencyUtils
-      .getLibraryDependenciesOrPlaces(getSbtFileOpt(module), module.getProject, module, GetDep)
-      .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
-
-    implicit val project: Project = module.getProject
-
+    // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
     val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
 
     inReadAction({
+      val libDeps = SbtDependencyUtils
+        .getLibraryDependenciesOrPlaces(getSbtFileOpt(module), module.getProject, module, GetDep)
+        .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
       libDeps
         .map(libDepInfixAndString => {
           val libDepArr = SbtDependencyUtils
