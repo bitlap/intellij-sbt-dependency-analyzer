@@ -110,12 +110,17 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
         BrowserUtil.browse(Release_Notes + version.presentation)
       }
     })
+    notification.addAction(
+      new NotificationAction(
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.updated.notification.goto")
+      ) {
+        override def actionPerformed(e: AnActionEvent, n: Notification): Unit = {
+          notification.expire()
+        }
+      }
+    )
 
     notification.notify(project)
-
-    // open url after 5s
-    waitInterval(5000)    // TODO
-    notification.expire() // disable open url
     true
   }
 
