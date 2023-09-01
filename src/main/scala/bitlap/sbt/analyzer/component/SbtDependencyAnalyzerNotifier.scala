@@ -73,6 +73,7 @@ object SbtDependencyAnalyzerNotifier {
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .setImportant(true)
     if (pluginsSbtFile != null) {
       notification.addAction(
         new NotificationAction(
