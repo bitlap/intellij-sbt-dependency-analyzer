@@ -74,9 +74,9 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-def commandInterval(): Unit = {
+def waitInterval(sleep: Long = Constants.intervalTimeout.toMillis): Unit = {
   try {
-    Thread.sleep(Constants.intervalTimeout.toMillis)
+    Thread.sleep(sleep)
   } catch {
     case ignore: Throwable =>
   }

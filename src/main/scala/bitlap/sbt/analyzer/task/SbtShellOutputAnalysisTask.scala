@@ -37,7 +37,7 @@ trait SbtShellOutputAnalysisTask[T]:
     }
     // see https://github.com/JetBrains/intellij-scala/blob/idea232.x/sbt/sbt-impl/src/org/jetbrains/sbt/shell/communication.scala
     // 1 second between multiple commands
-    commandInterval()
+    waitInterval()
 
     result
   end getCommandOutputLines
