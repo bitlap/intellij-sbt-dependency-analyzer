@@ -5,7 +5,6 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 [![Build](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
 [![Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
-![GitHub all releases](https://img.shields.io/github/downloads/bitlap/intellij-sbt-dependency-analyzer/total?label=Github%20Assets%20Downloads)
 ![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=JetBrains%20Plugin%20Downloads)
 
 
