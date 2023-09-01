@@ -22,7 +22,7 @@
                      defaultValue="true" restartRequired="false"
                      description="Force translation for notification"/>
 
-        <postStartupActivity implementation="bitlap.sbt.analyzer.component.UpdateListener"/>
+        <postStartupActivity implementation="bitlap.sbt.analyzer.component.PluginUpdateActivityListener"/>
 
     </extensions>
 

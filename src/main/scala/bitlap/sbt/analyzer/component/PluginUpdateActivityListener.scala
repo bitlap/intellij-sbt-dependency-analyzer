@@ -34,7 +34,7 @@ import com.intellij.util.ui.JBUI
  *    梦境迷离
  *  @version 1.0,2023/9/1
  */
-object UpdateListener:
+object PluginUpdateActivityListener:
   val Initial_Version = "0.0.0"
 
   val Update_Notification_Group_Id = "Sbt.DependencyAnalyzer.Notification"
@@ -43,13 +43,13 @@ object UpdateListener:
 
   val Release_Notes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"
 
-  private val LOG = Logger.getInstance(classOf[UpdateListener])
+  private val LOG = Logger.getInstance(classOf[PluginUpdateActivityListener])
 
-end UpdateListener
+end PluginUpdateActivityListener
 
-final class UpdateListener extends BaseProjectActivity {
+final class PluginUpdateActivityListener extends BaseProjectActivity {
 
-  import UpdateListener.*
+  import PluginUpdateActivityListener.*
 
   override def onRunActivity(project: Project) = {
     checkUpdate(project)
@@ -89,7 +89,7 @@ final class UpdateListener extends BaseProjectActivity {
     )
     val partStyle = s"margin-top: ${JBUI.scale(8)}px;"
     val content = SbtDependencyAnalyzerBundle.message(
-      "plugin.updated.notification.message",
+      "sbt.dependency.analyzer.updated.notification.message",
       partStyle,
       if (plugin.getChangeNotes == null) "<ul><li></li></ul>" else plugin.getChangeNotes,
       version.presentation
