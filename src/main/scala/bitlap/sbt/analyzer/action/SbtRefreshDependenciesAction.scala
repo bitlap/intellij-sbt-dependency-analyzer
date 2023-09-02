@@ -1,4 +1,7 @@
-package bitlap.sbt.analyzer
+package bitlap
+package sbt
+package analyzer
+package action
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.action.RefreshAllExternalProjectsAction
@@ -10,11 +13,11 @@ import com.intellij.openapi.externalSystem.action.RefreshAllExternalProjectsActi
 final class SbtRefreshDependenciesAction extends RefreshAllExternalProjectsAction:
 
   getTemplatePresentation.setText(
-    SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.refresh.dependencies.text")
+    SbtDependencyAnalyzerBundle.message("analyzer.refresh.dependencies.text")
   )
 
   getTemplatePresentation.setDescription(
-    SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.refresh.dependencies.description")
+    SbtDependencyAnalyzerBundle.message("analyzer.refresh.dependencies.description")
   )
 
   override def beforeActionPerformedUpdate(e: AnActionEvent): Unit =

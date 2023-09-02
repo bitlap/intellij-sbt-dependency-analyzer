@@ -74,7 +74,7 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-def waitInterval(sleep: Long = Constants.intervalTimeout.toMillis): Unit = {
+def waitInterval(sleep: Long = Constants.IntervalTimeout.toMillis): Unit = {
   try {
     Thread.sleep(sleep)
   } catch {

@@ -1,9 +1,8 @@
-package bitlap
-package sbt
-package analyzer
-package component
+package bitlap.sbt.analyzer.activity
 
-import bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle
+import bitlap.sbt.analyzer.*
+import bitlap.sbt.analyzer.activity.BaseProjectActivity
+import bitlap.sbt.analyzer.activity.PluginUpdateActivity
 
 import org.jetbrains.plugins.scala.project.Version
 
@@ -15,16 +14,12 @@ import com.intellij.notification.*
 import com.intellij.notification.impl.NotificationsManagerImpl
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
-import com.intellij.openapi.project.DumbAwareAction
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.*
 import com.intellij.openapi.ui.popup.Balloon
-import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.SystemInfoRt
+import com.intellij.openapi.util.*
 import com.intellij.openapi.util.registry.Registry
 import com.intellij.openapi.wm.IdeFrame
-import com.intellij.ui.BalloonImpl
-import com.intellij.ui.BalloonLayoutData
-import com.intellij.ui.JBColor
+import com.intellij.ui.*
 import com.intellij.ui.awt.RelativePoint
 import com.intellij.ui.jcef.JBCefApp
 import com.intellij.ui.scale.JBUIScale
@@ -34,14 +29,15 @@ import com.intellij.util.ui.JBUI
  *    梦境迷离
  *  @version 1.0,2023/9/1
  */
-object PluginUpdateActivityListener:
+object PluginUpdateActivity:
   private val InitialVersion               = "0.0.0"
+  private lazy val Log                     = Logger.getInstance(classOf[PluginUpdateActivity])
   private lazy val UpdateNotificationGroup = "Sbt.DependencyAnalyzer.UpdateNotification"
   private lazy val VersionProperty         = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
 
   private class UrlAction(version: Version)
       extends DumbAwareAction(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.updated.notification.goto"),
+        SbtDependencyAnalyzerBundle.message("analyzer.updated.notification.gotoBrowser"),
         null,
         AllIcons.General.Web
       ) {
@@ -52,11 +48,11 @@ object PluginUpdateActivityListener:
     }
   }
 
-end PluginUpdateActivityListener
+end PluginUpdateActivity
 
-final class PluginUpdateActivityListener extends BaseProjectActivity {
+final class PluginUpdateActivity extends BaseProjectActivity {
 
-  import PluginUpdateActivityListener.*
+  import PluginUpdateActivity.*
   import WhatsNew.*
 
   override def onRunActivity(project: Project) = {
@@ -91,13 +87,13 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
     version: Version
   ): Boolean = {
     val title = SbtDependencyAnalyzerBundle.message(
-      "sbt.dependency.analyzer.updated.notification.title",
+      "analyzer.updated.notification.title",
       plugin.getName,
       version.presentation
     )
     val partStyle = s"margin-top: ${JBUI.scale(8)}px;"
     val content = SbtDependencyAnalyzerBundle.message(
-      "sbt.dependency.analyzer.updated.notification.message",
+      "analyzer.updated.notification.text",
       partStyle,
       if (plugin.getChangeNotes == null) "<ul><li></li></ul>" else plugin.getChangeNotes,
       version.presentation

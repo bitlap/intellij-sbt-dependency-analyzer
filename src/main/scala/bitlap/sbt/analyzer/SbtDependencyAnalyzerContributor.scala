@@ -10,11 +10,12 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtils.*
-import bitlap.sbt.analyzer.component.*
+import bitlap.sbt.analyzer.activity.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
+import bitlap.sbt.analyzer.util.{ DependencyUtils, Notifications }
+import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
 import org.jetbrains.sbt.project.SbtProjectSystem
@@ -247,7 +248,7 @@ object SbtDependencyAnalyzerContributor:
   private def isValidFile(file: String): Boolean = {
     if (isValid.get()) {
       val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + Constants.fileLifespan
+      System.currentTimeMillis() <= lastModified + Constants.FileLifespan
     } else {
       isValid.getAndSet(true)
     }
@@ -382,11 +383,11 @@ object SbtDependencyAnalyzerContributor:
           } catch {
             case _: AnalyzerCommandNotFoundException =>
               if (isNotifying.compareAndSet(false, true)) {
-                SbtDependencyAnalyzerNotifier.notifyAndAddDependencyTreePlugin(project)
+                Notifications.notifyAndAddDependencyTreePlugin(project)
               }
               break()
             case ue: AnalyzerCommandUnknownException =>
-              SbtDependencyAnalyzerNotifier.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
+              Notifications.notifyUnknownError(project, ue.command, ue.moduleId, ue.scope)
               break()
             case e =>
               throw e

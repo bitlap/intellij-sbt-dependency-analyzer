@@ -23,36 +23,36 @@
                      defaultValue="true" restartRequired="false"
                      description="Force translation for notification"/>
 
-        <postStartupActivity implementation="bitlap.sbt.analyzer.component.PluginUpdateActivityListener"/>
+        <postStartupActivity implementation="bitlap.sbt.analyzer.activity.PluginUpdateActivity"/>
 
     </extensions>
 
     <actions>
-        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.ViewDependencyAnalyzerAction"/>
-        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.ToolbarDependencyAnalyzerAction"/>
+        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ViewDependencyAnalyzerAction"/>
+        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ToolbarDependencyAnalyzerAction"/>
         <action id="Sbt.ProjectViewDependencyAnalyzer"
-                class="bitlap.sbt.analyzer.ProjectViewDependencyAnalyzerAction">
+                class="bitlap.sbt.analyzer.action.ProjectViewDependencyAnalyzerAction">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="UML.Group"/>
         </action>
         <action id="Sbt.DependencyAnalyzer.OpenConfig"
-                class="bitlap.sbt.analyzer.SbtDependencyAnalyzerOpenConfigAction">
+                class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerOpenConfigAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.SbtDependencyAnalyzerGoToAction">
+        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="Sbt.DependencyAnalyzer.RefreshDependencies" class="bitlap.sbt.analyzer.SbtRefreshDependenciesAction">
+        <action id="Sbt.DependencyAnalyzer.RefreshDependencies" class="bitlap.sbt.analyzer.action.SbtRefreshDependenciesAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
 
         <action id="Sbt.WhatsNewInSbtDependencyAnalyzer"
-                class="bitlap.sbt.analyzer.component.WhatsNewAction">
+                class="bitlap.sbt.analyzer.activity.WhatsNewAction">
             <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="WhatsNewAction"/>
         </action>
 

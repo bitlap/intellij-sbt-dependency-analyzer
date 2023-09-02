@@ -1,4 +1,4 @@
-package bitlap.sbt.analyzer.component
+package bitlap.sbt.analyzer.activity
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project

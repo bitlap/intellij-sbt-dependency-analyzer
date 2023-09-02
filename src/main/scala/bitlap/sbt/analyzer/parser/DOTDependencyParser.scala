@@ -6,9 +6,9 @@ import java.util.concurrent.atomic.*
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtils
-import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.model.*
+import bitlap.sbt.analyzer.util.DependencyUtils
+import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 

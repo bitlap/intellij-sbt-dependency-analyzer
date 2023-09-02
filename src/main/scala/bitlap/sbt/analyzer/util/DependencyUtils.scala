@@ -1,10 +1,11 @@
-package bitlap.sbt.analyzer
+package bitlap.sbt.analyzer.util
 
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 

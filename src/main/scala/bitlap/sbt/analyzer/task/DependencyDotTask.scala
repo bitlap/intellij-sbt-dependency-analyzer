@@ -1,9 +1,9 @@
 package bitlap.sbt.analyzer.task
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
 

@@ -1,4 +1,4 @@
-package bitlap.sbt.analyzer.component
+package bitlap.sbt.analyzer.activity
 
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerPlugin
@@ -11,7 +11,7 @@ import com.intellij.openapi.project.DumbAwareAction
 final class WhatsNewAction extends DumbAwareAction {
 
   getTemplatePresentation.setText(
-    SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer")
+    SbtDependencyAnalyzerBundle.message("analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer")
   )
 
   override def actionPerformed(e: AnActionEvent): Unit = {

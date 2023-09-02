@@ -1,7 +1,10 @@
-package bitlap.sbt.analyzer
+package bitlap.sbt.analyzer.action
 
 import scala.jdk.CollectionConverters.*
 import scala.util.Try
+
+import bitlap.sbt.analyzer.*
+import bitlap.sbt.analyzer.util.DependencyUtils
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 

@@ -1,4 +1,4 @@
-package bitlap.sbt.analyzer.component
+package bitlap.sbt.analyzer.activity
 
 import java.util.*
 
@@ -24,15 +24,15 @@ import com.intellij.util.ui.UIUtil
  *  @version 1.0,2023/9/2
  */
 object WhatsNew:
-  private val LOG           = Logger.getInstance(classOf[WhatsNew.type])
-  private val Release_Notes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"
+  private lazy val Log     = Logger.getInstance(classOf[WhatsNew.type])
+  private val ReleaseNotes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"
 
   def canBrowseInHTMLEditor: Boolean = JBCefApp.isSupported
 
-  def getReleaseNotes(version: Version) = Release_Notes + version.presentation
+  def getReleaseNotes(version: Version): String = ReleaseNotes + version.presentation
 
   def browse(version: Version, project: Project): Unit = {
-    val url = Release_Notes + version.presentation
+    val url = ReleaseNotes + version.presentation
     if (project != null && canBrowseInHTMLEditor) {
       ApplicationManager.getApplication.invokeLater(
         () => {
@@ -40,7 +40,7 @@ object WhatsNew:
             HTMLEditorProvider.openEditor(
               project,
               SbtDependencyAnalyzerBundle
-                .message("sbt.dependency.analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer"),
+                .message("analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer"),
               url,
               // language=HTML
               s"""<div style="text-align: center;padding-top: 3rem">
@@ -51,7 +51,7 @@ object WhatsNew:
             )
           } catch {
             case e: Throwable =>
-              LOG.warn("""Failed to load "What's New" page""", e)
+              Log.warn("""Failed to load "What's New" page""", e)
               BrowserUtil.browse(url)
           }
         },
