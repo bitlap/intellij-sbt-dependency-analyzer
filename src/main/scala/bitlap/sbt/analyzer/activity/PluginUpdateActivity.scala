@@ -112,13 +112,13 @@ final class PluginUpdateActivity extends BaseProjectActivity {
     if (!canBrowseInHTMLEditor) {
       notification.addAction(new UrlAction(version))
     } else {
+
       notification.whenExpired(() => BrowserUtil.browse(WhatsNew.getReleaseNotes(version)))
+      waitInterval(10000)
+      notification.expire()
     }
 
     notification.notify(project)
-
-    waitInterval(5000)
-    notification.expire()
 
     true
   }
