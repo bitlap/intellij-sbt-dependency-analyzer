@@ -56,7 +56,7 @@ object SbtDependencyAnalyzerBundle:
   private val LOG = Logger.getInstance(classOf[SbtDependencyAnalyzerBundle])
 
   private lazy val forceFollowLanguagePack: Boolean = {
-    Registry.get("bitlap.sbt.analyzer.bundle.SbtDependencyAnalyzerBundle").asBoolean()
+    Registry.get("bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle").asBoolean()
   }
 
   private lazy val getDynamicLocale: Locale = {
