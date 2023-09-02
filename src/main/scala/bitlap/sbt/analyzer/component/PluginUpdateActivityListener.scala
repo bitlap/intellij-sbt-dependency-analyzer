@@ -35,21 +35,29 @@ import com.intellij.util.ui.JBUI
  *  @version 1.0,2023/9/1
  */
 object PluginUpdateActivityListener:
-  val Initial_Version = "0.0.0"
+  private val Initial_Version              = "0.0.0"
+  private val Update_Notification_Group_Id = "Sbt.DependencyAnalyzer.Notification"
+  private val Version_Property             = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
 
-  val Update_Notification_Group_Id = "Sbt.DependencyAnalyzer.Notification"
+  private class UrlAction(version: Version)
+      extends DumbAwareAction(
+        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.updated.notification.goto"),
+        null,
+        AllIcons.General.Web
+      ) {
 
-  val Version_Property = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
+    override def actionPerformed(e: AnActionEvent) = {
 
-  val Release_Notes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"
-
-  private val LOG = Logger.getInstance(classOf[PluginUpdateActivityListener])
+      BrowserUtil.browse(WhatsNew.getReleaseNotes(version))
+    }
+  }
 
 end PluginUpdateActivityListener
 
 final class PluginUpdateActivityListener extends BaseProjectActivity {
 
   import PluginUpdateActivityListener.*
+  import WhatsNew.*
 
   override def onRunActivity(project: Project) = {
     checkUpdate(project)
@@ -66,13 +74,13 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
 
     val version     = Version(versionString)
     val lastVersion = Version(lastVersionString)
-    if (version.compare(lastVersion) == 0) {
+    if (version == lastVersion) {
       return
     }
 
     // Simple handling of notifications
-    val isFeatureVersion = version.inRange(Version(Initial_Version), lastVersion)
-    if (showUpdateNotification(project, plugin, version)) {
+    val isNewVersion = version > lastVersion
+    if (isNewVersion && showUpdateNotification(project, plugin, version)) {
       properties.setValue(Version_Property, versionString)
     }
   }
@@ -103,25 +111,15 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
       .setTitle(title)
       .setImportant(true)
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
-    NotificationListener.UrlOpeningListener(true)
-    notification.whenExpired(() => {
-      // open url to visit release notes
-      if (JBCefApp.isSupported) {
-        BrowserUtil.browse(Release_Notes + version.presentation)
-      }
-    })
-    notification.addAction(
-      new NotificationAction(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.updated.notification.goto")
-      ) {
-        override def actionPerformed(e: AnActionEvent, n: Notification): Unit = {
-          notification.expire()
-        }
-      }
-    )
+
+    if (!canBrowseInHTMLEditor) {
+      notification.addAction(new UrlAction(version))
+    } else {
+      notification.whenExpired(() => BrowserUtil.browse(WhatsNew.getReleaseNotes(version)))
+    }
 
     notification.notify(project)
+
     true
   }
-
 }
