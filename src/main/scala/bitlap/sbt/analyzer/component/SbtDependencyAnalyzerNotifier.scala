@@ -19,7 +19,7 @@ import com.intellij.openapi.vfs.VfsUtil
  */
 object SbtDependencyAnalyzerNotifier {
 
-  private lazy val GROUP =
+  private lazy val NotificationGroup =
     NotificationGroupManager.getInstance().getNotificationGroup("Sbt.DependencyAnalyzer.Notification")
 
   private def getTextForAnalyzer(project: Project): String = {
@@ -38,7 +38,7 @@ object SbtDependencyAnalyzerNotifier {
 
   def notifyParseFileError(file: String): Unit = {
     // add notification when gets vfsFile timeout
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.parse", file),
@@ -50,7 +50,7 @@ object SbtDependencyAnalyzerNotifier {
 
   def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {
     // add notification
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.unknown", moduleId, scope.toString, command),
@@ -66,7 +66,7 @@ object SbtDependencyAnalyzerNotifier {
     val pluginsSbtFile = VfsUtil.findRelativeFile(projectPath, "project", "plugins.sbt")
 
     // add notification
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
         SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error"),

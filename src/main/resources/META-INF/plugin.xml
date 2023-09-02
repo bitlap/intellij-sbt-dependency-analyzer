@@ -17,6 +17,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
+        <notificationGroup id="Sbt.DependencyAnalyzer.UpdateNotification" displayType="BALLOON"/>
 
         <registryKey key="bitlap.sbt.analyzer.bundle.SbtDependencyAnalyzerBundle"
                      defaultValue="true" restartRequired="false"
@@ -48,6 +49,11 @@
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
+        </action>
+
+        <action id="Sbt.WhatsNewInSbtDependencyAnalyzer"
+                class="bitlap.sbt.analyzer.component.WhatsNewAction">
+            <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="WhatsNewAction"/>
         </action>
 
         <group id="Sbt.View.ProjectMenu">
@@ -104,6 +110,7 @@
             <ul>
                 <li>Locale zn_CN translation for notification.</li>
                 <li>Plugin update notification.</li>
+                <li>Add What's New action.</li>
             </ul>
             
             <h1>0.1.3-231.9392.1</h1>

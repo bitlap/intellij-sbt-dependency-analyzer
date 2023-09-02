@@ -35,9 +35,9 @@ import com.intellij.util.ui.JBUI
  *  @version 1.0,2023/9/1
  */
 object PluginUpdateActivityListener:
-  private val Initial_Version              = "0.0.0"
-  private val Update_Notification_Group_Id = "Sbt.DependencyAnalyzer.Notification"
-  private val Version_Property             = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
+  private val InitialVersion               = "0.0.0"
+  private lazy val UpdateNotificationGroup = "Sbt.DependencyAnalyzer.UpdateNotification"
+  private lazy val VersionProperty         = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
 
   private class UrlAction(version: Version)
       extends DumbAwareAction(
@@ -67,7 +67,7 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
     val plugin            = SbtDependencyAnalyzerPlugin.descriptor
     val versionString     = plugin.getVersion
     val properties        = PropertiesComponent.getInstance()
-    val lastVersionString = properties.getValue(Version_Property, Initial_Version)
+    val lastVersionString = properties.getValue(VersionProperty, InitialVersion)
     if (versionString == lastVersionString) {
       return
     }
@@ -81,7 +81,7 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
     // Simple handling of notifications
     val isNewVersion = version > lastVersion
     if (isNewVersion && showUpdateNotification(project, plugin, version)) {
-      properties.setValue(Version_Property, versionString)
+      properties.setValue(VersionProperty, versionString)
     }
   }
 
@@ -103,7 +103,7 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
       version.presentation
     )
 
-    val notificationGroup = NotificationGroupManager.getInstance().getNotificationGroup(Update_Notification_Group_Id)
+    val notificationGroup = NotificationGroupManager.getInstance().getNotificationGroup(UpdateNotificationGroup)
     if (notificationGroup == null) return false
 
     val notification = notificationGroup
