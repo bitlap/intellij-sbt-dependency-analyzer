@@ -1,7 +1,7 @@
-package bitlap.sbt.analyzer.activity
-
-import bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle
-import bitlap.sbt.analyzer.SbtDependencyAnalyzerPlugin
+package bitlap
+package sbt
+package analyzer
+package activity
 
 import org.jetbrains.plugins.scala.project.Version
 

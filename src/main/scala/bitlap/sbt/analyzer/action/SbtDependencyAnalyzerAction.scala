@@ -1,4 +1,7 @@
-package bitlap.sbt.analyzer.action
+package bitlap
+package sbt
+package analyzer
+package action
 
 import scala.jdk.CollectionConverters.*
 

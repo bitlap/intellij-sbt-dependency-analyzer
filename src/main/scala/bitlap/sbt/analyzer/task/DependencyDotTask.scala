@@ -1,6 +1,8 @@
-package bitlap.sbt.analyzer.task
+package bitlap
+package sbt
+package analyzer
+package task
 
-import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.util.DependencyUtils.*

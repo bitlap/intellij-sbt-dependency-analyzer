@@ -1,8 +1,9 @@
-package bitlap.sbt.analyzer.activity
+package bitlap
+package sbt
+package analyzer
+package activity
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.activity.BaseProjectActivity
-import bitlap.sbt.analyzer.activity.PluginUpdateActivity
 
 import org.jetbrains.plugins.scala.project.Version
 
