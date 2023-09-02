@@ -120,6 +120,9 @@ final class PluginUpdateActivityListener extends BaseProjectActivity {
 
     notification.notify(project)
 
+    waitInterval(5000)
+    notification.expire()
+
     true
   }
 }
