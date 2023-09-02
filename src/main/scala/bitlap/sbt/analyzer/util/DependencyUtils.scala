@@ -1,4 +1,7 @@
-package bitlap.sbt.analyzer
+package bitlap
+package sbt
+package analyzer
+package util
 
 import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong

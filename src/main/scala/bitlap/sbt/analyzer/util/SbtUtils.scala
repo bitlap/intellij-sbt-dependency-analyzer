@@ -1,7 +1,6 @@
-package bitlap.sbt.analyzer
+package bitlap.sbt.analyzer.util
 
-import java.io.{ BufferedInputStream, File, FileInputStream }
-import java.io.File
+import java.io.*
 import java.net.URI
 import java.util.Properties
 import java.util.jar.JarFile

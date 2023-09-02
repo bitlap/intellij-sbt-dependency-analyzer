@@ -7,7 +7,7 @@ import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.Constants.*
-import bitlap.sbt.analyzer.SbtUtils.getClass
+import bitlap.sbt.analyzer.util.SbtUtils.getClass
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
@@ -30,14 +30,14 @@ trait SbtShellOutputAnalysisTask[T]:
       new StringBuilder(),
       SbtShellCommunication.messageAggregator
     )
-    val res    = Await.result(executed.map(_.result()), Constants.timeout)
+    val res    = Await.result(executed.map(_.result()), Constants.Timeout)
     val result = res.split(Constants.Line_Separator).toList.filter(_.startsWith("[info]"))
     if (result.isEmpty) {
       log.warn("Sbt Dependency Analyzer cannot find any output lines")
     }
     // see https://github.com/JetBrains/intellij-scala/blob/idea232.x/sbt/sbt-impl/src/org/jetbrains/sbt/shell/communication.scala
     // 1 second between multiple commands
-    commandInterval()
+    waitInterval()
 
     result
   end getCommandOutputLines

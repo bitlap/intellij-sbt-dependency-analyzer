@@ -6,8 +6,8 @@ import java.nio.file.Path
 import scala.util.Try
 
 import bitlap.sbt.analyzer.Constants
-import bitlap.sbt.analyzer.component.SbtDependencyAnalyzerNotifier
 import bitlap.sbt.analyzer.model.ModuleContext
+import bitlap.sbt.analyzer.util.Notifications
 
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
@@ -47,9 +47,9 @@ object DOTUtil {
         if (vfsFile != null) {
           VfsUtil.markDirtyAndRefresh(false, false, false, vfsFile)
         } else {
-          if (System.currentTimeMillis() - start > Constants.timeout.toMillis) {
+          if (System.currentTimeMillis() - start > Constants.Timeout.toMillis) {
             LOG.error(s"Cannot get dot file: $file")
-            SbtDependencyAnalyzerNotifier.notifyParseFileError(file)
+            Notifications.notifyParseFileError(file)
             return null
           }
         }
@@ -61,7 +61,7 @@ object DOTUtil {
 
     } catch {
       case e: Throwable =>
-        SbtDependencyAnalyzerNotifier.notifyParseFileError(file)
+        Notifications.notifyParseFileError(file)
         LOG.error(s"Cannot parse dot file: $file", e)
         null
     }

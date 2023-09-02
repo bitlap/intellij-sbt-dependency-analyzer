@@ -1,4 +1,4 @@
-package bitlap.sbt.analyzer.component
+package bitlap.sbt.analyzer.util
 
 import java.nio.file.Path
 
@@ -17,9 +17,9 @@ import com.intellij.openapi.vfs.VfsUtil
 
 /** SbtDependencyAnalyzer global notifier
  */
-object SbtDependencyAnalyzerNotifier {
+object Notifications {
 
-  private lazy val GROUP =
+  private lazy val NotificationGroup =
     NotificationGroupManager.getInstance().getNotificationGroup("Sbt.DependencyAnalyzer.Notification")
 
   private def getTextForAnalyzer(project: Project): String = {
@@ -38,10 +38,10 @@ object SbtDependencyAnalyzerNotifier {
 
   def notifyParseFileError(file: String): Unit = {
     // add notification when gets vfsFile timeout
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.parse", file),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.text", file),
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -50,10 +50,10 @@ object SbtDependencyAnalyzerNotifier {
 
   def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {
     // add notification
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.unknown", moduleId, scope.toString, command),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.unknown.text", moduleId, scope.toString, command),
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -66,17 +66,18 @@ object SbtDependencyAnalyzerNotifier {
     val pluginsSbtFile = VfsUtil.findRelativeFile(projectPath, "project", "plugins.sbt")
 
     // add notification
-    val notification = GROUP
+    val notification = NotificationGroup
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title"),
-        SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error"),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.unknown.title"),
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .setImportant(true)
     if (pluginsSbtFile != null) {
       notification.addAction(
         new NotificationAction(
-          SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.notification.goto.plugins.sbt")
+          SbtDependencyAnalyzerBundle.message("analyzer.notification.gotoPluginsFile")
         ) {
           override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
             val doc = FileDocumentManager.getInstance().getDocument(pluginsSbtFile)

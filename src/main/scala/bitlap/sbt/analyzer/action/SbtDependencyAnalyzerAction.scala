@@ -1,11 +1,15 @@
-package bitlap.sbt.analyzer
+package bitlap
+package sbt
+package analyzer
+package action
 
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.*
+
 import org.jetbrains.sbt.project.SbtProjectSystem
 
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.externalSystem.dependency.analyzer.*
 import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.*
@@ -20,7 +24,7 @@ import com.intellij.openapi.module.Module
  */
 final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[ExternalSystemNode[?]]:
 
-  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
+  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
 
   override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): String =
@@ -67,7 +71,7 @@ end ViewDependencyAnalyzerAction
 
 final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module]:
 
-  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
+  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
 
   override def getDependencyScope(anActionEvent: AnActionEvent, data: Module): String = null
@@ -93,7 +97,7 @@ end ProjectViewDependencyAnalyzerAction
 
 final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction():
 
-  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.action.name"))
+  getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
 
   private val viewAction = ViewDependencyAnalyzerAction()

@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.1.4-231.9392.1</version>
+    <version>0.2.0-RC1-231.9392.1</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <idea-version since-build="231.0"/>
@@ -17,30 +17,44 @@
     <extensions defaultExtensionNs="com.intellij">
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
+        <notificationGroup id="Sbt.DependencyAnalyzer.UpdateNotification" displayType="BALLOON"/>
+
+        <registryKey key="bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle"
+                     defaultValue="true" restartRequired="false"
+                     description="Force translation for notification"/>
+
+        <postStartupActivity implementation="bitlap.sbt.analyzer.activity.PluginUpdateActivity"/>
+
     </extensions>
 
     <actions>
-        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.ViewDependencyAnalyzerAction"/>
-        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.ToolbarDependencyAnalyzerAction"/>
+        <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ViewDependencyAnalyzerAction"/>
+        <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ToolbarDependencyAnalyzerAction"/>
         <action id="Sbt.ProjectViewDependencyAnalyzer"
-                class="bitlap.sbt.analyzer.ProjectViewDependencyAnalyzerAction">
+                class="bitlap.sbt.analyzer.action.ProjectViewDependencyAnalyzerAction">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="before" relative-to-action="UML.Group"/>
         </action>
         <action id="Sbt.DependencyAnalyzer.OpenConfig"
-                class="bitlap.sbt.analyzer.SbtDependencyAnalyzerOpenConfigAction">
+                class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerOpenConfigAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.SbtDependencyAnalyzerGoToAction">
+        <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
-        <action id="Sbt.DependencyAnalyzer.RefreshDependencies" class="bitlap.sbt.analyzer.SbtRefreshDependenciesAction">
+        <action id="Sbt.DependencyAnalyzer.RefreshDependencies"
+                class="bitlap.sbt.analyzer.action.SbtRefreshDependenciesAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
+        </action>
+
+        <action id="Sbt.WhatsNewInSbtDependencyAnalyzer"
+                class="bitlap.sbt.analyzer.activity.WhatsNewAction">
+            <add-to-group group-id="HelpMenu" anchor="after" relative-to-action="WhatsNewAction"/>
         </action>
 
         <group id="Sbt.View.ProjectMenu">
@@ -93,6 +107,13 @@
     </description>
     <change-notes>
         <![CDATA[
+            <h1>0.2.0-RC1-231.9392.1</h1>
+            <ul>
+                <li>🎉Add locale zn_CN translation for notification.</li>
+                <li>🎉Add plugin update notification.</li>
+                <li>🎉Add What's New action in Help menu.</li>
+            </ul>
+            
             <h1>0.1.3-231.9392.1</h1>
             <ul>
                 <li>Fix module recognition failure when analyzing cross-build projects for Scala2 and Scala3.</li>

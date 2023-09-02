@@ -1,11 +1,16 @@
-package bitlap.sbt.analyzer
+package bitlap
+package sbt
+package analyzer
+package action
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
-import com.intellij.openapi.externalSystem.dependency.analyzer.ExternalSystemDependencyAnalyzerOpenConfigAction
+import com.intellij.openapi.externalSystem.dependency.analyzer.{
+  DependencyAnalyzerDependency as Dependency,
+  DependencyAnalyzerView,
+  ExternalSystemDependencyAnalyzerOpenConfigAction
+}
 
 final class SbtDependencyAnalyzerOpenConfigAction
     extends ExternalSystemDependencyAnalyzerOpenConfigAction(SbtProjectSystem.Id):

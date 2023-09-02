@@ -5,9 +5,9 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.DependencyUtils
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.DOTUtil
+import bitlap.sbt.analyzer.util.DependencyUtils
 
 import org.scalatest.flatspec.AnyFlatSpec
 

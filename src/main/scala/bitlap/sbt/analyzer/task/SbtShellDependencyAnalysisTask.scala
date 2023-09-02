@@ -6,9 +6,9 @@ package task
 import scala.concurrent.*
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.DependencyUtils.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
@@ -61,7 +61,7 @@ trait SbtShellDependencyAnalysisTask:
                   parserTypeEnum.cmd,
                   moduleId,
                   scope,
-                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                  SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")
                 )
               )
             }
@@ -69,7 +69,7 @@ trait SbtShellDependencyAnalysisTask:
             if (line.startsWith(s"[error]") && line.contains(parserTypeEnum.cmd) && !promise.isCompleted) {
               promise.failure(
                 AnalyzerCommandNotFoundException(
-                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                  SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")
                 )
               )
             } else if (line.startsWith(s"[error]") && !promise.isCompleted) {
@@ -78,7 +78,7 @@ trait SbtShellDependencyAnalysisTask:
                   parserTypeEnum.cmd,
                   moduleId,
                   scope,
-                  SbtDependencyAnalyzerBundle.message("sbt.dependency.analyzer.error.title")
+                  SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")
                 )
               )
             }
@@ -88,7 +88,7 @@ trait SbtShellDependencyAnalysisTask:
       )
       .flatMap(_ => promise.future)
 
-    Await.result(result, Constants.timeout)
+    Await.result(result, Constants.Timeout)
     rootNode(file)
   }
 
