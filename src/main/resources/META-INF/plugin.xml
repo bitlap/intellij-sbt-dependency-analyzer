@@ -93,7 +93,7 @@
         <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer/issues">Issues</a>
         <br/>
         <br/>
-        Adds support for the SBT. The following features are available for free with IntelliJ IDEA:
+        Adds support for the Scala's sbt. The following features are available for free with IntelliJ IDEA:
         <ul>
               <li>Show Dependency Tree</li>
               <li>Show Conflicts</li>
@@ -107,9 +107,15 @@
     </description>
     <change-notes>
         <![CDATA[
+        
+            <h1>0.2.0-RC2-231.9392.1</h1>
+            <ul>
+                <li>Update description and action name.</li>
+            </ul>
+            
             <h1>0.2.0-RC1-231.9392.1</h1>
             <ul>
-                <li>🎉Add locale zn_CN translation for notification.</li>
+                <li>🎉Add locale zh_CN translation for notification.</li>
                 <li>🎉Add plugin update notification.</li>
                 <li>🎉Add What's New action in Help menu.</li>
             </ul>

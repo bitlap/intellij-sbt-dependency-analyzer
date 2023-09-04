@@ -21,6 +21,10 @@ import com.intellij.pom.Navigatable
 import com.intellij.psi.PsiElement
 
 final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction(SbtProjectSystem.Id):
+  
+  getTemplatePresentation.setText(
+     SbtDependencyAnalyzerBundle.message("analyzer.gotoAction.text")
+  )
 
   private val LOG = Logger.getInstance(classOf[SbtDependencyAnalyzerGoToAction])
 
