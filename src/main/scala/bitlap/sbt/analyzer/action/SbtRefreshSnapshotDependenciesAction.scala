@@ -29,7 +29,7 @@ final class SbtRefreshSnapshotDependenciesAction extends BaseRefreshDependencies
     SbtDependencyAnalyzerContributor.isValid.set(false)
     SbtShellOutputAnalysisTask.refreshSnapshotsTask.executeCommand(e.getProject)
     // no need to trigger refresh project, but for update view
-     super.actionPerformed(e)
+    super.actionPerformed(e)
   }
 
 end SbtRefreshSnapshotDependenciesAction
