@@ -333,8 +333,9 @@ object SbtDependencyAnalyzerContributor:
       ): DependencyScopeNode =
         val moduleId = moduleData.getId.split(" ")(0)
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
+        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)
         // File cache for one hour
-        if (!isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
+        if (useCache) {
           DependencyParserFactory
             .getInstance(summon[ParserTypeEnum])
             .buildDependencyTree(

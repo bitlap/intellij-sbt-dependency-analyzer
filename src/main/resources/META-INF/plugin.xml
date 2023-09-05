@@ -51,6 +51,12 @@
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
+        <action id="Sbt.DependencyAnalyzer.RefreshSnapshotDependencies"
+                class="bitlap.sbt.analyzer.action.SbtRefreshSnapshotDependenciesAction">
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
+        </action>
 
         <action id="Sbt.WhatsNewInSbtDependencyAnalyzer"
                 class="bitlap.sbt.analyzer.activity.WhatsNewAction">
@@ -111,6 +117,7 @@
             <h1>0.2.0-RC2-231.9392.1</h1>
             <ul>
                 <li>Update description and action name.</li>
+                <li>Add refresh snapshots button.</li>
             </ul>
             
             <h1>0.2.0-RC1-231.9392.1</h1>
