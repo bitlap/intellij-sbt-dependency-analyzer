@@ -1,16 +1,11 @@
 package bitlap.sbt.analyzer.action
 
 import scala.annotation.nowarn
-import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.task.*
 
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.statistics.ExternalSystemActionsCollector
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
-import com.intellij.openapi.fileEditor.FileDocumentManager
 
 /** @author
  *    梦境迷离
