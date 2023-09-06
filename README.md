@@ -20,9 +20,10 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Usage Instructions
 
-This Intellij IDEA plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+This plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, do not modify or delete `project/sdap.sbt`.
+Because this plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
 
-The Plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it.
+**Let's see how to use it!**
 
 Just click on the icon and wait for the analysis:
 
@@ -30,12 +31,7 @@ Just click on the icon and wait for the analysis:
 
 When the analysis is complete:
 
-<details>
-<summary>Show Conflicts 👈🏻</summary>
-
 ![](./docs/dependencyTreeConflicts.jpg)
-
-</details>
 
 ## For more details
 
