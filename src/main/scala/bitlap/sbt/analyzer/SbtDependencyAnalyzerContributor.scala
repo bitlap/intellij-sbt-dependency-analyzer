@@ -327,14 +327,21 @@ object SbtDependencyAnalyzerContributor:
       val module = findModule(project, moduleData)
       if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
+      if (isNotifying.get()) {
+        // must reload project to enable it
+        SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
+        isNotifying.compareAndSet(true, false)
+      }
+
       // if the analysis files already exist (.dot), use it directly.
       def executeCommandOrReadExistsFile(
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
         val moduleId = moduleData.getId.split(" ")(0)
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
+        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)
         // File cache for one hour
-        if (!isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)) {
+        if (useCache) {
           DependencyParserFactory
             .getInstance(summon[ParserTypeEnum])
             .buildDependencyTree(
@@ -364,12 +371,6 @@ object SbtDependencyAnalyzerContributor:
           )
         }
       end executeCommandOrReadExistsFile
-
-      if (isNotifying.get()) {
-        // must reload project to enable it
-        SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
-        isNotifying.compareAndSet(true, false)
-      }
 
       val result = ListBuffer[DependencyScopeNode]()
       import scala.util.control.Breaks.*

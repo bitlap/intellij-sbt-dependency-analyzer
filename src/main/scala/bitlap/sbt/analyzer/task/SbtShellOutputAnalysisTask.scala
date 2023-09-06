@@ -80,6 +80,8 @@ object SbtShellOutputAnalysisTask:
 
   lazy val reloadTask: SbtShellOutputAnalysisTask[Unit] = new ReloadTask
 
+  lazy val refreshSnapshotsTask: SbtShellOutputAnalysisTask[Unit] = new RefreshSnapshotsTask
+
   lazy val libraryDependenciesTask: SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]] =
     new LibraryDependenciesTask
 

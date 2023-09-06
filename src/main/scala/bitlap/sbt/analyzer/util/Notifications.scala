@@ -6,11 +6,14 @@ import bitlap.sbt.analyzer.*
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
+import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
+import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
+import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
@@ -92,11 +95,11 @@ object Notifications {
                   FileEditorManager
                     .getInstance(project)
                     .openTextEditor(new OpenFileDescriptor(project, pluginsSbtFile), true)
-                  // if Intellij not enable auto-reload
-                  ProjectRefreshAction.Companion.refreshProject(project)
                 }
               }
             )
+            // force refresh project
+            ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, SbtProjectSystem.Id))
           }
         }
       )
