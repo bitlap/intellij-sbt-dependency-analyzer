@@ -123,8 +123,8 @@ object DependencyUtils {
 
     mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
       val artifact   = getArtifactInfoFromDisplayName(None, node.getDisplayName)
-      val artifactId = artifact.map(_.artifact).getOrElse(Constants.Empty_String)
-      val group      = artifact.map(_.group).getOrElse(Constants.Empty_String)
+      val artifactId = artifact.map(_.artifact).getOrElse(Constants.EmptyString)
+      val group      = artifact.map(_.group).getOrElse(Constants.EmptyString)
       // Use artifact to determine whether there are modules in the dependency.
       if (
         context.ideaModuleIdSbtModuleNames.values
@@ -200,7 +200,7 @@ object DependencyUtils {
     val projectPath =
       ideaModuleName
         .flatMap(m => context.ideaModuleNamePaths.get(m))
-        .getOrElse(context.ideaModuleNamePaths.getOrElse(sbtModuleName, Constants.Empty_String))
+        .getOrElse(context.ideaModuleNamePaths.getOrElse(sbtModuleName, Constants.EmptyString))
 
     val p = new ProjectDependencyNodeImpl(
       dn.getId,

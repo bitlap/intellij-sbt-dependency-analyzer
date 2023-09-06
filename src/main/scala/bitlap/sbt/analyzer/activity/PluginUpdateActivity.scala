@@ -31,7 +31,6 @@ import com.intellij.util.ui.JBUI
  */
 object PluginUpdateActivity:
   private val InitialVersion       = "0.0.0"
-  private lazy val Log             = Logger.getInstance(classOf[PluginUpdateActivity])
   private lazy val VersionProperty = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
 
 end PluginUpdateActivity
@@ -74,7 +73,7 @@ final class PluginUpdateActivity extends BaseProjectActivity {
   ): Boolean = {
     val latestChangeNotes =
       if (plugin.getChangeNotes == null) "<ul><li></li></ul>"
-      else plugin.getChangeNotes.split(Constants.Change_Notes_Separator)(0)
+      else plugin.getChangeNotes.split(Constants.ChangeNotesSeparator)(0)
     val title = SbtDependencyAnalyzerBundle.message(
       "analyzer.updated.notification.title",
       plugin.getName,

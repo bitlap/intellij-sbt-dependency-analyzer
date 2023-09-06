@@ -8,10 +8,10 @@ import scala.concurrent.duration.*
  */
 object Constants:
 
-  final val Line_Separator: String = "\n"
+  final val LineSeparator: String = "\n"
 
-  final val Colon_Separator: String = ":"
-  final val Empty_String: String    = ""
+  final val ColonSeparator: String = ":"
+  final val EmptyString: String    = ""
 
   final val SingleSbtModule = "$SingleModule$"
   final val RootSbtModule   = "$RootModule$"
@@ -26,6 +26,6 @@ object Constants:
 
   final val FileLifespan = 1000 * 60 * 60L
 
-  final val Change_Notes_Separator = "<!-- @@ -->"
+  final val ChangeNotesSeparator = "<!-- @@ -->"
 
 end Constants

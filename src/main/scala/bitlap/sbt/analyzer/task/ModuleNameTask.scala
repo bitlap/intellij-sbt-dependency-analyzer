@@ -47,15 +47,15 @@ final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String
         case moduleNameInputRegex(_, _, moduleName, _, _) => moduleName.trim
         case rootModuleNameInputRegex(_, _)               => RootSbtModule
         case SingleSbtModule                              => SingleSbtModule
-        case _                                            => Empty_String
+        case _                                            => EmptyString
 
       val value = v match
         case shellOutputResultRegex(_, _, sbtModuleName) => sbtModuleName.trim
-        case _                                           => Empty_String
+        case _                                           => EmptyString
 
       key -> value
 
-    }.filter(kv => kv._1 != Empty_String && kv._2 != Empty_String).toMap
+    }.filter(kv => kv._1 != EmptyString && kv._2 != EmptyString).toMap
 
   end executeCommand
 
