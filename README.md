@@ -38,7 +38,8 @@ When the analysis is complete:
 1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
 2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
-4. `reload` reload `plugins.sbt` on-demand.
+4. `reload` reload project on-demand.
+5. `update` update dependencies on-demand.
 
 ## Troubleshooting issues
 
