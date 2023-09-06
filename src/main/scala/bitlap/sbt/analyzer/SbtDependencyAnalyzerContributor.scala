@@ -384,7 +384,7 @@ object SbtDependencyAnalyzerContributor:
           } catch {
             case _: AnalyzerCommandNotFoundException =>
               if (isNotifying.compareAndSet(false, true)) {
-                Notifications.notifyAndAddDependencyTreePlugin(project)
+                Notifications.notifyAndCreateSdapFile(project)
               }
               break()
             case ue: AnalyzerCommandUnknownException =>

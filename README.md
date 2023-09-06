@@ -20,26 +20,10 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Usage Instructions
 
-To use this Intellij IDEA plugin, please put this line into `project/plugins.sbt` of your project:
+This plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, do not modify or delete `project/sdap.sbt`.
+Because this plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
 
-For sbt 1.4+ use:
-```scala
-addDependencyTreePlugin
-```
-
-For sbt < 1.3 use:
-```scala
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")
-```
-
-For sbt < 0.13.10 use:
-```scala
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
-```
-
-What is the meaning of this line of code?
-
-Because this Intellij IDEA plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+**Let's see how to use it!**
 
 Just click on the icon and wait for the analysis:
 
@@ -47,23 +31,15 @@ Just click on the icon and wait for the analysis:
 
 When the analysis is complete:
 
-<details>
-<summary>Show Conflicts 👈🏻</summary>
-
 ![](./docs/dependencyTreeConflicts.jpg)
-
-</details>
-
-If you don't add above code, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) while jumping into the `project/plugins.sbt`:
-
-![](docs/notifyAndGoto.jpg)
 
 ## For more details
 
 1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
 2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
 3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
-4. `reload` reload `plugins.sbt` on-demand.
+4. `reload` reload project on-demand.
+5. `update` update dependencies on-demand.
 
 ## Troubleshooting issues
 
@@ -83,4 +59,4 @@ Using sbt shell to reload or build the project avoids this issue:
 First, make sure that `organization` has been configured correctly: 
 1. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.
 2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization`.
-3. Please refresh(`Reload All sbt Projects`) the project manually.
+3. Please refresh (`Reload All sbt Projects` or `Refresh Dependencies`) the project manually.

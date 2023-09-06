@@ -5,7 +5,7 @@ lazy val scala3Version = "3.3.0"
 
 lazy val intellijVersion =
   "231.9392.1" // https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
-lazy val pluginVersion = s"0.2.0-RC1-$intellijVersion"
+lazy val pluginVersion = s"0.2.0-RC2-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -65,6 +65,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     libraryDependencies ++= Seq(
       "guru.nidi"      % "graphviz-java-min-deps" % "0.18.1",
       "ch.qos.logback" % "logback-classic"        % "1.2.3",
+      "org.jooq"       % "joor"                   % "0.9.15",
       "org.scalatest" %% "scalatest"              % "3.2.16" % Test
     )
   )

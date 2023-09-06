@@ -54,7 +54,7 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
       val key = k match
         case libraryDependenciesInputRegex(_, _, moduleName, _, _) => moduleName.trim
         case rootLibraryDependenciesInputRegex(_, _)               => RootSbtModule
-        case _                                                     => Empty_String
+        case _                                                     => EmptyString
 
       val value = v match
         case shellOutputResultRegex(_, _, output) =>
@@ -68,7 +68,7 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
 
       key -> value
     }.collect {
-      case (k, v) if k != Empty_String => k -> v
+      case (k, v) if k != EmptyString => k -> v
     }.toMap
   end executeCommand
 
