@@ -2,7 +2,7 @@ package bitlap.sbt.analyzer.task
 
 import com.intellij.openapi.project.Project
 
-/** Process the `set csrConfiguration;dependencyResolution` command, load fresh snapshots for analysis plugin.
+/** Process the `set csrConfiguration;update` command, load fresh snapshots for analysis plugin.
  *
  *  @author
  *    梦境迷离
