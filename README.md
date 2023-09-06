@@ -54,7 +54,7 @@ When the analysis is complete:
 
 </details>
 
-If you don't add above code, this plugin will give a bootstrap prompt in the bottom right corner, and after clicking on the bootstrap prompt, Intellij IDEA will automatically add the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) while jumping into the `project/plugins.sbt`:
+If you don't add above code, Intellij IDEA will automatically generate `project/sdap.sbt` and add the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement at the end of the file.
 
 ![](docs/notifyAndGoto.jpg)
 

@@ -26,4 +26,6 @@ object Constants:
 
   final val FileLifespan = 1000 * 60 * 60L
 
+  final val Change_Notes_Separator = "<!-- @@ -->"
+
 end Constants

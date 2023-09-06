@@ -119,6 +119,7 @@
                 <li>Update description and action name.</li>
                 <li>Add refresh snapshots button.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.2.0-RC1-231.9392.1</h1>
             <ul>
@@ -126,12 +127,14 @@
                 <li>🎉Add plugin update notification.</li>
                 <li>🎉Add What's New action in Help menu.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.3-231.9392.1</h1>
             <ul>
                 <li>Fix module recognition failure when analyzing cross-build projects for Scala2 and Scala3.</li>
                 <li>Improve notification,stop immediately when an exception occurs during the first task execution.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.2-231.9392.1</h1>
             <ul>
@@ -139,6 +142,7 @@
                 <li>Support for older versions of sbt.</li>
                 <li>Other improvements.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.1-231.9392.1</h1>
             <ul>
@@ -146,6 +150,7 @@
                 <li>Add refresh action.</li>
                 <li>Add bootstrap prompt and automatically add the `addDependencyTreePlugin`.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.0-231.9392.1</h1>
             <ul>
@@ -153,27 +158,31 @@
                 <li>Cache files for one hour.</li>
                 <li>Refactor code.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.0-231.9392.1-M7</h1>
             <ul>
                 <li>🔥Show Conflict omitted status.</li>
                 <li>🔥Support Scala Js and Scala native.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.0-231.9392.1-M6</h1>
             <ul>
                 <li>🔥Highlight module dependencies.</li>
             </ul>
+            <!-- @@ -->
             
             <h1>0.1.0-231.9392.1-M5</h1>
             <ul>
                 <li>🔥Significantly improve performance.</li>
-            </ul>    
+            </ul>
+            <!-- @@ -->
             
             <h1>0.1.0-231.9392.1-M4</h1>
             <ul>
                 <li>🔥 First Blood.</li>
-            </ul>    
+            </ul> 
         ]]>
     </change-notes>
 

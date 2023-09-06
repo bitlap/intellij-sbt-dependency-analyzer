@@ -4,6 +4,7 @@ package analyzer
 package activity
 
 import bitlap.sbt.analyzer.*
+import bitlap.sbt.analyzer.util.Notifications
 
 import org.jetbrains.plugins.scala.project.Version
 
@@ -11,8 +12,6 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.notification.*
-import com.intellij.notification.impl.NotificationsManagerImpl
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.*
@@ -35,19 +34,6 @@ object PluginUpdateActivity:
   private lazy val Log                     = Logger.getInstance(classOf[PluginUpdateActivity])
   private lazy val UpdateNotificationGroup = "Sbt.DependencyAnalyzer.UpdateNotification"
   private lazy val VersionProperty         = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
-
-  private class UrlAction(version: Version)
-      extends DumbAwareAction(
-        SbtDependencyAnalyzerBundle.message("analyzer.updated.notification.gotoBrowser"),
-        null,
-        AllIcons.General.Web
-      ) {
-
-    override def actionPerformed(e: AnActionEvent) = {
-
-      BrowserUtil.browse(WhatsNew.getReleaseNotes(version))
-    }
-  }
 
 end PluginUpdateActivity
 
@@ -87,6 +73,9 @@ final class PluginUpdateActivity extends BaseProjectActivity {
     plugin: IdeaPluginDescriptor,
     version: Version
   ): Boolean = {
+    val latestChangeNotes =
+      if (plugin.getChangeNotes == null) "<ul><li></li></ul>"
+      else plugin.getChangeNotes.split(Constants.Change_Notes_Separator)(0)
     val title = SbtDependencyAnalyzerBundle.message(
       "analyzer.updated.notification.title",
       plugin.getName,
@@ -96,30 +85,10 @@ final class PluginUpdateActivity extends BaseProjectActivity {
     val content = SbtDependencyAnalyzerBundle.message(
       "analyzer.updated.notification.text",
       partStyle,
-      if (plugin.getChangeNotes == null) "<ul><li></li></ul>" else plugin.getChangeNotes,
+      latestChangeNotes,
       version.presentation
     )
-
-    val notificationGroup = NotificationGroupManager.getInstance().getNotificationGroup(UpdateNotificationGroup)
-    if (notificationGroup == null) return false
-
-    val notification = notificationGroup
-      .createNotification(content, NotificationType.INFORMATION)
-      .setTitle(title)
-      .setImportant(true)
-      .setIcon(SbtDependencyAnalyzerIcons.ICON)
-
-    if (!canBrowseInHTMLEditor) {
-      notification.addAction(new UrlAction(version))
-    } else {
-
-      notification.whenExpired(() => BrowserUtil.browse(WhatsNew.getReleaseNotes(version)))
-      waitInterval(10000)
-      notification.expire()
-    }
-
-    notification.notify(project)
-
+    Notifications.notifyUpdateActivity(project, version, title, content)
     true
   }
 }
