@@ -8,21 +8,11 @@ import bitlap.sbt.analyzer.util.Notifications
 
 import org.jetbrains.plugins.scala.project.Version
 
-import com.intellij.icons.AllIcons
-import com.intellij.ide.BrowserUtil
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.util.PropertiesComponent
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.*
-import com.intellij.openapi.ui.popup.Balloon
 import com.intellij.openapi.util.*
-import com.intellij.openapi.util.registry.Registry
-import com.intellij.openapi.wm.IdeFrame
 import com.intellij.ui.*
-import com.intellij.ui.awt.RelativePoint
-import com.intellij.ui.jcef.JBCefApp
-import com.intellij.ui.scale.JBUIScale
 import com.intellij.util.ui.JBUI
 
 /** @author
@@ -38,7 +28,6 @@ end PluginUpdateActivity
 final class PluginUpdateActivity extends BaseProjectActivity {
 
   import PluginUpdateActivity.*
-  import WhatsNew.*
 
   override def onRunActivity(project: Project) = {
     checkUpdate(project)

@@ -1,23 +1,16 @@
 package bitlap.sbt.analyzer.activity
 
-import java.util.*
-
 import bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle
 
 import org.jetbrains.plugins.scala.project.Version
 
-import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
-import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.*
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.impl.HTMLEditorProvider
-import com.intellij.openapi.project.DumbAwareAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Conditions
 import com.intellij.ui.jcef.JBCefApp
-import com.intellij.util.ui.UIUtil
 
 /** @author
  *    梦境迷离

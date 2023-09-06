@@ -20,8 +20,11 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Usage Instructions
 
-This plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, do not modify or delete `project/sdap.sbt`.
+This plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, do not modify or delete `project/sdap.sbt`. 
+
 Because this plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+
+But if statement **already exists** in `*.sbt` files, `sdap.sbt` will not be created.
 
 **Let's see how to use it!**
 

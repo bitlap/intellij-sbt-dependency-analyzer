@@ -1,6 +1,9 @@
 package bitlap.sbt.analyzer
 
+import java.util.concurrent.TimeUnit
+
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration.Duration
 
 import bitlap.sbt.analyzer.parser.ParserTypeEnum
 
@@ -74,9 +77,9 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-def waitInterval(sleep: Long = Constants.IntervalTimeout.toMillis): Unit = {
+def waitInterval(sleep: Duration = Constants.IntervalTimeout): Unit = {
   try {
-    Thread.sleep(sleep)
+    Thread.sleep(sleep.toMillis)
   } catch {
     case ignore: Throwable =>
   }

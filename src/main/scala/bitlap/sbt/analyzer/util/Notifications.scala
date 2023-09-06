@@ -2,6 +2,9 @@ package bitlap.sbt.analyzer.util
 
 import java.nio.file.Path
 
+import scala.concurrent.Promise
+import scala.concurrent.duration.*
+
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.activity.WhatsNew
 import bitlap.sbt.analyzer.activity.WhatsNew.canBrowseInHTMLEditor
@@ -14,10 +17,13 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
+import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
+import com.intellij.openapi.externalSystem.util.{ ExternalSystemBundle, ExternalSystemUtil }
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
 import com.intellij.openapi.vfs.VfsUtil
@@ -91,7 +97,7 @@ object Notifications {
           // if Intellij not enable auto-reload
           // force refresh project
           ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, SbtProjectSystem.Id))
-          waitInterval(2000)
+          waitInterval(2.seconds)
 
           // 2. add notification
           val addNotification = NotificationGroup
@@ -140,8 +146,6 @@ object Notifications {
       .setListenerIfSupport(NotificationListener.URL_OPENING_LISTENER)
     if (canBrowseInHTMLEditor) {
       notification.whenExpired(() => WhatsNew.browse(version, project))
-      waitInterval(10000)
-      notification.expire()
     } else {
       notification.addAction(
         new DumbAwareAction(
@@ -149,11 +153,39 @@ object Notifications {
           null,
           AllIcons.General.Web
         ) {
-          override def actionPerformed(e: AnActionEvent): Unit = BrowserUtil.browse(WhatsNew.getReleaseNotes(version))
+          override def actionPerformed(e: AnActionEvent): Unit =
+            notification.expire()
+            BrowserUtil.browse(WhatsNew.getReleaseNotes(version))
         }
       )
     }
     notification.notify(project)
+    if (canBrowseInHTMLEditor) {
+      while (!isProjectReady(project)) {
+        waitInterval(1.second)
+      }
+      waitInterval(10.seconds)
+      notification.expire()
+    }
+  }
+
+  def isProjectReady(project: Project): Boolean = {
+    SbtUtils
+      .getExternalProjectPath(project)
+      .map { externalProjectPath =>
+        val processingManager = ApplicationManager.getApplication.getService(classOf[ExternalSystemProcessingManager])
+        if (
+          processingManager
+            .findTask(ExternalSystemTaskType.RESOLVE_PROJECT, SbtProjectSystem.Id, externalProjectPath) != null
+          || processingManager
+            .findTask(ExternalSystemTaskType.EXECUTE_TASK, SbtProjectSystem.Id, externalProjectPath) != null
+          || processingManager
+            .findTask(ExternalSystemTaskType.REFRESH_TASKS_LIST, SbtProjectSystem.Id, externalProjectPath) != null
+        ) {
+          false
+        } else true
+      }
+      .forall(identity)
   }
 
   extension (notification: Notification) {

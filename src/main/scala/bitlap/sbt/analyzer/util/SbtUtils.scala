@@ -6,12 +6,14 @@ import java.util.Properties
 import java.util.jar.JarFile
 
 import scala.collection.mutable
+import scala.jdk.CollectionConverters.*
 import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.util.Using
 
 import org.jetbrains.sbt.SbtUtil as SSbtUtil
 import org.jetbrains.sbt.project.*
 import org.jetbrains.sbt.project.settings.*
+import org.jetbrains.sbt.settings.SbtSettings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
@@ -27,7 +29,12 @@ object SbtUtils {
 
   private val log = Logger.getInstance(getClass)
 
-  def getSbtSettings(dir: String, project: Project): SbtExecutionSettings =
+  def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
+
+  def getExternalProjectPath(project: Project): List[String] =
+    getSbtProject(project).getLinkedProjectsSettings.asScala.map(_.getExternalProjectPath()).toList
+
+  def getSbtExecutionSettings(dir: String, project: Project): SbtExecutionSettings =
     SbtExternalSystemManager.executionSettingsFor(project, dir)
 
   def launcherJar(sbtSettings: SbtExecutionSettings): File =
@@ -35,7 +42,7 @@ object SbtUtils {
 
   def getSbtVersion(project: Project): String = {
     val workingDirPath = getWorkingDirPath(project)
-    val sbtSettings    = getSbtSettings(workingDirPath, project)
+    val sbtSettings    = getSbtExecutionSettings(workingDirPath, project)
     lazy val launcher  = launcherJar(sbtSettings)
     SSbtUtil.detectSbtVersion(new File(workingDirPath), launcher)
   }
