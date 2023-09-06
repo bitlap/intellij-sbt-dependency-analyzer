@@ -30,10 +30,9 @@ import com.intellij.util.ui.JBUI
  *  @version 1.0,2023/9/1
  */
 object PluginUpdateActivity:
-  private val InitialVersion               = "0.0.0"
-  private lazy val Log                     = Logger.getInstance(classOf[PluginUpdateActivity])
-  private lazy val UpdateNotificationGroup = "Sbt.DependencyAnalyzer.UpdateNotification"
-  private lazy val VersionProperty         = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
+  private val InitialVersion       = "0.0.0"
+  private lazy val Log             = Logger.getInstance(classOf[PluginUpdateActivity])
+  private lazy val VersionProperty = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
 
 end PluginUpdateActivity
 

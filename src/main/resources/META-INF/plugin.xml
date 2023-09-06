@@ -15,9 +15,11 @@
     <resource-bundle>messages.SbtDependencyAnalyzerBundle</resource-bundle>
 
     <extensions defaultExtensionNs="com.intellij">
+        <!-- https://plugins.jetbrains.com/feature#name_dependencySupport -->
+        <dependencySupport kind="java" coordinate="org.scala-sbt:sbt" displayName="sbt"  />
+        <dependencySupport kind="java" coordinate="sbt" displayName="sbt"  />
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
-        <notificationGroup id="Sbt.DependencyAnalyzer.UpdateNotification" displayType="BALLOON"/>
 
         <registryKey key="bitlap.sbt.analyzer.SbtDependencyAnalyzerBundle"
                      defaultValue="true" restartRequired="false"
