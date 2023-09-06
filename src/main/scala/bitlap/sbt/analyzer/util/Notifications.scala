@@ -94,10 +94,10 @@ object Notifications {
           } else {
             doc.setText(doc.getText + Constants.LineSeparator + getSdapText(project))
           }
-          // if Intellij not enable auto-reload
+          // if intellij not enable auto-reload
           // force refresh project
-          ExternalSystemUtil.refreshProjects(new ImportSpecBuilder(project, SbtProjectSystem.Id))
-          waitInterval(2.seconds)
+          SbtUtils.refreshProject(project)
+          SbtUtils.untilProjectReady(project)
 
           // 2. add notification
           val addNotification = NotificationGroup
@@ -160,32 +160,10 @@ object Notifications {
       )
     }
     notification.notify(project)
-    if (canBrowseInHTMLEditor) {
-      while (!isProjectReady(project)) {
-        waitInterval(1.second)
-      }
+    if (canBrowseInHTMLEditor && SbtUtils.untilProjectReady(project)) {
       waitInterval(10.seconds)
       notification.expire()
     }
-  }
-
-  def isProjectReady(project: Project): Boolean = {
-    SbtUtils
-      .getExternalProjectPath(project)
-      .map { externalProjectPath =>
-        val processingManager = ApplicationManager.getApplication.getService(classOf[ExternalSystemProcessingManager])
-        if (
-          processingManager
-            .findTask(ExternalSystemTaskType.RESOLVE_PROJECT, SbtProjectSystem.Id, externalProjectPath) != null
-          || processingManager
-            .findTask(ExternalSystemTaskType.EXECUTE_TASK, SbtProjectSystem.Id, externalProjectPath) != null
-          || processingManager
-            .findTask(ExternalSystemTaskType.REFRESH_TASKS_LIST, SbtProjectSystem.Id, externalProjectPath) != null
-        ) {
-          false
-        } else true
-      }
-      .forall(identity)
   }
 
   extension (notification: Notification) {

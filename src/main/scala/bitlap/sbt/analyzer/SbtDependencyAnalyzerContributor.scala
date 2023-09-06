@@ -8,13 +8,14 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
+import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.activity.*
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
-import bitlap.sbt.analyzer.util.{ DependencyUtils, Notifications }
+import bitlap.sbt.analyzer.util.{ DependencyUtils, Notifications, SbtUtils }
 import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
@@ -204,23 +205,24 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private def getOrganization(project: Project): String =
-    // When force a refresh, we must re-read the settings, such organization,moduleName
-    if (organization != null && SbtDependencyAnalyzerContributor.isValid.get()) return organization
+    // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
+    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopene.
+    if (organization != null) return organization
     organization = SbtShellOutputAnalysisTask.organizationTask.executeCommand(project)
     organization
 
   private def getIdeaModuleIdSbtModules(project: Project): Map[String, String] =
-    if (ideaModuleIdSbtModules.nonEmpty && SbtDependencyAnalyzerContributor.isValid.get()) return ideaModuleIdSbtModules
+    if (ideaModuleIdSbtModules.nonEmpty) return ideaModuleIdSbtModules
     ideaModuleIdSbtModules = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
     ideaModuleIdSbtModules
 
   private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] =
-    if (declaredDependencies.nonEmpty && SbtDependencyAnalyzerContributor.isValid.get()) return declaredDependencies
+    if (declaredDependencies.nonEmpty) return declaredDependencies
     val module = findModule(project, moduleData)
     declaredDependencies = DependencyUtils.getDeclaredDependency(module).map(_.getCoordinates)
     declaredDependencies
 
-  private def getOrRefreshData(moduleData: ModuleData)(using ParserTypeEnum): JList[DependencyScopeNode] = {
+  private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] = {
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
     if (moduleData.getModuleName == Constants.Project) return Collections.emptyList()
@@ -242,15 +244,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
 object SbtDependencyAnalyzerContributor:
 
-  final val isValid             = new AtomicBoolean(true)
+  final val isAvailable = new AtomicBoolean(true)
+
   private final val isNotifying = new AtomicBoolean(false)
 
   private def isValidFile(file: String): Boolean = {
-    if (isValid.get()) {
+    if (isAvailable.get()) {
       val lastModified = Path.of(file).toFile.lastModified()
       System.currentTimeMillis() <= lastModified + Constants.FileLifespan
     } else {
-      isValid.getAndSet(true)
+      isAvailable.getAndSet(true)
     }
   }
 
@@ -327,7 +330,7 @@ object SbtDependencyAnalyzerContributor:
       val module = findModule(project, moduleData)
       if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
-      if (isNotifying.get()) {
+      if (isNotifying.get() && SbtUtils.untilProjectReady(project)) {
         // must reload project to enable it
         SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
         isNotifying.compareAndSet(true, false)
