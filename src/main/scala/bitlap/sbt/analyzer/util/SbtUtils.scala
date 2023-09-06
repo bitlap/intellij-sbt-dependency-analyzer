@@ -6,9 +6,12 @@ import java.util.Properties
 import java.util.jar.JarFile
 
 import scala.collection.mutable
+import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.util.Using
+
+import bitlap.sbt.analyzer.waitInterval
 
 import org.jetbrains.sbt.SbtUtil as SSbtUtil
 import org.jetbrains.sbt.project.*
@@ -17,6 +20,8 @@ import org.jetbrains.sbt.settings.SbtSettings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
+import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
 import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.*
@@ -30,6 +35,33 @@ object SbtUtils {
   private val log = Logger.getInstance(getClass)
 
   def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
+
+  def untilProjectReady(project: Project): Boolean = {
+    while (!SbtUtils.isProjectReady(project)) {
+      waitInterval(1.second)
+    }
+    true
+  }
+
+  def isProjectReady(project: Project): Boolean = {
+    SbtUtils
+      .getExternalProjectPath(project)
+      .map { externalProjectPath =>
+        // index is ready?
+        val processingManager = ApplicationManager.getApplication.getService(classOf[ExternalSystemProcessingManager])
+        if (
+          processingManager
+            .findTask(ExternalSystemTaskType.RESOLVE_PROJECT, SbtProjectSystem.Id, externalProjectPath) != null
+          || processingManager
+            .findTask(ExternalSystemTaskType.EXECUTE_TASK, SbtProjectSystem.Id, externalProjectPath) != null
+          || processingManager
+            .findTask(ExternalSystemTaskType.REFRESH_TASKS_LIST, SbtProjectSystem.Id, externalProjectPath) != null
+        ) {
+          false
+        } else true
+      }
+      .forall(identity)
+  }
 
   def getExternalProjectPath(project: Project): List[String] =
     getSbtProject(project).getLinkedProjectsSettings.asScala.map(_.getExternalProjectPath()).toList

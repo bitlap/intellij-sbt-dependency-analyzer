@@ -2,23 +2,24 @@ package bitlap.sbt.analyzer.action
 
 import java.util
 
-import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.{ ActionUpdateThread, AnActionEvent }
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.ExternalSystemManager
-import com.intellij.openapi.externalSystem.action.RefreshAllExternalProjectsAction
-import com.intellij.openapi.externalSystem.model.{ ExternalSystemDataKeys, ProjectSystemId }
+import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
 import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
-import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.*
 
 /** @author
  *    梦境迷离
  *  @version 1.0,2023/9/5
  */
-abstract class BaseRefreshDependenciesAction extends RefreshAllExternalProjectsAction() {
+abstract class BaseRefreshDependenciesAction extends DumbAwareAction() {
 
   lazy val eventText: String
   lazy val eventDescription: String
+
+  override def getActionUpdateThread: ActionUpdateThread = ActionUpdateThread.BGT
 
   protected def getSystemIds(e: AnActionEvent): util.ArrayList[ProjectSystemId] = {
     val systemIds        = new util.ArrayList[ProjectSystemId]
