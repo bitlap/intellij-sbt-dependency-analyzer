@@ -20,26 +20,9 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## Usage Instructions
 
-To use this Intellij IDEA plugin, please put this line into `project/plugins.sbt` of your project:
+This Intellij IDEA plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
 
-For sbt 1.4+ use:
-```scala
-addDependencyTreePlugin
-```
-
-For sbt < 1.3 use:
-```scala
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.9.2")
-```
-
-For sbt < 0.13.10 use:
-```scala
-addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
-```
-
-What is the meaning of this line of code?
-
-Because this Intellij IDEA plugin depends on `sbt-dependency-graph` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+The Plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it.
 
 Just click on the icon and wait for the analysis:
 
@@ -53,10 +36,6 @@ When the analysis is complete:
 ![](./docs/dependencyTreeConflicts.jpg)
 
 </details>
-
-If you don't add above code, Intellij IDEA will automatically generate `project/sdap.sbt` and add the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement at the end of the file.
-
-![](docs/notifyAndGoto.jpg)
 
 ## For more details
 
@@ -83,4 +62,4 @@ Using sbt shell to reload or build the project avoids this issue:
 First, make sure that `organization` has been configured correctly: 
 1. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.
 2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization`.
-3. Please refresh(`Reload All sbt Projects`) the project manually.
+3. Please refresh (`Reload All sbt Projects` or `Refresh Dependencies`) the project manually.
