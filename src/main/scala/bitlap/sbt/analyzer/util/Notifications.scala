@@ -94,11 +94,9 @@ object Notifications {
           } else {
             doc.setText(doc.getText + Constants.LineSeparator + getSdapText(project))
           }
-          // if Intellij not enable auto-reload
+          // if intellij not enable auto-reload
           // force refresh project
-          ExternalSystemUtil.refreshProjects(
-            new ImportSpecBuilder(project, SbtProjectSystem.Id).dontReportRefreshErrors().build()
-          )
+          SbtUtils.refreshProject(project)
           SbtUtils.untilProjectReady(project)
 
           // 2. add notification

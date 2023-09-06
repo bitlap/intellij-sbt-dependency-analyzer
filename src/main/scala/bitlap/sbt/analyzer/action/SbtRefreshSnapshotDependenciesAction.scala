@@ -2,6 +2,7 @@ package bitlap.sbt.analyzer.action
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.task.*
+import bitlap.sbt.analyzer.util.SbtUtils
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
@@ -24,9 +25,7 @@ final class SbtRefreshSnapshotDependenciesAction extends BaseRefreshDependencies
   override def actionPerformed(e: AnActionEvent): Unit = {
     SbtDependencyAnalyzerContributor.isAvailable.set(false)
     SbtShellOutputAnalysisTask.refreshSnapshotsTask.executeCommand(e.getProject)
-    ExternalSystemUtil.refreshProjects(
-      new ImportSpecBuilder(e.getProject, SbtProjectSystem.Id).dontReportRefreshErrors().build()
-    )
+    SbtUtils.refreshProject(e.getProject)
   }
 
 end SbtRefreshSnapshotDependenciesAction
