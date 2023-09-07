@@ -11,7 +11,7 @@ import com.intellij.openapi.project.DumbAwareAction
 final class WhatsNewAction extends DumbAwareAction {
 
   getTemplatePresentation.setText(
-    SbtDependencyAnalyzerBundle.message("analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer")
+    SbtDependencyAnalyzerBundle.message("analyzer.action.whatsNew.text", "Sbt Dependency Analyzer")
   )
 
   override def actionPerformed(e: AnActionEvent): Unit = {

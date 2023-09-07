@@ -63,13 +63,13 @@ final class PluginUpdateActivity extends BaseProjectActivity {
       if (plugin.getChangeNotes == null) "<ul><li></li></ul>"
       else plugin.getChangeNotes.split(Constants.ChangeNotesSeparator)(0)
     val title = SbtDependencyAnalyzerBundle.message(
-      "analyzer.updated.notification.title",
+      "analyzer.notification.updated.title",
       plugin.getName,
       version.presentation
     )
     val partStyle = s"margin-top: ${JBUI.scale(8)}px;"
     val content = SbtDependencyAnalyzerBundle.message(
-      "analyzer.updated.notification.text",
+      "analyzer.notification.updated.text",
       partStyle,
       latestChangeNotes,
       version.presentation
