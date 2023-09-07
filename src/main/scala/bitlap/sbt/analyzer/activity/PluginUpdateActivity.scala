@@ -3,9 +3,6 @@ package sbt
 package analyzer
 package activity
 
-import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.util.Notifications
-
 import org.jetbrains.plugins.scala.project.Version
 
 import com.intellij.ide.plugins.IdeaPluginDescriptor
@@ -14,6 +11,8 @@ import com.intellij.openapi.project.*
 import com.intellij.openapi.util.*
 import com.intellij.ui.*
 import com.intellij.util.ui.JBUI
+
+import util.Notifications
 
 /** @author
  *    梦境迷离

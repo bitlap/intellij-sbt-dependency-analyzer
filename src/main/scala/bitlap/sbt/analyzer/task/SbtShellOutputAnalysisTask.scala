@@ -5,14 +5,12 @@ package task
 
 import scala.concurrent.*
 
-import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.Constants.*
-import bitlap.sbt.analyzer.util.SbtUtils.getClass
-
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
+
+import Constants.*
 
 /** Tasks depend on the output of the SBT console.
  *

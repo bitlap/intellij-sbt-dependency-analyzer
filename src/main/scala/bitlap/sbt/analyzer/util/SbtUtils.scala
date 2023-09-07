@@ -1,4 +1,7 @@
-package bitlap.sbt.analyzer.util
+package bitlap
+package sbt
+package analyzer
+package util
 
 import java.io.*
 import java.net.URI
@@ -10,8 +13,6 @@ import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 import scala.jdk.CollectionConverters.MapHasAsScala
 import scala.util.Using
-
-import bitlap.sbt.analyzer.waitInterval
 
 import org.jetbrains.sbt.SbtUtil as SSbtUtil
 import org.jetbrains.sbt.project.*

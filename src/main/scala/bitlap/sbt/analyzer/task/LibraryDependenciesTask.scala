@@ -1,11 +1,14 @@
-package bitlap.sbt.analyzer.task
+package bitlap
+package sbt
+package analyzer
+package task
 
 import scala.collection.mutable
 
-import bitlap.sbt.analyzer.Constants.*
-import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask.*
-
 import com.intellij.openapi.project.Project
+
+import Constants.*
+import SbtShellOutputAnalysisTask.*
 
 /** TODO: Process the `sbt libraryDependencies` command, get all user explicitly declared dependencies.
  *  @author

@@ -8,9 +8,6 @@ import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.*
-
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.project.*
@@ -29,6 +26,9 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module as OpenapiModule
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
+
+import model.*
+import parser.*
 
 /** @author
  *    梦境迷离

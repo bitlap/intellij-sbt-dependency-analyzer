@@ -1,4 +1,7 @@
-package bitlap.sbt.analyzer.parser
+package bitlap
+package sbt
+package analyzer
+package parser
 
 import java.util.List as JList
 import java.util.concurrent.atomic.*
@@ -6,16 +9,15 @@ import java.util.concurrent.atomic.*
 import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.util.DependencyUtils
-import bitlap.sbt.analyzer.util.DependencyUtils.*
-
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
+import DependencyUtils.*
 import guru.nidi.graphviz.model.{ Graph as _, * }
+import model.*
+import util.DependencyUtils
 
 /** @author
  *    梦境迷离

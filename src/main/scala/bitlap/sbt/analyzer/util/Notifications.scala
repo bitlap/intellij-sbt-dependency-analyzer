@@ -1,13 +1,12 @@
-package bitlap.sbt.analyzer.util
+package bitlap
+package sbt
+package analyzer
+package util
 
 import java.nio.file.Path
 
 import scala.concurrent.Promise
 import scala.concurrent.duration.*
-
-import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.activity.WhatsNew
-import bitlap.sbt.analyzer.activity.WhatsNew.canBrowseInHTMLEditor
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
@@ -27,6 +26,9 @@ import com.intellij.openapi.externalSystem.util.{ ExternalSystemBundle, External
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
 import com.intellij.openapi.vfs.VfsUtil
+
+import activity.WhatsNew
+import activity.WhatsNew.canBrowseInHTMLEditor
 
 /** SbtDependencyAnalyzer global notifier
  */

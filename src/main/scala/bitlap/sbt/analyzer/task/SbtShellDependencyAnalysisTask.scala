@@ -5,17 +5,16 @@ package task
 
 import scala.concurrent.*
 
-import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.*
-import bitlap.sbt.analyzer.util.DependencyUtils.*
-
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.DependencyScopeNode
 import com.intellij.openapi.project.Project
+
+import model.*
+import parser.*
+import util.DependencyUtils.*
 
 /** Tasks depend on the `addDependencyTreePlugin` plugin of the SBT.
  *  @author

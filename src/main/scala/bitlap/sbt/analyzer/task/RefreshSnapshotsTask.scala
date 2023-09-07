@@ -1,10 +1,13 @@
-package bitlap.sbt.analyzer.task
-
-import bitlap.sbt.analyzer.util.SbtUtils
+package bitlap
+package sbt
+package analyzer
+package task
 
 import org.jetbrains.plugins.scala.project.Version
 
 import com.intellij.openapi.project.Project
+
+import util.SbtUtils
 
 /** Process the `set csrConfiguration;update` command, load fresh snapshots for analysis plugin.
  *

@@ -1,10 +1,13 @@
-package bitlap.sbt.analyzer.task
+package bitlap
+package sbt
+package analyzer
+package task
 
 import scala.collection.mutable
 
-import bitlap.sbt.analyzer.Constants.*
-
 import com.intellij.openapi.project.Project
+
+import Constants.*
 
 /** Process the `sbt moduleName` command, get all module names in sbt, it refers to the module name declared through
  *  `name =: ` in `build.sbt` instead of Intellij IDEA.

@@ -1,13 +1,12 @@
-package bitlap.sbt.analyzer.parser
+package bitlap
+package sbt
+package analyzer
+package parser
 
 import java.io.File
 import java.nio.file.Path
 
 import scala.util.Try
-
-import bitlap.sbt.analyzer.Constants
-import bitlap.sbt.analyzer.model.ModuleContext
-import bitlap.sbt.analyzer.util.Notifications
 
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
@@ -18,6 +17,8 @@ import com.intellij.openapi.vfs.VfsUtil
 import guru.nidi.graphviz.attribute.validate.ValidatorEngine
 import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
+import model.ModuleContext
+import util.Notifications
 
 /** @author
  *    梦境迷离
