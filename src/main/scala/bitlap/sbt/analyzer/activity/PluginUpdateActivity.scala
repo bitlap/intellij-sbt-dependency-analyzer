@@ -12,7 +12,7 @@ import com.intellij.openapi.util.*
 import com.intellij.ui.*
 import com.intellij.util.ui.JBUI
 
-import util.Notifications
+import analyzer.util.Notifications
 
 /** @author
  *    梦境迷离

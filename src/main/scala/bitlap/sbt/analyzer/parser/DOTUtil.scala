@@ -14,11 +14,11 @@ import org.jetbrains.plugins.scala.project.VirtualFileExt
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VfsUtil
 
+import analyzer.util.Notifications
 import guru.nidi.graphviz.attribute.validate.ValidatorEngine
 import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
 import model.ModuleContext
-import util.Notifications
 
 /** @author
  *    梦境迷离

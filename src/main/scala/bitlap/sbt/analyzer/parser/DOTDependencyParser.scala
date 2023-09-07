@@ -15,9 +15,9 @@ import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 import DependencyUtils.*
+import analyzer.util.DependencyUtils
 import guru.nidi.graphviz.model.{ Graph as _, * }
 import model.*
-import util.DependencyUtils
 
 /** @author
  *    梦境迷离
