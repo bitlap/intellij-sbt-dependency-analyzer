@@ -151,7 +151,7 @@ object Notifications {
     } else {
       notification.addAction(
         new DumbAwareAction(
-          SbtDependencyAnalyzerBundle.message("analyzer.updated.notification.gotoBrowser"),
+          SbtDependencyAnalyzerBundle.message("analyzer.notification.updated.gotoBrowser"),
           null,
           AllIcons.General.Web
         ) {
