@@ -121,6 +121,7 @@
                 <li>Update description and action name.</li>
                 <li>Add refresh snapshots button.</li>
                 <li>Add "project/sdap.sbt" to enable "sbt-dependency-tree", plugin no longer modify "project/plugins.sbt".</li>
+                <li>Improved notifications.</li>
             </ul>
             <!-- @@ -->
             
