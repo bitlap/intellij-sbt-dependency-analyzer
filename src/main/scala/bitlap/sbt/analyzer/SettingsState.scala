@@ -42,7 +42,7 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
   var ignoredModules: List[String] = List.empty
 
   @BeanProperty
-  var organization: String = null
+  var organization: String = _
 
   override def getState(): SettingsState = this
 
