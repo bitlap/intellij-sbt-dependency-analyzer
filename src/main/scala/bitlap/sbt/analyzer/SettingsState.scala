@@ -26,36 +26,30 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
 
   import SettingsState.*
 
-  @Volatile
-  @Transient
-  private var isInitialized = false
+  @BeanProperty
+  var languageSelection: AnalyzerLanguage = AnalyzerLanguage.DEFAULT
 
   @BeanProperty
-  private var _languageSelection: AnalyzerLanguage = AnalyzerLanguage.DEFAULT
+  var disableAnalyzeCompile: Boolean = true
 
   @BeanProperty
-  private var _analyzedScope: String = DependencyScopeEnum.values.map(_.toString).mkString(",")
+  var disableAnalyzeProvided: Boolean = true
 
   @BeanProperty
-  private var _ignoredModules: String = _
+  var disableAnalyzeTest: Boolean = true
 
   @BeanProperty
-  private var _organization: String = _
+  var ignoredModules: List[String] = List.empty
+
+  @BeanProperty
+  var organization: String = null
 
   override def getState(): SettingsState = this
 
   override def loadState(state: SettingsState): Unit = {
     XmlSerializerUtil.copyBean(state, this)
-    val properties: PropertiesComponent = PropertiesComponent.getInstance()
-    val dataVersion                     = properties.getInt(DataVersionKey, 0)
-    if (dataVersion < CurrentDataVersion) {
-      properties.setValue(DataVersionKey, CurrentDataVersion, 0)
-    }
   }
 
-  override def initializeComponent(): Unit = {
-    isInitialized = true
-  }
 }
 
 object SettingsState {
@@ -65,7 +59,7 @@ object SettingsState {
   val _Topic: Topic[SettingsChangeListener] =
     Topic.create("SbtDependencyAnalyzerSettingsChanged", classOf[SettingsChangeListener])
 
-  private[analyzer] enum AnalyzerLanguage(val displayName: String) {
+  enum AnalyzerLanguage(val displayName: String) {
 
     case DEFAULT extends AnalyzerLanguage(SbtDependencyAnalyzerBundle.message("analyzer.settings.item.main.or.english"))
 
@@ -73,16 +67,25 @@ object SettingsState {
         extends AnalyzerLanguage(SbtDependencyAnalyzerBundle.message("analyzer.settings.item.primaryLanguage"))
   }
 
+  def toText(l: AnalyzerLanguage) = l.displayName
+  def fromText(s: String)         = AnalyzerLanguage.valueOf(s)
+
   trait SettingsChangeListener:
 
-    def onAnalyzerConfigurationChanged(): Unit
+    def onAnalyzerConfigurationChanged(settingsState: SettingsState): Unit
 
   end SettingsChangeListener
 
-  val CurrentDataVersion = 1
-  val DataVersionKey     = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.settings.data.version"
-
-  val SETTINGS_CHANGE_PUBLISHER: SettingsChangeListener =
+  /** *
+   *  {{{
+   *     ApplicationManager
+   *    .getApplication()
+   *    .messageBus
+   *    .connect(this)
+   *    .subscribe(SettingsChangeListener.TOPIC, this)
+   *  }}}
+   */
+  val SettingsChangePublisher: SettingsChangeListener =
     ApplicationManager.getApplication.getMessageBus.syncPublisher(_Topic)
 
 }

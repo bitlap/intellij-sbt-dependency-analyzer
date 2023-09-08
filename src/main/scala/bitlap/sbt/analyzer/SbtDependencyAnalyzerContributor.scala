@@ -24,6 +24,7 @@ import org.jetbrains.sbt.project.data.ModuleNode
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
 import com.intellij.openapi.externalSystem.model.ProjectKeys
@@ -242,9 +243,17 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 }
 
-object SbtDependencyAnalyzerContributor:
+object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeListener:
 
   final val isAvailable = new AtomicBoolean(true)
+
+  // if data change
+  override def onAnalyzerConfigurationChanged(settingsState: SettingsState): Unit = {
+    // TODO
+    isAvailable.set(false)
+  }
+
+  ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
 
   private final val isNotifying = new AtomicBoolean(false)
 

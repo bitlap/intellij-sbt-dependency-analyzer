@@ -20,11 +20,11 @@ final class SbtDependencyAnalyzerConfigurable extends SearchableConfigurable {
 
   override def getHelpTopic(): String = "default"
 
-  override def createComponent(): JComponent = panel.getMainPanel
+  override def createComponent(): JComponent = panel.$$$getRootComponent$$$()
 
   override def isModified(): Boolean = panel.isModified
 
-  override def apply(): Unit = {}
+  override def apply(): Unit = panel.apply()
 
   override def reset(): Unit = panel.from()
 
