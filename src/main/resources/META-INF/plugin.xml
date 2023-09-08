@@ -26,7 +26,7 @@
                      description="Force translation for notification"/>
 
         <postStartupActivity implementation="bitlap.sbt.analyzer.activity.PluginUpdateActivity"/>
-        <applicationService serviceImplementation="bitlap.sbt.analyzer.Settings"/>
+        <applicationService serviceImplementation="bitlap.sbt.analyzer.SettingsState"/>
         <applicationConfigurable groupId="tools"
                      displayName="Sbt Dependency Analyzer"
                      instance="bitlap.sbt.analyzer.SbtDependencyAnalyzerConfigurable"/>

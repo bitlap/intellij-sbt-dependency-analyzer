@@ -2,7 +2,8 @@ package bitlap.sbt.analyzer
 
 import javax.swing.JComponent
 
-import com.intellij.openapi.options.SearchableConfigurable
+import com.intellij.openapi.options.*
+import com.intellij.openapi.options.Configurable.Composite
 
 /** @author
  *    梦境迷离
@@ -10,22 +11,23 @@ import com.intellij.openapi.options.SearchableConfigurable
  */
 final class SbtDependencyAnalyzerConfigurable extends SearchableConfigurable {
 
+  // create a ui form
+  private val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(SettingsState.instance)
+
   override def getId(): String = SbtDependencyAnalyzerPlugin.PLUGIN_ID
 
   override def getDisplayName(): String = SbtDependencyAnalyzerBundle.message("analyzer.settings.page.name")
 
   override def getHelpTopic(): String = "default"
 
-  override def createComponent(): JComponent = ???
+  override def createComponent(): JComponent = panel.getMainPanel
 
-  override def getPreferredFocusedComponent(): JComponent = ???
+  override def isModified(): Boolean = panel.isModified
 
-  override def isModified(): Boolean = ???
+  override def apply(): Unit = {}
 
-  override def apply(): Unit = ???
+  override def reset(): Unit = panel.from()
 
-  override def reset(): Unit = ???
-
-  override def disposeUIResources(): Unit = ???
+  override def disposeUIResources(): Unit = {}
 
 }
