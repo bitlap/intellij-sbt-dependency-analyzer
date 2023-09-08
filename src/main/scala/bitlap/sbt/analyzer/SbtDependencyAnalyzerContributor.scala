@@ -91,7 +91,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              if (!DependencyUtils.canIgnoreModule(module)) {
+              val moduleId        = moduleData.getId.split(" ")(0)
+
+              if (!DependencyUtils.canIgnoreModule(module, moduleId)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
             }
@@ -139,7 +141,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     )
   }
 
-  private def deleteExistAnalysisFiles(modulePath: String)(using ParserTypeEnum): Unit = {
+  private def deleteExistAnalysisFiles(modulePath: String): Unit = {
     DependencyScopeEnum.values
       .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[ParserTypeEnum])))
       .foreach(p => Files.deleteIfExists(p))
@@ -335,9 +337,11 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       ideaModuleNamePaths: Map[String, String],
       ideaModuleIdSbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
-    )(using ParserTypeEnum): JList[DependencyScopeNode] =
-      val module = findModule(project, moduleData)
-      if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
+    ): JList[DependencyScopeNode] =
+      val module   = findModule(project, moduleData)
+      val moduleId = moduleData.getId.split(" ")(0)
+
+      if (DependencyUtils.canIgnoreModule(module, moduleId)) return Collections.emptyList()
 
       if (isNotifying.get() && SbtUtils.untilProjectReady(project)) {
         // must reload project to enable it
@@ -349,7 +353,6 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       def executeCommandOrReadExistsFile(
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
-        val moduleId = moduleData.getId.split(" ")(0)
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
         val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)
         // File cache for one hour
@@ -387,11 +390,17 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       val result = ListBuffer[DependencyScopeNode]()
       import scala.util.control.Breaks.*
       // break, no more commands will be executed
-      breakable(
+      breakable {
+        val settings = SettingsState.instance
         for (scope <- DependencyScopeEnum.values) {
           var node: DependencyScopeNode = null
           try {
-            node = executeCommandOrReadExistsFile(scope)
+
+            if (settings.disableAnalyzeProvided && scope == DependencyScopeEnum.Provided) {} else if (
+              settings.disableAnalyzeTest && scope == DependencyScopeEnum.Test
+            ) {} else if (settings.disableAnalyzeCompile && scope == DependencyScopeEnum.Compile) {} else {
+              node = executeCommandOrReadExistsFile(scope)
+            }
             result.append(node)
           } catch {
             case _: AnalyzerCommandNotFoundException =>
@@ -406,7 +415,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
               throw e
           }
         }
-      )
+      }
 
       result.toList.asJava
     end loadDependencies
