@@ -255,6 +255,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
   override def onAnalyzerConfigurationChanged(settingsState: SettingsState): Unit = {
     // TODO
     isAvailable.set(false)
+    SbtUtils.refreshProject(e.getProject)
   }
 
   ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
