@@ -91,9 +91,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             val module     = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
-              val moduleId        = moduleData.getId.split(" ")(0)
-
-              if (!DependencyUtils.canIgnoreModule(module, moduleId)) {
+              if (!DependencyUtils.canIgnoreModule(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
             }
@@ -209,7 +207,11 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def getOrganization(project: Project): String =
     // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
-    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopene.
+    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopen.
+    if (SettingsState.instance.organization != null && SettingsState.instance.organization != Constants.EmptyString) {
+      return SettingsState.instance.organization
+    }
+
     if (organization != null) return organization
     organization = SbtShellOutputAnalysisTask.organizationTask.executeCommand(project)
     organization
@@ -341,7 +343,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       val module   = findModule(project, moduleData)
       val moduleId = moduleData.getId.split(" ")(0)
 
-      if (DependencyUtils.canIgnoreModule(module, moduleId)) return Collections.emptyList()
+      if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
       if (isNotifying.get() && SbtUtils.untilProjectReady(project)) {
         // must reload project to enable it

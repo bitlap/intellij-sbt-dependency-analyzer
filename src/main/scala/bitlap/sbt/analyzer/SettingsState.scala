@@ -27,9 +27,6 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
   import SettingsState.*
 
   @BeanProperty
-  var languageSelection: AnalyzerLanguage = AnalyzerLanguage.DEFAULT
-
-  @BeanProperty
   var disableAnalyzeCompile: Boolean = true
 
   @BeanProperty
@@ -37,9 +34,6 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
 
   @BeanProperty
   var disableAnalyzeTest: Boolean = true
-
-  @BeanProperty
-  var ignoredModules: List[String] = List.empty
 
   @BeanProperty
   var organization: String = _
@@ -58,17 +52,6 @@ object SettingsState {
 
   val _Topic: Topic[SettingsChangeListener] =
     Topic.create("SbtDependencyAnalyzerSettingsChanged", classOf[SettingsChangeListener])
-
-  enum AnalyzerLanguage(val displayName: String) {
-
-    case DEFAULT extends AnalyzerLanguage(SbtDependencyAnalyzerBundle.message("analyzer.settings.item.main.or.english"))
-
-    case PRIMARY_LANGUAGE
-        extends AnalyzerLanguage(SbtDependencyAnalyzerBundle.message("analyzer.settings.item.primaryLanguage"))
-  }
-
-  def toText(l: AnalyzerLanguage) = l.displayName
-  def fromText(s: String)         = AnalyzerLanguage.valueOf(s)
 
   trait SettingsChangeListener:
 

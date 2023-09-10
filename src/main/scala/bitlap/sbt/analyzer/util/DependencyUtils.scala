@@ -82,12 +82,9 @@ object DependencyUtils {
 
   /** do not analyze this module
    */
-  def canIgnoreModule(module: Module, moduleId: String): Boolean = {
+  def canIgnoreModule(module: Module): Boolean = {
     // if module is itself a build module, skip build module
     val isBuildModule = module.isBuildModule
-    if (SettingsState.instance.ignoredModules.contains(moduleId)) {
-      return false
-    }
     isBuildModule || module.isSharedSourceModule
   }
 
