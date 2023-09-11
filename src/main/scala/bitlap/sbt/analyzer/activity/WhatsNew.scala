@@ -33,7 +33,7 @@ object WhatsNew:
             HTMLEditorProvider.openEditor(
               project,
               SbtDependencyAnalyzerBundle
-                .message("analyzer.action.WhatsNew.text", "Sbt Dependency Analyzer"),
+                .message("analyzer.action.whatsNew.text", "Sbt Dependency Analyzer"),
               url,
               // language=HTML
               s"""<div style="text-align: center;padding-top: 3rem">
