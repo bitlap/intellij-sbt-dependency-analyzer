@@ -46,7 +46,7 @@ When the analysis is complete:
 
 ## Advances Setup
 
-> If you are not sure, you do not need to use these settings!
+> If you are not sure, you do not need to use these configurations!
 
 Using configurations, analysis wait times can be dramatically reduced:
 
