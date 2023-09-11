@@ -208,8 +208,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private def getOrganization(project: Project): String =
     // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
     // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopen.
-    if (SettingsState.instance.organization != null && SettingsState.instance.organization != Constants.EmptyString) {
-      return SettingsState.instance.organization
+    val org = SettingsState.getSettings(project).organization
+    if (org != null && org != Constants.EmptyString) {
+      return org
     }
 
     if (organization != null) return organization
@@ -252,20 +253,20 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
   final val isAvailable = new AtomicBoolean(true)
 
   // if data change
-  override def onAnalyzerConfigurationChanged(settingsState: SettingsState): Unit = {
+  override def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit = {
     // TODO
     isAvailable.set(false)
-    SbtUtils.refreshProject(e.getProject)
+    SbtUtils.refreshProject(project)
   }
 
   ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
 
   private final val isNotifying = new AtomicBoolean(false)
 
-  private def isValidFile(file: String): Boolean = {
+  private def isValidFile(project: Project, file: String): Boolean = {
     if (isAvailable.get()) {
       val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + Constants.FileLifespan
+      System.currentTimeMillis() <= lastModified + SettingsState.getSettings(project).fileCacheTimeout * 1000
     } else {
       isAvailable.getAndSet(true)
     }
@@ -357,7 +358,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
-        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)
+        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(project, file)
         // File cache for one hour
         if (useCache) {
           DependencyParserFactory
@@ -394,7 +395,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       import scala.util.control.Breaks.*
       // break, no more commands will be executed
       breakable {
-        val settings = SettingsState.instance
+        val settings = SettingsState.getSettings(project)
         for (scope <- DependencyScopeEnum.values) {
           var node: DependencyScopeNode = null
           try {
@@ -404,7 +405,9 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
             ) {} else if (settings.disableAnalyzeCompile && scope == DependencyScopeEnum.Compile) {} else {
               node = executeCommandOrReadExistsFile(scope)
             }
-            result.append(node)
+            if (node != null) {
+              result.append(node)
+            }
           } catch {
             case _: AnalyzerCommandNotFoundException =>
               if (isNotifying.compareAndSet(false, true)) {

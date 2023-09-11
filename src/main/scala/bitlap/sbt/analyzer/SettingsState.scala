@@ -10,6 +10,7 @@ import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
 import com.intellij.openapi.externalSystem.settings.*
+import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
@@ -21,22 +22,24 @@ import kotlin.jvm.Volatile
  *  @version 1.0,2023/9/7
  */
 @State(name = "SbtDependencyAnalyzer.Settings", storages = Array(new Storage("bitlap.sbt.dependency.analyzer.xml")))
-@Service(Array(Service.Level.PROJECT))
 final class SettingsState extends PersistentStateComponent[SettingsState] {
 
   import SettingsState.*
 
   @BeanProperty
-  var disableAnalyzeCompile: Boolean = true
+  var disableAnalyzeCompile: Boolean = false
 
   @BeanProperty
-  var disableAnalyzeProvided: Boolean = true
+  var disableAnalyzeProvided: Boolean = false
 
   @BeanProperty
-  var disableAnalyzeTest: Boolean = true
+  var disableAnalyzeTest: Boolean = false
 
   @BeanProperty
-  var organization: String = _
+  var organization: String = ""
+
+  @BeanProperty
+  var fileCacheTimeout: Int = 3600
 
   override def getState(): SettingsState = this
 
@@ -48,14 +51,14 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
 
 object SettingsState {
 
-  val instance: SettingsState = ApplicationManager.getApplication.getService(classOf[SettingsState])
+  def getSettings(project: Project): SettingsState = project.getService(classOf[SettingsState])
 
   val _Topic: Topic[SettingsChangeListener] =
     Topic.create("SbtDependencyAnalyzerSettingsChanged", classOf[SettingsChangeListener])
 
   trait SettingsChangeListener:
 
-    def onAnalyzerConfigurationChanged(settingsState: SettingsState): Unit
+    def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit
 
   end SettingsChangeListener
 

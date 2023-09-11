@@ -4,15 +4,16 @@ import javax.swing.JComponent
 
 import com.intellij.openapi.options.*
 import com.intellij.openapi.options.Configurable.Composite
+import com.intellij.openapi.project.Project
 
 /** @author
  *    梦境迷离
  *  @version 1.0,2023/9/7
  */
-final class SbtDependencyAnalyzerConfigurable extends SearchableConfigurable {
+final class SbtDependencyAnalyzerConfigurable(project: Project) extends SearchableConfigurable {
 
   // create a ui form
-  private val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(SettingsState.instance)
+  private val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(project)
 
   override def getId(): String = SbtDependencyAnalyzerPlugin.PLUGIN_ID
 

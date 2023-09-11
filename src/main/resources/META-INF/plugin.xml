@@ -16,8 +16,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- https://plugins.jetbrains.com/feature#name_dependencySupport -->
-        <dependencySupport kind="java" coordinate="org.scala-sbt:sbt" displayName="sbt"  />
-        <dependencySupport kind="java" coordinate="sbt" displayName="sbt"  />
+        <dependencySupport kind="java" coordinate="org.scala-sbt:sbt" displayName="sbt"/>
+        <dependencySupport kind="java" coordinate="sbt" displayName="sbt"/>
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
 
@@ -26,11 +26,10 @@
                      description="Force translation for notification"/>
 
         <postStartupActivity implementation="bitlap.sbt.analyzer.activity.PluginUpdateActivity"/>
-        <applicationService serviceImplementation="bitlap.sbt.analyzer.SettingsState"/>
-        <applicationConfigurable groupId="tools"
-                     displayName="Sbt Dependency Analyzer"
-                     instance="bitlap.sbt.analyzer.SbtDependencyAnalyzerConfigurable"/>
-
+        <projectService serviceImplementation="bitlap.sbt.analyzer.SettingsState"/>
+        <projectConfigurable groupId="tools"
+                             displayName="Sbt Dependency Analyzer"
+                             instance="bitlap.sbt.analyzer.SbtDependencyAnalyzerConfigurable"/>
     </extensions>
 
     <actions>
