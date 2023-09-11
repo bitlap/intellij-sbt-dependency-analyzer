@@ -44,7 +44,7 @@ When the analysis is complete:
 4. `reload` reload project on-demand.
 5. `update` update dependencies on-demand.
 
-## Advances Setup
+## Advanced Setup
 
 > If you are not sure, you do not need to use these configurations!
 
@@ -76,7 +76,7 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 ```
 Using sbt shell to reload or build the project avoids this issue:
 
-<img src="./docs/sbtShellUseForReload.jpg" width = "400" height = "280" alt="settings" align="right" />
+<img src="./docs/sbtShellUseForReload.jpg" width = "500" height = "230" alt="settings" align="center" />
 
 ### Can't analyze dependencies between modules?
 
