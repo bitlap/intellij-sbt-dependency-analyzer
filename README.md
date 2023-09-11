@@ -34,7 +34,7 @@ Just click on the icon and wait for the analysis:
 
 When the analysis is complete:
 
-<img src="./docs/dependencyTreeConflicts.jpg" width = "400" height = "280" alt="settings" align="center" />
+<img src="./docs/dependencyTreeConflicts.jpg" width = "500" height = "200" alt="settings" align="center" />
 
 ## For more details
 
@@ -45,6 +45,8 @@ When the analysis is complete:
 5. `update` update dependencies on-demand.
 
 ## Advances Setup
+
+> If you are not sure, you do not need to use these settings!
 
 Using configurations, analysis wait times can be dramatically reduced:
 
