@@ -61,7 +61,18 @@ object Notifications {
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .setImportant(true)
     notification.notify(null)
+  }
+
+  def notifySettingsChanged(project: Project): Unit = {
+    val notification = NotificationGroup
+      .createNotification(
+        SbtDependencyAnalyzerBundle.message("analyzer.notification.setting.changed.title"),
+        NotificationType.INFORMATION
+      )
+      .setIcon(SbtDependencyAnalyzerIcons.ICON)
+    notification.notify(project)
   }
 
   def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {
@@ -73,6 +84,7 @@ object Notifications {
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .setImportant(true)
     notification.notify(project)
   }
 
@@ -108,6 +120,7 @@ object Notifications {
               SbtDependencyAnalyzerBundle.message("analyzer.notification.addSdap.text", pluginSbtFileName),
               NotificationType.INFORMATION
             )
+            .setImportant(true)
             .setIcon(SbtDependencyAnalyzerIcons.ICON)
             .addAction(
               new NotificationAction(

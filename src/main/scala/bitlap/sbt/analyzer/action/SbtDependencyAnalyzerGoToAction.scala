@@ -27,6 +27,7 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
   )
 
   private val LOG = Logger.getInstance(classOf[SbtDependencyAnalyzerGoToAction])
+  private var declaredDependencies: List[DeclaredDependency] = _
 
   override def getNavigatable(e: AnActionEvent): Navigatable =
     Option(getDeclaredDependency(e)).flatMap { dependency =>
@@ -54,7 +55,12 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val module                          = getParentModule(project, dependency)
     if (coordinates == null || module == null) return null
 
-    val declared = DependencyUtils.getDeclaredDependency(module)
+    val declared =
+      if (declaredDependencies == null) {
+        declaredDependencies = DependencyUtils.getDeclaredDependency(module)
+        declaredDependencies
+      } else declaredDependencies
+
     declared
       .find(dc =>
         if (

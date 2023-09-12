@@ -24,8 +24,6 @@ object Constants:
 
   final val IntervalTimeout = 1010.milliseconds
 
-  final val FileLifespan = 1000 * 60 * 60L
-
   final val ChangeNotesSeparator = "<!-- @@ -->"
 
 end Constants

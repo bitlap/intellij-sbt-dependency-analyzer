@@ -24,6 +24,7 @@ import org.jetbrains.sbt.project.data.ModuleNode
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
 import com.intellij.openapi.externalSystem.model.ProjectKeys
@@ -138,7 +139,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     )
   }
 
-  private def deleteExistAnalysisFiles(modulePath: String)(using ParserTypeEnum): Unit = {
+  private def deleteExistAnalysisFiles(modulePath: String): Unit = {
     DependencyScopeEnum.values
       .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[ParserTypeEnum])))
       .foreach(p => Files.deleteIfExists(p))
@@ -206,7 +207,12 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def getOrganization(project: Project): String =
     // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
-    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopene.
+    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopen.
+    val org = SettingsState.getSettings(project).organization
+    if (org != null && org != Constants.EmptyString) {
+      return org
+    }
+
     if (organization != null) return organization
     organization = SbtShellOutputAnalysisTask.organizationTask.executeCommand(project)
     organization
@@ -242,16 +248,25 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 }
 
-object SbtDependencyAnalyzerContributor:
+object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeListener:
 
   final val isAvailable = new AtomicBoolean(true)
 
+  // if data change
+  override def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit = {
+    // TODO
+    isAvailable.set(false)
+    SbtUtils.refreshProject(project)
+  }
+
+  ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
+
   private final val isNotifying = new AtomicBoolean(false)
 
-  private def isValidFile(file: String): Boolean = {
+  private def isValidFile(project: Project, file: String): Boolean = {
     if (isAvailable.get()) {
       val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + Constants.FileLifespan
+      System.currentTimeMillis() <= lastModified + SettingsState.getSettings(project).fileCacheTimeout * 1000
     } else {
       isAvailable.getAndSet(true)
     }
@@ -326,8 +341,10 @@ object SbtDependencyAnalyzerContributor:
       ideaModuleNamePaths: Map[String, String],
       ideaModuleIdSbtModules: Map[String, String],
       declared: List[UnifiedCoordinates]
-    )(using ParserTypeEnum): JList[DependencyScopeNode] =
-      val module = findModule(project, moduleData)
+    ): JList[DependencyScopeNode] =
+      val module   = findModule(project, moduleData)
+      val moduleId = moduleData.getId.split(" ")(0)
+
       if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
       if (isNotifying.get() && SbtUtils.untilProjectReady(project)) {
@@ -340,9 +357,8 @@ object SbtDependencyAnalyzerContributor:
       def executeCommandOrReadExistsFile(
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
-        val moduleId = moduleData.getId.split(" ")(0)
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
-        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(file)
+        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(project, file)
         // File cache for one hour
         if (useCache) {
           DependencyParserFactory
@@ -378,12 +394,20 @@ object SbtDependencyAnalyzerContributor:
       val result = ListBuffer[DependencyScopeNode]()
       import scala.util.control.Breaks.*
       // break, no more commands will be executed
-      breakable(
+      breakable {
+        val settings = SettingsState.getSettings(project)
         for (scope <- DependencyScopeEnum.values) {
           var node: DependencyScopeNode = null
           try {
-            node = executeCommandOrReadExistsFile(scope)
-            result.append(node)
+
+            if (settings.disableAnalyzeProvided && scope == DependencyScopeEnum.Provided) {} else if (
+              settings.disableAnalyzeTest && scope == DependencyScopeEnum.Test
+            ) {} else if (settings.disableAnalyzeCompile && scope == DependencyScopeEnum.Compile) {} else {
+              node = executeCommandOrReadExistsFile(scope)
+            }
+            if (node != null) {
+              result.append(node)
+            }
           } catch {
             case _: AnalyzerCommandNotFoundException =>
               if (isNotifying.compareAndSet(false, true)) {
@@ -397,7 +421,7 @@ object SbtDependencyAnalyzerContributor:
               throw e
           }
         }
-      )
+      }
 
       result.toList.asJava
     end loadDependencies

@@ -30,11 +30,11 @@ But if statement **already exists** in `*.sbt` files, `sdap.sbt` will not be cre
 
 Just click on the icon and wait for the analysis:
 
-![](./docs/gotoAnalyze1.jpg)
+<img src="./docs/gotoAnalyze1.jpg" width = "400" height = "280" alt="settings" align="center" />
 
 When the analysis is complete:
 
-![](./docs/dependencyTreeConflicts.jpg)
+<img src="./docs/dependencyTreeConflicts.jpg" width = "500" height = "200" alt="settings" align="center" />
 
 ## For more details
 
@@ -43,6 +43,28 @@ When the analysis is complete:
 3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
 4. `reload` reload project on-demand.
 5. `update` update dependencies on-demand.
+
+## Advanced Setup
+
+> If you are not sure, you do not need to use these configurations!
+
+Using configurations, analysis wait times can be dramatically reduced:
+
+<img src="./docs/settings.png" width = "400" height = "280" alt="settings" align="right" />
+
+**File Cache Timeout**
+
+If the file hasn't been changed for more than `3600` seconds, plugin will execute the `dependencyDot` task, otherwise use the one that already exists, unless using `Refresh`.
+
+**Organization** 
+
+If you set this value, the `organization` task will not be used to get your project's organization. 
+
+**Disable Scope**
+
+If you don't need to analyze all scopes, just disable it.
+
+Configurations are persistent and associated with each intellij project.
 
 ## Troubleshooting issues
 
@@ -54,8 +76,7 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 ```
 Using sbt shell to reload or build the project avoids this issue:
 
-![](docs/sbtShellUseForReload.jpg)
-
+<img src="./docs/sbtShellUseForReload.jpg" width = "500" height = "230" alt="settings" align="center" />
 
 ### Can't analyze dependencies between modules?
 

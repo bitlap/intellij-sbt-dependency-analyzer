@@ -16,8 +16,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- https://plugins.jetbrains.com/feature#name_dependencySupport -->
-        <dependencySupport kind="java" coordinate="org.scala-sbt:sbt" displayName="sbt"  />
-        <dependencySupport kind="java" coordinate="sbt" displayName="sbt"  />
+        <dependencySupport kind="java" coordinate="org.scala-sbt:sbt" displayName="sbt"/>
+        <dependencySupport kind="java" coordinate="sbt" displayName="sbt"/>
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
 
@@ -26,7 +26,10 @@
                      description="Force translation for notification"/>
 
         <postStartupActivity implementation="bitlap.sbt.analyzer.activity.PluginUpdateActivity"/>
-
+        <projectService serviceImplementation="bitlap.sbt.analyzer.SettingsState"/>
+        <projectConfigurable groupId="tools"
+                             displayName="Sbt Dependency Analyzer"
+                             instance="bitlap.sbt.analyzer.SbtDependencyAnalyzerConfigurable"/>
     </extensions>
 
     <actions>
@@ -116,6 +119,12 @@
     <change-notes>
         <![CDATA[
         
+            <h1>0.2.0-RC3-231.9392.1</h1>
+            <ul>
+                <li>🎉Add Intellij Settings.</li>
+            </ul>
+            <!-- @@ -->
+            
             <h1>0.2.0-RC2-231.9392.1</h1>
             <ul>
                 <li>Update description and action name.</li>
