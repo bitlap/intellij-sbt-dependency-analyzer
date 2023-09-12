@@ -34,7 +34,7 @@ Just click on the icon and wait for the analysis:
 
 When the analysis is complete:
 
-<img src="./docs/dependencyTreeConflicts.jpg" width = "500" height = "200" alt="settings" align="center" />
+<img src="./docs/dependencyTreeConflicts.jpg" width = "600" height = "300" alt="settings" align="center" />
 
 ## For more details
 
