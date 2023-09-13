@@ -140,7 +140,7 @@ object DependencyUtils {
   }
 
   private def isSelfArtifact(artifact: String, context: ModuleContext): Boolean = {
-    // Processing cross platform, module name is not artifact!
+    // processing cross platform, module name is not artifact!
     val currentModuleName =
       context.ideaModuleIdSbtModuleNames.getOrElse(
         context.currentModuleId,

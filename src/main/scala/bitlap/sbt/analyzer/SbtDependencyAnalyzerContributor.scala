@@ -207,7 +207,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def getOrganization(project: Project): String =
     // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
-    // Usually, Uses do not change frequently, so it's better to keep caching until the view is reopen.
+    // Usually, Users do not change frequently, so it's better to keep caching until the view is reopen.
     val org = SettingsState.getSettings(project).organization
     if (org != null && org != Constants.EmptyString) {
       return org

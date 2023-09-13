@@ -36,7 +36,7 @@ When the analysis is complete:
 
 <img src="./docs/dependencyTreeConflicts.jpg" width = "600" height = "300" alt="settings" align="center" />
 
-## For more details
+## More Details
 
 1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
 2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
@@ -66,7 +66,7 @@ If you don't need to analyze all scopes, just disable it.
 
 Configurations are persistent and associated with each intellij project.
 
-## Troubleshooting issues
+## Troubleshooting Issues
 
 ### "Caused by: java.io.IOException: Could not create lock for ..."
 
