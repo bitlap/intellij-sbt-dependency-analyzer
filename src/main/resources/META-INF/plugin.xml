@@ -123,6 +123,7 @@
             <h1>0.2.0-231.9392.1</h1>
             <ul>
                 <li>Add moduleName cache.</li>
+                <li>Multi-module project, use the first non-root module when opening view.</li>
             </ul>
             <!-- @@ -->
                     
