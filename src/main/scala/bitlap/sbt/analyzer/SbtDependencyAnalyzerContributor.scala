@@ -103,13 +103,11 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
     }
 
-    // root -> top
-    // this will result in the plugin always executing the root/dependencyDot when attempting to open the view for the first time,
-    // and generating dot files for all modules by default.
-    // TODO: Problem: Problem: It will be slow when used for the first time, Exclude root module?
+    // root -> top - 1
+    // root is no longer turned on by default to make it easier for us to do caching and configuration.
     val (root, others) = projects.asScala.partition(_._2.getLinkedExternalProjectPath == project.getBasePath)
-    (root.keys.toList ++ others.keys.toList.sortBy(_.getModule.getName)).asJava
-
+    val sortedOthers   = others.keys.toList.sortBy(_.getModule.getName)
+    (sortedOthers ++ root.keys.toList).asJava
   }
 
   override def whenDataChanged(listener: functions.Function0[kotlin.Unit], parentDisposable: Disposable): Unit = {
@@ -206,29 +204,41 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   }
 
   private def getOrganization(project: Project): String =
-    // When force refresh, we will not re-read the settings, such organization,moduleName, because refreshing makes efficiency lower.
-    // Usually, Users do not change frequently, so it's better to keep caching until the view is reopen.
-    val org = SettingsState.getSettings(project).organization
+    if (organization != null) return organization
+
+    // we don't actively delete configurations
+    val settingsState = SettingsState.getSettings(project)
+    val org           = settingsState.organization
     if (org != null && org != Constants.EmptyString) {
       return org
     }
 
-    if (organization != null) return organization
     organization = SbtShellOutputAnalysisTask.organizationTask.executeCommand(project)
+    settingsState.organization = organization
     organization
+  end getOrganization
 
   private def getIdeaModuleIdSbtModules(project: Project): Map[String, String] =
     if (ideaModuleIdSbtModules.nonEmpty) return ideaModuleIdSbtModules
+
+    // we don't actively delete configurations
+
+    val settingsState = SettingsState.getSettings(project)
+    if (!settingsState.sbtModules.isEmpty) return settingsState.sbtModules.asScala.toMap
+
     ideaModuleIdSbtModules = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
+    settingsState.sbtModules = ideaModuleIdSbtModules.asJava
     ideaModuleIdSbtModules
+  end getIdeaModuleIdSbtModules
 
   private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] =
     if (declaredDependencies.nonEmpty) return declaredDependencies
     val module = findModule(project, moduleData)
     declaredDependencies = DependencyUtils.getDeclaredDependency(module).map(_.getCoordinates)
     declaredDependencies
+  end getDeclaredDependencies
 
-  private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] = {
+  private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] =
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
     if (moduleData.getModuleName == Constants.Project) return Collections.emptyList()
@@ -245,7 +255,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
         )
     )
     Option(result).getOrElse(Collections.emptyList())
-  }
+  end getOrRefreshData
+
 }
 
 object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeListener:

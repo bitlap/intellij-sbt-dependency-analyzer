@@ -38,11 +38,13 @@ When the analysis is complete:
 
 ## More Details
 
-1. `organization` get current project `organization`. Call once and cache when opening the dependency analysis view for the first time.
-2. `moduleName` get all sbt modules. Call once and cache when opening the dependency analysis view for the first time.
-3. `dependencyDot` get all dependency trees. File will be cached for an hour if you don't actively refresh dependencies or update libraryDependencies.
-4. `reload` reload project on-demand.
-5. `update` update dependencies on-demand.
+The plugin will use these sbt tasks. Please trust me, the plugin has done its best to minimize the need to avoid redundant execution:
+
+1. `organization`
+2. `moduleName`
+3. `dependencyDot`
+4. `reload`
+5. `update`
 
 ## Advanced Setup
 
@@ -65,6 +67,8 @@ If you set this value, the `organization` task will not be used to get your proj
 If you don't need to analyze all scopes, just disable it.
 
 Configurations are persistent and associated with each intellij project.
+
+As with other plugins, this plugin has its own storage which is `.idea/bitlap.sbt.dependency.analyzer.xml`, if this file is deleted, the cache will be cleared and the cache of the `moduleName` task will be removed.
 
 ## Troubleshooting Issues
 

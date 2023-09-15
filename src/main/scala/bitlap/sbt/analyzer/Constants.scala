@@ -13,8 +13,8 @@ object Constants:
   final val ColonSeparator: String = ":"
   final val EmptyString: String    = ""
 
-  final val SingleSbtModule = "$SingleModule$"
-  final val RootSbtModule   = "$RootModule$"
+  final val SingleSbtModule = "__Single_Module__"
+  final val RootSbtModule   = "__Root_Module__"
 
   final val Project = "project"
 
