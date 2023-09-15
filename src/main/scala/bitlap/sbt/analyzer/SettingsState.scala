@@ -2,6 +2,8 @@ package bitlap
 package sbt
 package analyzer
 
+import java.util.{ Collections, Map as JMap }
+
 import scala.beans.BeanProperty
 
 import org.jetbrains.sbt.project.settings.*
@@ -25,6 +27,9 @@ import kotlin.jvm.Volatile
 final class SettingsState extends PersistentStateComponent[SettingsState] {
 
   import SettingsState.*
+
+  @BeanProperty
+  var sbtModules: JMap[String, String] = Collections.emptyMap()
 
   @BeanProperty
   var disableAnalyzeCompile: Boolean = false
