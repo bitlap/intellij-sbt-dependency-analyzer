@@ -84,7 +84,6 @@ Using sbt shell to reload or build the project avoids this issue:
 
 ### Can't analyze dependencies between modules?
 
-First, make sure that `organization` has been configured correctly: 
-1. To verify if `organization` is correctly configured, you can execute `organization` in the sbt shell. If not configured, the `organization` is a module name, which will not be able to analyze the modules that the current module depends on.
-2. For multi-module projects, if root module doesn't use `ThisBuild` or `inThisBuild` to set `organization`, then each module must be configured with `organization`.
-3. Please refresh (`Reload All sbt Projects` or `Refresh Dependencies`) the project manually.
+Make sure you use one of the following settings to show the way for the plugin:
+- The `organization` in [Advanced Setup](#advanced-setup) has been set.
+- The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
