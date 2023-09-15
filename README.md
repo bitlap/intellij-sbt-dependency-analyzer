@@ -34,7 +34,7 @@ Just click on the icon and wait for the analysis:
 
 When the analysis is complete:
 
-<img src="./docs/dependencyTreeConflicts.jpg" width = "600" height = "300" alt="settings" align="center" />
+<img src="./docs/dependencyTreeConflicts.jpg" width = "1000" height = "400" alt="settings" align="center" />
 
 ## More Details
 
@@ -84,6 +84,6 @@ Using sbt shell to reload or build the project avoids this issue:
 
 ### Can't analyze dependencies between modules?
 
-Make sure you use one of the following settings to show the way for the plugin:
+Make sure you've used one of the following settings for the plugin to help find the correct module:
 - The `organization` in [Advanced Setup](#advanced-setup) has been set.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
