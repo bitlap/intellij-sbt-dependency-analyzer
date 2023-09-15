@@ -12,11 +12,11 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 > Support since Intellij IDEA 2023.1 (231.9392.1)
 
-- View Dependency Tree
-- Show Conflicts
-- Search Dependencies
-- Locate Dependency (multi-module)
-- Show dependencies between modules
+- [x] View Dependency Tree
+- [x] Show Conflicts
+- [x] Search Dependencies
+- [x] Locate Dependency (multi-module)
+- [x] Show dependencies between modules
 
 ## Usage Instructions
 
