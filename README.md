@@ -38,7 +38,7 @@ When the analysis is complete:
 
 ## More Details
 
-The plugin will use these sbt tasks. Please trust me, the plugin has done its best to minimize the need to avoid redundant execution:
+The plugin will use these sbt tasks. But trust me, the plugin has done its best to minimize the need to avoid redundant execution:
 
 1. `organization`
 2. `moduleName`
