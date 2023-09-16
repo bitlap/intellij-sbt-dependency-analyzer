@@ -50,7 +50,7 @@ The plugin will use these sbt tasks. But trust me, the plugin has done its best 
 
 > If you are not sure, you do not need to use these configurations!
 
-Using configurations, analysis wait times can be dramatically reduced:
+By using configurations, analysis wait times can be dramatically reduced:
 
 <img src="./docs/settings.png" width = "400" height = "280" alt="settings" align="right" />
 
