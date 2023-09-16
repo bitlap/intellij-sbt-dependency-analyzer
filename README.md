@@ -64,11 +64,11 @@ If you set this value, the `organization` task will not be used to get your proj
 
 **Disable Scope**
 
-If you don't need to analyze all scopes, just disable it.
+If you don't need to analyze all scopes, just disable the scope you don't want to analyze.
 
 Configurations are persistent and associated with each intellij project.
 
-As with other plugins, this plugin has its own storage which is `.idea/bitlap.sbt.dependency.analyzer.xml`, if this file is deleted, the cache will be cleared and the cache of the `moduleName` task will be removed.
+As with other plugins, this plugin has its own storage which is `.idea/bitlap.sbt.dependency.analyzer.xml`, if this file is deleted, the cache will be cleared.
 
 ## Troubleshooting Issues
 
