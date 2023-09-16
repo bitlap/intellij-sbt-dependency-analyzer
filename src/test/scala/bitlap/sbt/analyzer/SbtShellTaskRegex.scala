@@ -48,7 +48,7 @@ class SbtShellTaskRegex extends AnyFlatSpec {
         assert(artifact == "org.scalatest:scalatest:3.2.16:test")
       case _ => assert(false)
 
-    "org.scalatest:scalatest:3.2.16" match
+    "org.scalatest:scalatest:3.2.17" match
       case SbtShellOutputAnalysisTask.libraryDependenciesOutput1(group, _, _) =>
         assert(group == "org.scalatest")
       case _ => assert(false)
