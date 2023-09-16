@@ -18,8 +18,7 @@ pull_request_rules:
     conditions:
       - author=scala-steward
       - "body~=(labels: library-update, early-semver-minor)|(labels: library-update, early-semver-patch)|(labels: sbt-plugin-update, early-semver-minor)|(labels: sbt-plugin-update, early-semver-patch)|(labels: test-library-update)"
-      - "check-success=Java8"
-      - "check-success=Java11"      
+      - "check-success=Java17"
     actions:
       merge:
         method: squash
