@@ -1,13 +1,16 @@
 import org.jetbrains.sbtidea.Keys.*
 import org.jetbrains.sbtidea.verifier.FailureLevel
 
-lazy val scala3Version = "3.3.0"
+lazy val scala3Version         = "3.3.0"
+lazy val logbackVersion        = "1.2.3"
+lazy val graphvizVersion       = "0.18.1"
+lazy val joorVersion           = "0.9.15"
+lazy val scalatestVersion      = "3.2.16"
+lazy val pluginVerifierVersion = "1.301"
 
-lazy val intellijVersion =
-  "231.9392.1" // https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
-
-lazy val pluginVersion = s"0.2.0" +
-  s"-$intellijVersion"
+// https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
+lazy val intellijVersion = "231.9392.1"
+lazy val pluginVersion   = s"0.2.0-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -49,8 +52,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
 //        Some("xxx") // or None if password is not set(or via PLUGIN_SIGN_KEY_PWD env var)
     ),
     pluginVerifierOptions := pluginVerifierOptions.value.copy(
-      version = "1.301", // use a specific verifier version
-      offline = true,    // forbid the verifier from reaching the internet
+      version = pluginVerifierVersion, // use a specific verifier version
+      offline = true,                  // forbid the verifier from reaching the internet
       failureLevels =
         Set(FailureLevel.INTERNAL_API_USAGES, FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.COMPATIBILITY_WARNINGS)
     ),
@@ -66,9 +69,9 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     publish / skip := true,
     commands ++= Commands.value,
     libraryDependencies ++= Seq(
-      "guru.nidi"      % "graphviz-java-min-deps" % "0.18.1",
-      "ch.qos.logback" % "logback-classic"        % "1.2.3",
-      "org.jooq"       % "joor"                   % "0.9.15",
-      "org.scalatest" %% "scalatest"              % "3.2.16" % Test
+      "guru.nidi"      % "graphviz-java-min-deps" % graphvizVersion,
+      "ch.qos.logback" % "logback-classic"        % logbackVersion,
+      "org.jooq"       % "joor"                   % joorVersion,
+      "org.scalatest" %% "scalatest"              % scalatestVersion % Test
     )
   )
