@@ -62,3 +62,11 @@ jobs:
 
       - name: Check Binary Compatibility
         run: sbt runPluginVerifier
+
+  
+  ci:
+    runs-on: ubuntu-20.04
+    needs: [ build, test, verification]
+    steps:
+      - name: Aggregate outcomes
+        run: echo "build succeeded"        
