@@ -37,9 +37,13 @@ object WhatsNew:
               url,
               // language=HTML
               s"""<div style="text-align: center;padding-top: 3rem">
-                 |<div style="padding-top: 1rem; margin-bottom: 0.8rem;">Failed to load!</div>
+                 |<div style="padding-top: 1rem; margin-bottom: 0.8rem;">${SbtDependencyAnalyzerBundle.message(
+                  "analyzer.notification.updated.failure.title"
+                )}</div>
                  |<div><a href="$url" target="_blank"
-                 |        style="font-size: 2rem">Open in browser</a></div>
+                 |        style="font-size: 2rem">${SbtDependencyAnalyzerBundle.message(
+                  "analyzer.notification.updated.failure.text"
+                )}</a></div>
                  |</div>""".stripMargin
             )
           } catch {
