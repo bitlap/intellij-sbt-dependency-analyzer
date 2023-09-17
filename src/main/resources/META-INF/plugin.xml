@@ -124,6 +124,8 @@
             <ul>
                 <li>Add moduleName cache.</li>
                 <li>Multi-module project, use the first non-root module when opening view.</li>
+                <li>Update dependencies.</li>
+                <li>Add zh_CN message for whats’new.</li>
             </ul>
             <!-- @@ -->
                     
