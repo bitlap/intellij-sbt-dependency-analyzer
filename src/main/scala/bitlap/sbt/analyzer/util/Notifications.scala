@@ -3,34 +3,25 @@ package sbt
 package analyzer
 package util
 
-import java.io.File
 import java.nio.file.Path
 
-import scala.concurrent.Promise
 import scala.concurrent.duration.*
+
+import bitlap.sbt.analyzer.activity.WhatsNew
+import bitlap.sbt.analyzer.activity.WhatsNew.canBrowseInHTMLEditor
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
-import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
-import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
-import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
-import com.intellij.openapi.externalSystem.util.{ ExternalSystemBundle, ExternalSystemUtil }
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
 import com.intellij.openapi.vfs.{ VfsUtil, VirtualFile }
-
-import activity.WhatsNew
-import activity.WhatsNew.canBrowseInHTMLEditor
 
 /** SbtDependencyAnalyzer global notifier
  */
