@@ -102,7 +102,7 @@ object Notifications {
             val gitExclude    = VfsUtil.findRelativeFile(basePath, ".git", "info", "exclude")
             val gitExcludeDoc = gitExclude.document()
             if (gitExcludeDoc != null) {
-              val ignoreText = "project" + Constants.Separator + "sdap.sbt"
+              val ignoreText = "project" + Constants.Separator + pluginSbtFileName
               if (gitExcludeDoc.getText != null && !gitExcludeDoc.getText.contains(ignoreText)) {
                 gitExcludeDoc.setReadOnly(false)
                 gitExcludeDoc.setText(
