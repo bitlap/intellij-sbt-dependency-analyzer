@@ -5,30 +5,23 @@ package util
 
 import java.nio.file.Path
 
-import scala.concurrent.Promise
 import scala.concurrent.duration.*
+
+import bitlap.sbt.analyzer.activity.WhatsNew
+import bitlap.sbt.analyzer.activity.WhatsNew.canBrowseInHTMLEditor
 
 import org.jetbrains.plugins.scala.*
 import org.jetbrains.plugins.scala.project.Version
-import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
-import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
-import com.intellij.openapi.externalSystem.util.{ ExternalSystemBundle, ExternalSystemUtil }
+import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
-import com.intellij.openapi.vfs.VfsUtil
-
-import activity.WhatsNew
-import activity.WhatsNew.canBrowseInHTMLEditor
+import com.intellij.openapi.vfs.{ VfsUtil, VirtualFile }
 
 /** SbtDependencyAnalyzer global notifier
  */
@@ -99,14 +92,33 @@ object Notifications {
       new Runnable() {
         override def run(): Unit = {
           // 1. get or create sdap.sbt file and add dependency tree statement
-          val projectPath    = VfsUtil.createDirectoryIfMissing(basePath, "project")
-          val pluginsSbtFile = projectPath.findOrCreateChildData(null, pluginSbtFileName)
-          val doc            = FileDocumentManager.getInstance().getDocument(pluginsSbtFile)
+          val sdapText    = getSdapText(project)
+          val projectPath = VfsUtil.createDirectoryIfMissing(basePath, "project")
+
+          var pluginsSbtFile     = projectPath.findChild(pluginSbtFileName)
+          val isSdapAutoGenerate = pluginsSbtFile.isSdapAutoGenerate(sdapText)
+          if (isSdapAutoGenerate) {
+            // add to git ignore
+            val gitExclude    = VfsUtil.findRelativeFile(basePath, ".git", "info", "exclude")
+            val gitExcludeDoc = gitExclude.document()
+            if (gitExcludeDoc != null) {
+              val ignoreText = "project" + Constants.Separator + pluginSbtFileName
+              if (gitExcludeDoc.getText != null && !gitExcludeDoc.getText.contains(ignoreText)) {
+                gitExcludeDoc.setReadOnly(false)
+                gitExcludeDoc.setText(
+                  gitExcludeDoc.getText + Constants.LineSeparator + ignoreText + Constants.LineSeparator
+                )
+              }
+            }
+            pluginsSbtFile = projectPath.findOrCreateChildData(null, pluginSbtFileName)
+          }
+
+          val doc = pluginsSbtFile.document()
           doc.setReadOnly(false)
-          if (doc.getText == null || doc.getText.trim.isEmpty) {
-            doc.setText(getSdapText(project))
+          if (isSdapAutoGenerate) {
+            doc.setText(sdapText)
           } else {
-            doc.setText(doc.getText + Constants.LineSeparator + getSdapText(project))
+            doc.setText(doc.getText + Constants.LineSeparator + sdapText)
           }
           // if intellij not enable auto-reload
           // force refresh project
@@ -191,6 +203,25 @@ object Notifications {
         // ignore
       }
       notification
+    }
+  }
+
+  extension (file: VirtualFile) {
+
+    private def document(): Document = {
+      if (file == null) {
+        return null
+      }
+      val doc = FileDocumentManager.getInstance().getDocument(file)
+      doc
+    }
+
+    private def isSdapAutoGenerate(sdapText: String): Boolean = {
+      if (file == null) {
+        return true
+      }
+      val doc = FileDocumentManager.getInstance().getDocument(file)
+      doc == null || doc.getText == null || doc.getText.trim.isEmpty || doc.getText.trim == sdapText
     }
   }
 }
