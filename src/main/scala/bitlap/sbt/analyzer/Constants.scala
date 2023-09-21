@@ -1,7 +1,5 @@
 package bitlap.sbt.analyzer
 
-import java.io.File
-
 import scala.concurrent.duration.*
 
 /** @author
@@ -10,7 +8,7 @@ import scala.concurrent.duration.*
  */
 object Constants:
 
-  final val Separator: String     = File.separator
+  final val Separator: String     = "/"
   final val LineSeparator: String = "\n"
 
   final val ColonSeparator: String = ":"
