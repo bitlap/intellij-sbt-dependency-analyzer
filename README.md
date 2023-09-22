@@ -7,38 +7,39 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 [![Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
 [![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=JetBrains%20Plugin%20Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
 
+English | [中文](README-CN.md)
 
 ## Features
 
-> Support since Intellij IDEA 2023.1 (231.9392.1)
+> Support available since IntelliJ IDEA 2023.1 (231.9392.1)
 
 - [x] View Dependency Tree
 - [x] Show Conflicts
 - [x] Search Dependencies
 - [x] Locate Dependency (multi-module)
-- [x] Show dependencies between modules
+- [x] Show Dependencies Between Modules
 
 ## Usage Instructions
 
-This plugin will automatically generate `project/sdap.sbt` and put code `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, do not modify or delete `project/sdap.sbt`. 
+This plugin will automatically generate `project/sdap.sbt` and insert the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, please refrain from modifying or deleting `project/sdap.sbt`. 
 
-Because this plugin depends on `sbt-dependency-tree` which is a third-party plugin, but now integrated into sbt by default (but the plugin will not be enabled by default, see [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now integrated into sbt by default (although it won't be enabled by default, as explained in this [sbt issue](https://github.com/sbt/sbt/pull/5880)).
 
-But if statement **already exists** in `*.sbt` files, `sdap.sbt` will not be created.
+If the statement already exists in `*.sbt` files, `sdap.sbt` will not be created.
 
-**Let's see how to use it!**
+**Let's explore how to use it!**
 
-Just click on the icon and wait for the analysis:
+Simply click on the icon and wait for the analysis to complete:
 
 <img src="./docs/gotoAnalyze1.jpg" width = "400" height = "280" alt="settings" align="center" />
 
-When the analysis is complete:
+Once the analysis is finished:
 
 <img src="./docs/dependencyTreeConflicts.jpg" width = "1000" height = "400" alt="settings" align="center" />
 
 ## More Details
 
-The plugin will use these sbt tasks. But trust me, the plugin has done its best to minimize the need to avoid redundant execution:
+The plugin utilizes the following sbt tasks. However, rest assured that the plugin has been optimized to minimize redundant executions:
 
 1. `organization`
 2. `moduleName`
@@ -48,42 +49,43 @@ The plugin will use these sbt tasks. But trust me, the plugin has done its best 
 
 ## Advanced Setup
 
-> If you are not sure, you do not need to use these configurations!
+> If you are uncertain, you can safely skip these configurations!
 
-By using configurations, analysis wait times can be dramatically reduced:
+By utilizing configurations, analysis wait times can be significantly reduced:
 
 <img src="./docs/settings.png" width = "400" height = "280" alt="settings" align="right" />
 
 **File Cache Timeout**
 
-If the file hasn't been changed for more than `3600` seconds, plugin will execute the `dependencyDot` task, otherwise use the one that already exists, unless using `Refresh`.
+If a file remains unchanged for more than 3600 seconds, the plugin will execute the `dependencyDot` task. Otherwise, it will use the existing one, unless you opt for a `Refresh`.
 
 **Organization** 
 
-If you set this value, the `organization` task will not be used to get your project's organization. 
+If you specify this value, the `organization` task will not be used to retrieve your project's organization.
 
-**Disable Scope**
+**Disable Scopes**
 
-If you don't need to analyze all scopes, just disable the scope you don't want to analyze.
+If you do not need to analyze all scopes, simply disable the scope(s) you wish to skip.
 
-Configurations are persistent and associated with each intellij project.
+Configurations are persistent and associated with each IntelliJ project.
 
-As with other plugins, this plugin has its own storage which is `.idea/bitlap.sbt.dependency.analyzer.xml`, if this file is deleted, the cache will be cleared.
+Like other plugins, this one maintains its own storage in `.idea/bitlap.sbt.dependency.analyzer.xml`. Deleting this file will clear the cache.
 
 ## Troubleshooting Issues
 
 ### "Caused by: java.io.IOException: Could not create lock for ..."
 
-Due to the need for the plugin to use sbt shell, when you open the dependency analysis view and start using the Intellij IDEA to reload or build project, it may cause this problem:
+Due to the plugin's requirement to use sbt shell, opening the dependency analysis view and subsequently using IntelliJ IDEA to reload or build the project may lead to the following issue:
 ```
 Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load5964714308503584069_lock, error 5
 ```
-Using sbt shell to reload or build the project avoids this issue:
+
+To avoid this problem, utilize sbt shell for reloading or building the project:
 
 <img src="./docs/sbtShellUseForReload.jpg" width = "500" height = "230" alt="settings" align="center" />
 
-### Can't analyze dependencies between modules?
+### Unable to analyze dependencies between modules?
 
-Make sure you've used one of the following settings for the plugin to help find the correct module:
-- The `organization` in [Advanced Setup](#advanced-setup) has been set.
+Ensure that you have applied one of the following settings to help identify the correct module:
+- The `organization` in [Advanced Setup](#advanced-setup) has been configured.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
