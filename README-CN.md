@@ -71,7 +71,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 与其他插件一样，此插件具有自己的存储位置，即 `.idea/bitlap.sbt.dependency.analyzer.xml`。删除此文件将清除缓存。
 
-## 故障排除问题
+## 问题排查
 
 ### "Caused by: java.io.IOException: Could not create lock for ..."
 
