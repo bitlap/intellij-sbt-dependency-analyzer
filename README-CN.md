@@ -87,7 +87,7 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 
 ### 无法分析模块之间的依赖关系？
 
-请确保您已应用了一下配置之一，以帮助识别正确的模块：
+请确保您已应用了以下配置之一，以帮助识别正确的模块：
 
 - 在 [高级设置](#高级设置) 中已配置 `organization`。
 - 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
