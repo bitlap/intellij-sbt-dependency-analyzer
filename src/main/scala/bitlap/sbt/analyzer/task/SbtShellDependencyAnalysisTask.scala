@@ -23,7 +23,7 @@ import util.DependencyUtils.*
  */
 trait SbtShellDependencyAnalysisTask:
 
-  val parserTypeEnum: ParserTypeEnum
+  val parserTypeEnum: AnalyzedFileType
 
   def executeCommand(
     project: Project,

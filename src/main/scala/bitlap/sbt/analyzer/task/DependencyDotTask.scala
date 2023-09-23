@@ -22,7 +22,7 @@ import com.intellij.openapi.project.Project
  */
 final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
 
-  override val parserTypeEnum: ParserTypeEnum = ParserTypeEnum.DOT
+  override val parserTypeEnum: AnalyzedFileType = AnalyzedFileType.Dot
 
   override def executeCommand(
     project: Project,
@@ -40,7 +40,7 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
       val sbtModuleNameMap =
         if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
         else ideaModuleIdSbtModules
-      DependencyParserFactory
+      AnalyzedParserFactory
         .getInstance(parserTypeEnum)
         .buildDependencyTree(
           ModuleContext(

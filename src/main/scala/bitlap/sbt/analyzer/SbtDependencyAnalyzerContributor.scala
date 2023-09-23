@@ -139,7 +139,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def deleteExistAnalysisFiles(modulePath: String): Unit = {
     DependencyScopeEnum.values
-      .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[ParserTypeEnum])))
+      .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[AnalyzedFileType])))
       .foreach(p => Files.deleteIfExists(p))
   }
 
@@ -368,12 +368,12 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       def executeCommandOrReadExistsFile(
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
-        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[ParserTypeEnum])
+        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[AnalyzedFileType])
         val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(project, file)
         // File cache for one hour
         if (useCache) {
-          DependencyParserFactory
-            .getInstance(summon[ParserTypeEnum])
+          AnalyzedParserFactory
+            .getInstance(summon[AnalyzedFileType])
             .buildDependencyTree(
               ModuleContext(
                 file,

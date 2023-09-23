@@ -9,9 +9,9 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-trait DependencyParser {
+trait AnalyzedFileParser {
 
-  val parserType: ParserTypeEnum
+  val fileType: AnalyzedFileType
 
   def buildDependencyTree(
     context: ModuleContext,

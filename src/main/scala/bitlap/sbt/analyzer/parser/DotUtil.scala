@@ -24,9 +24,9 @@ import model.ModuleContext
  *    梦境迷离
  *  @version 1.0,2023/8/3
  */
-object DOTUtil {
+object DotUtil {
 
-  private val LOG = Logger.getInstance(classOf[DOTUtil.type])
+  private val LOG = Logger.getInstance(classOf[DotUtil.type])
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
