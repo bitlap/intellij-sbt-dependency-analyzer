@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 
-import bitlap.sbt.analyzer.parser.ParserTypeEnum
+import bitlap.sbt.analyzer.parser.AnalyzedFileType
 
 import org.jetbrains.sbt.project.*
 
@@ -30,7 +30,7 @@ lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAna
 
 given ExecutionContext = ExecutionContext.Implicits.global
 
-given ParserTypeEnum = ParserTypeEnum.DOT
+given AnalyzedFileType = AnalyzedFileType.Dot
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {

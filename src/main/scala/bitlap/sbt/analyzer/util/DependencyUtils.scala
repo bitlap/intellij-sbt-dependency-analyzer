@@ -93,7 +93,7 @@ object DependencyUtils {
     else s"$project / $scope / $cmd"
   }
 
-  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: ParserTypeEnum): String =
+  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: AnalyzedFileType): String =
     s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
 
   def createRootScopeNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {

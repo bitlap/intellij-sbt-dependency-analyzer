@@ -30,6 +30,7 @@ object WhatsNew:
       ApplicationManager.getApplication.invokeLater(
         () => {
           try {
+            // TODO Why does it often fail to open?
             HTMLEditorProvider.openEditor(
               project,
               SbtDependencyAnalyzerBundle
