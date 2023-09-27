@@ -93,5 +93,6 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 - 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
 
 
+<br />
 
 #### 如果你喜欢这个项目，或者对你有用，请[点击](https://github.com/bitlap/intellij-sbt-dependency-analyzer)右上角 ⭐️ Star 收藏吧~
