@@ -89,3 +89,7 @@ To avoid this problem, utilize sbt shell for reloading or building the project:
 Ensure that you have applied one of the following settings to help identify the correct module:
 - The `organization` in [Advanced Setup](#advanced-setup) has been configured.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
+
+
+
+#### If you find Sbt Dependency Analyzer useful, please ⭐️ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page.
