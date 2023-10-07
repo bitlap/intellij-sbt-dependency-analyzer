@@ -62,10 +62,22 @@ private fun SimpleColoredComponent.customizeCellRenderer(
 
     if (showSize) {
         when (group.data) {
-            is SbtDAArtifact -> append(
-                " (${formatThousands((group.data as SbtDAArtifact).size)} KB)",
-                GRAYED_ATTRIBUTES
-            )
+            is SbtDAArtifact ->
+            {
+                val selfSize =  formatThousands((group.data as SbtDAArtifact).totalSize)
+                val total = formatThousands((group.data as SbtDAArtifact).size)
+                if(selfSize == total) {
+                    append(
+                        " - $selfSize KB",
+                        GRAYED_ATTRIBUTES
+                    ) 
+                } else {
+                    append(
+                        " - $selfSize KB ($total KB)",
+                        GRAYED_ATTRIBUTES
+                    )
+                }
+            }
 
             else -> return
         }

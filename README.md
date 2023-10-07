@@ -18,6 +18,7 @@ English | [中文](README-CN.md)
 - [x] Search Dependencies
 - [x] Locate Dependency (multi-module)
 - [x] Show Dependencies Between Modules
+- [x] Show JAR Size
 
 ## Usage Instructions
 

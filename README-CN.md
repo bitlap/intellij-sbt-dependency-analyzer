@@ -18,6 +18,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - [x] 搜索依赖
 - [x] 定位依赖（多模块）
 - [x] 显示模块间依赖关系
+- [x] 查看 JAR 包大小
 
 ## 使用说明
 
