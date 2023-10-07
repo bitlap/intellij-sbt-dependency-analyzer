@@ -2,7 +2,6 @@
 package bitlap.sbt.analyzer.jbexternal.util
 
 import com.intellij.ide.nls.NlsMessages
-import com.intellij.ide.plugins.newui.HorizontalLayout
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Scope
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.observable.properties.GraphProperty
@@ -23,7 +22,7 @@ import org.apache.commons.lang.StringUtils
 import java.awt.Component
 import javax.swing.*
 
-
+@Suppress("DEPRECATION")
 internal class SearchScopeSelector(property: ObservableMutableProperty<List<ScopeItem>>) : JPanel() {
     init {
         val dropDownLink = SearchScopeDropDownLink(property)
@@ -32,7 +31,7 @@ internal class SearchScopeSelector(property: ObservableMutableProperty<List<Scop
             .apply { border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2) }
             .apply { labelFor = dropDownLink }
 
-        layout = HorizontalLayout(0)
+        layout = com.intellij.ide.plugins.newui.HorizontalLayout(0)
         border = JBUI.Borders.empty()
         add(label)
         add(dropDownLink)

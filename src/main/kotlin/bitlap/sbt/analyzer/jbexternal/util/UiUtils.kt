@@ -2,7 +2,6 @@
 package bitlap.sbt.analyzer.jbexternal.util
 
 import com.intellij.icons.AllIcons
-import com.intellij.ide.plugins.newui.HorizontalLayout
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -77,9 +76,10 @@ internal fun toolbarPanel(configure: BorderLayoutPanel.() -> Unit) =
         .apply { withPreferredHeight(JBUI.scale(30)) }
         .apply { configure() }
 
+@Suppress("DEPRECATION")
 internal fun horizontalPanel(vararg components: JComponent) =
     JPanel()
-        .apply { layout = HorizontalLayout(0) }
+        .apply { layout = com.intellij.ide.plugins.newui.HorizontalLayout(0) }
         .apply { border = JBUI.Borders.empty() }
         .apply { components.forEach(::add) }
 

@@ -1,9 +1,12 @@
 package bitlap.sbt.analyzer.action
 
+import scala.jdk.CollectionConverters.*
+
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.jbexternal.*
-import scala.jdk.CollectionConverters.*
+
 import org.jetbrains.sbt.project.SbtProjectSystem
+
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.externalSystem.dependency.analyzer.*
 import com.intellij.openapi.externalSystem.model.*

@@ -1,6 +1,5 @@
 import org.jetbrains.sbtidea.Keys.*
 import org.jetbrains.sbtidea.verifier.FailureLevel
-import kotlin.*
 
 lazy val scala3Version         = "3.3.1"
 lazy val logbackVersion        = "1.4.11"
@@ -75,4 +74,6 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       "org.jooq"       % "joor"                   % joorVersion,
       "org.scalatest" %% "scalatest"              % scalatestVersion % Test
     ),
+    kotlinVersion := "1.8.10",
+    Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin"
   )
