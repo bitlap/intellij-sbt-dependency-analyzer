@@ -63,8 +63,9 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
         selectedData.getDependencyNode match
           case pdn: ProjectDependencyNode => DAModule(pdn.getProjectName)
           case adn: ArtifactDependencyNode =>
-            val size  = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName) / 1024
-            val total = SbtUtils.getLibraryTotalSize(selectedData.getProject, adn.getDependencies.asScala.toList) / 1024
+            val size = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName).convertToKB
+            val total =
+              SbtUtils.getLibraryTotalSize(selectedData.getProject, adn.getDependencies.asScala.toList).convertToKB
             SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size, size + total)
 
   end getDependencyData

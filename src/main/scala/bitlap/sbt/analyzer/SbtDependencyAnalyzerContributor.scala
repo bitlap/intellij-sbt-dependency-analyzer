@@ -198,8 +198,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
         data.putUserData(Module_Data, moduleData)
         data
       case adn: ArtifactDependencyNode =>
-        val size  = SbtUtils.getLibrarySize(project, adn.getDisplayName) / 1024
-        val total = SbtUtils.getLibraryTotalSize(project, adn.getDependencies.asScala.toList) / 1024
+        val size  = SbtUtils.getLibrarySize(project, adn.getDisplayName).convertToKB
+        val total = SbtUtils.getLibraryTotalSize(project, adn.getDependencies.asScala.toList).convertToKB
         SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size, size + total)
       case _ => null
     }
