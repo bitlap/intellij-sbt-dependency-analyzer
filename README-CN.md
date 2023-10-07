@@ -22,11 +22,9 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## 使用说明
 
-此插件将自动生成 `project/sdap.sbt` 文件，并在其中插入 `addDependencyTreePlugin`（或 `addSbtPlugin(...)`）语句。请勿修改或删除 `project/sdap.sbt` 文件。
+此插件首次分析失败时将自动生成 `project/sdap.sbt` 文件，并在其中插入一行 `addDependencyTreePlugin` （或 `addSbtPlugin(...)` ）。 请勿修改或删除 `project/sdap.sbt` 文件。
 
 此插件依赖于 `sbt-dependency-tree`，这是一个第三方插件，但现在已默认集成到 sbt 中（尽管默认情况下未启用，详见 [sbt 问题](https://github.com/sbt/sbt/pull/5880)）。
-
-如果 `*.sbt` 文件中已存在相应语句，则不会创建 `sdap.sbt` 文件。
 
 **让我们看看如何使用它！**
 
