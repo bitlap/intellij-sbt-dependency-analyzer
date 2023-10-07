@@ -1,6 +1,10 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.*
 import javax.swing.JList
 import javax.swing.JTree
 import javax.swing.ListModel
@@ -12,14 +16,13 @@ import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.invokeLater
-import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.observable.properties.*
 import com.intellij.openapi.observable.util.bind
 import com.intellij.openapi.observable.util.transform
-import com.intellij.openapi.ui.asSequence
 import com.intellij.openapi.observable.util.whenTreeChanged
+import com.intellij.openapi.ui.asSequence
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.*
 import com.intellij.ui.SimpleTextAttributes.GRAYED_ATTRIBUTES
@@ -28,27 +31,16 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.treeStructure.SimpleTree
 import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.tree.TreeUtil
+import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 
-const val UNIT = "KB"
-internal fun Dependency.Data.getDisplayText(showGroupId: Boolean, showSize: Boolean): @NlsSafe String = when (this) {
-    is Dependency.Data.Module -> name
-    is Dependency.Data.Artifact -> when (this) {
-        is SbtDAArtifact -> when (showGroupId) {
-            true -> when (showSize) {
-                true -> "$groupId:$artifactId:$version ($size $UNIT)"
-                else -> "$groupId:$artifactId:$version"
-            }
-            else -> when (showSize) {
-                true -> "$artifactId:$version ($size $UNIT)"
-                else -> "$artifactId:$version"
-            }
-        }
-        else -> when (showGroupId) {
+internal fun Dependency.Data.getDisplayText(showGroupId: Boolean): @NlsSafe String =
+    when (this) {
+        is Dependency.Data.Module -> name
+        is Dependency.Data.Artifact -> when (showGroupId) {
             true -> "$groupId:$artifactId:$version"
             else -> "$artifactId:$version"
         }
     }
-}
 
 private fun SimpleColoredComponent.customizeCellRenderer(
     group: DependencyGroup, showGroupId: Boolean, showSize: Boolean
@@ -60,13 +52,32 @@ private fun SimpleColoredComponent.customizeCellRenderer(
             is Dependency.Data.Artifact -> AllIcons.Nodes.PpLib
         }
     }
-    val dataText = group.data.getDisplayText(showGroupId, showSize)
+    val dataText = group.data.getDisplayText(showGroupId)
     append(dataText, if (group.isOmitted) GRAYED_ATTRIBUTES else REGULAR_ATTRIBUTES)
     val scopes = group.variances.map { it.scope.name }.toSet()
     val scopesText = scopes.singleOrNull() ?: ExternalSystemBundle.message(
         "external.system.dependency.analyzer.scope.n", scopes.size
     )
     append(" ($scopesText)", GRAYED_ATTRIBUTES)
+
+    if (showSize) {
+        when (group.data) {
+            is SbtDAArtifact -> append(
+                " (${formatThousands((group.data as SbtDAArtifact).size)} KB)",
+                GRAYED_ATTRIBUTES
+            )
+
+            else -> return
+        }
+    }
+}
+
+fun formatThousands(l: Long): String {
+    val formatter: DecimalFormat = NumberFormat.getInstance(Locale.US) as DecimalFormat
+    val symbols: DecimalFormatSymbols = formatter.decimalFormatSymbols
+    symbols.setGroupingSeparator(' ')
+    formatter.decimalFormatSymbols = symbols
+    return formatter.format(l)
 }
 
 internal abstract class AbstractDependencyList(

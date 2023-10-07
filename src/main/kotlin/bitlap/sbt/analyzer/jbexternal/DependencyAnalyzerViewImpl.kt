@@ -159,7 +159,7 @@ class DependencyAnalyzerViewImpl(
         val dependencyDataFilter = dependencyDataFilter
         val dependencyScopeFilter = dependencyScopeFilter.filter { it.isSelected }.map { it.scope }
         val showDependencyWarnings = showDependencyWarnings
-        return filter { dependency -> dependencyDataFilter in dependency.data.getDisplayText(showDependencyGroupId, showDependencySize) }
+        return filter { dependency -> dependencyDataFilter in dependency.data.getDisplayText(showDependencyGroupId) }
             .filter { dependency -> dependency.scope in dependencyScopeFilter }
             .filter { dependency -> if (showDependencyWarnings) dependency.hasWarnings else true }
     }
@@ -214,7 +214,7 @@ class DependencyAnalyzerViewImpl(
     }
 
     private fun updateUsagesTitle() {
-        val text = dependency?.data?.getDisplayText(showDependencyGroupId, showDependencySize)
+        val text = dependency?.data?.getDisplayText(showDependencyGroupId)
         usagesTitle = if (text == null) "" else ExternalSystemBundle.message(
             "external.system.dependency.analyzer.usages.title", text
         )
@@ -313,7 +313,7 @@ class DependencyAnalyzerViewImpl(
     private fun Iterable<Dependency>.createDependencyGroups(): List<DependencyGroup> = sortedWith(
         Comparator.comparing(
             { it.data },
-            DependencyDataComparator(showDependencyGroupId, showDependencySize)
+            DependencyDataComparator(showDependencyGroupId)
         )
     ).groupBy { it.data.getGroup() }.map { DependencyGroup(it.value) }
 
@@ -465,10 +465,10 @@ class DependencyAnalyzerViewImpl(
         updateViewModel()
     }
 
-    private class DependencyDataComparator(private val showDependencyGroupId: Boolean, private val showDependencySize:Boolean) : Comparator<Dependency.Data> {
+    private class DependencyDataComparator(private val showDependencyGroupId: Boolean) : Comparator<Dependency.Data> {
         override fun compare(o1: Dependency.Data, o2: Dependency.Data): Int {
-            val text1 = o1.getDisplayText(showDependencyGroupId, showDependencySize)
-            val text2 = o2.getDisplayText(showDependencyGroupId, showDependencySize)
+            val text1 = o1.getDisplayText(showDependencyGroupId)
+            val text2 = o2.getDisplayText(showDependencyGroupId)
             return when (o1) {
                 is Dependency.Data.Module -> when (o2) {
                     is Dependency.Data.Module -> NaturalComparator.INSTANCE.compare(text1, text2)
