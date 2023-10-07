@@ -4,6 +4,7 @@ import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.jbexternal.*
+import bitlap.sbt.analyzer.util.SbtUtils
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
@@ -61,8 +62,9 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
       case _ =>
         selectedData.getDependencyNode match
           case pdn: ProjectDependencyNode => DAModule(pdn.getProjectName)
-          // TODO
-          case adn: ArtifactDependencyNode => SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, 100)
+          case adn: ArtifactDependencyNode =>
+            val size = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName)
+            SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size)
 
   end getDependencyData
 

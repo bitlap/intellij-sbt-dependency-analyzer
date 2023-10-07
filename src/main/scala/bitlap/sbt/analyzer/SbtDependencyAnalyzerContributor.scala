@@ -177,7 +177,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           DADependency(dependency.getData, scope, usage, dependency.getStatus)
         }
       case _ =>
-        val dependencyData = dependencyNode.getDependencyData(projects)
+        val dependencyData = getDependencyData(dependencyNode, projects)
         if (dependencyData == null) null
         else {
           val status = dependencyNode.getStatus(usage, dependencyData)
@@ -186,6 +186,23 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           dep
         }
   }
+
+  private def getDependencyData(
+    node: DependencyNode,
+    projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]
+  ): Dependency.Data =
+    node match {
+      case pdn: ProjectDependencyNode =>
+        val data       = DAModule(pdn.getProjectName)
+        val moduleData = pdn.getModuleData(projects)
+        data.putUserData(Module_Data, moduleData)
+        data
+      case adn: ArtifactDependencyNode =>
+        val size = SbtUtils.getLibrarySize(project, adn.getDisplayName)
+        SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size)
+      case _ => null
+    }
+  end getDependencyData
 
   private def addDependencies(
     usage: Dependency,
@@ -297,20 +314,6 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
   end extension
 
   extension (node: DependencyNode)
-
-    def getDependencyData(projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]): Dependency.Data =
-      node match {
-        case pdn: ProjectDependencyNode =>
-          val data       = DAModule(pdn.getProjectName)
-          val moduleData = pdn.getModuleData(projects)
-          data.putUserData(Module_Data, moduleData)
-          data
-        case adn: ArtifactDependencyNode =>
-          // TODO
-          SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, 100)
-        case _ => null
-      }
-    end getDependencyData
 
     def getStatus(usage: Dependency, data: Dependency.Data): JList[Dependency.Status] =
       val status = ListBuffer[Dependency.Status]()

@@ -27,6 +27,8 @@ import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProces
 import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemUtil }
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.*
+import com.intellij.openapi.roots.OrderRootType
+import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 
 /** @author
  *    梦境迷离
@@ -35,6 +37,18 @@ import com.intellij.openapi.project.*
 object SbtUtils {
 
   private val log = Logger.getInstance(getClass)
+
+  /** sbt: com.softwaremill.sttp.shared:zio_3:1.3.7:jar
+   */
+  def getLibrarySize(project: Project, artifact: String): Long = {
+    val libraryTable = LibraryTablesRegistrar.getInstance.getLibraryTable(project)
+    val library      = libraryTable.getLibraryByName(s"sbt: $artifact:jar")
+    val vf           = library.getFiles(OrderRootType.CLASSES)
+    if (vf != null) {
+      vf.headOption.map(_.getLength / 1024).getOrElse(0)
+    } else 0
+
+  }
 
   def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
 
