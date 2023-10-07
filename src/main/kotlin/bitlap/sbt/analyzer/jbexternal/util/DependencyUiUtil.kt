@@ -1,6 +1,12 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
+import javax.swing.JList
+import javax.swing.JTree
+import javax.swing.ListModel
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.TreeModel
+
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.invokeLater
@@ -20,12 +26,6 @@ import com.intellij.ui.components.JBList
 import com.intellij.ui.treeStructure.SimpleTree
 import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.tree.TreeUtil
-import javax.swing.JList
-import javax.swing.JTree
-import javax.swing.ListModel
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.TreeModel
-
 
 internal fun Dependency.Data.getDisplayText(showGroupId: Boolean): @NlsSafe String =
     when (this) {

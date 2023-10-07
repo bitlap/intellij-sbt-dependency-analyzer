@@ -1,6 +1,14 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
+import java.awt.BorderLayout
+import javax.swing.JComponent
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.JTree
+import javax.swing.border.Border
+
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionToolbar
@@ -24,13 +32,6 @@ import com.intellij.ui.components.JBLoadingPanel
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.util.ui.tree.TreeUtil
-import java.awt.BorderLayout
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JList
-import javax.swing.JPanel
-import javax.swing.JTree
-import javax.swing.border.Border
 
 
 internal const val BORDER = 6
@@ -63,42 +64,29 @@ internal fun JComponent.setPreferredWidth(width: Int) {
     preferredSize = preferredSize.also { it.width = width }
 }
 
-internal fun label(text: String) =
-    JLabel(text)
-        .apply { border = JBUI.Borders.empty(BORDER) }
+internal fun label(text: String) = JLabel(text).apply { border = JBUI.Borders.empty(BORDER) }
 
-internal fun label(property: ObservableProperty<String>) =
-    label(property.get())
-        .bind(property)
+internal fun label(property: ObservableProperty<String>) = label(property.get()).bind(property)
 
 internal fun toolWindowPanel(configure: SimpleToolWindowPanel.() -> Unit) =
-    SimpleToolWindowPanel(true, true)
-        .apply { configure() }
+    SimpleToolWindowPanel(true, true).apply { configure() }
 
 internal fun toolbarPanel(configure: BorderLayoutPanel.() -> Unit) =
-    BorderLayoutPanel()
-        .apply { layout = BorderLayout() }
-        .apply { border = JBUI.Borders.empty(1, 2) }
-        .apply { withMinimumHeight(JBUI.scale(30)) }
-        .apply { withPreferredHeight(JBUI.scale(30)) }
-        .apply { configure() }
+    BorderLayoutPanel().apply { layout = BorderLayout() }.apply { border = JBUI.Borders.empty(1, 2) }
+        .apply { withMinimumHeight(JBUI.scale(30)) }.apply { withPreferredHeight(JBUI.scale(30)) }.apply { configure() }
 
 @Suppress("DEPRECATION")
 internal fun horizontalPanel(vararg components: JComponent) =
-    JPanel()
-        .apply { layout = com.intellij.ide.plugins.newui.HorizontalLayout(0) }
-        .apply { border = JBUI.Borders.empty() }
-        .apply { components.forEach(::add) }
+    JPanel().apply { layout = com.intellij.ide.plugins.newui.HorizontalLayout(0) }
+        .apply { border = JBUI.Borders.empty() }.apply { components.forEach(::add) }
 
 internal fun horizontalSplitPanel(proportionKey: String, proportion: Float, configure: OnePixelSplitter.() -> Unit) =
-    OnePixelSplitter(false, proportionKey, proportion)
-        .apply { configure() }
+    OnePixelSplitter(false, proportionKey, proportion).apply { configure() }
 
-internal fun <T> cardPanel(createPanel: (T) -> JComponent) =
-    object : CardLayoutPanel<T, T, JComponent>() {
-        override fun prepare(key: T) = key
-        override fun create(ui: T) = createPanel(ui)
-    }
+internal fun <T> cardPanel(createPanel: (T) -> JComponent) = object : CardLayoutPanel<T, T, JComponent>() {
+    override fun prepare(key: T) = key
+    override fun create(ui: T) = createPanel(ui)
+}
 
 internal fun <T, C : CardLayoutPanel<T, *, *>> C.bind(property: ObservableProperty<T>): C = apply {
     select(property.get(), true)
@@ -122,36 +110,26 @@ internal fun toggleAction(property: ObservableMutableProperty<Boolean>): ToggleA
         override fun getActionUpdateThread() = ActionUpdateThread.EDT
     }
 
-internal fun action(action: (AnActionEvent) -> Unit): AnAction =
-    object : AnAction(), DumbAware {
-        override fun actionPerformed(e: AnActionEvent) = action(e)
-    }
+internal fun action(action: (AnActionEvent) -> Unit): AnAction = object : AnAction(), DumbAware {
+    override fun actionPerformed(e: AnActionEvent) = action(e)
+}
 
-internal fun popupActionGroup(vararg actions: AnAction) =
-    DefaultActionGroup(*actions)
-        .apply { isPopup = true }
+internal fun popupActionGroup(vararg actions: AnAction) = DefaultActionGroup(*actions).apply { isPopup = true }
 
 internal fun AnAction.asActionButton(place: String) =
-    ActionButton(this, templatePresentation.clone(), place, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE)
-        .apply { border = JBUI.Borders.empty(ACTION_BORDER) }
-
-internal fun separator() =
-    JLabel(AllIcons.General.Divider)
-        .apply { border = JBUI.Borders.empty(ACTION_BORDER) }
-        .apply { font = JBUI.Fonts.toolbarSmallComboBoxFont() }
-
-internal fun expandTreeAction(tree: JTree) =
-    action { TreeUtil.expandAll(tree) }
-        .apply {
-            templatePresentation.text =
-                ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.expand")
+    ActionButton(this, templatePresentation.clone(), place, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE).apply {
+            border = JBUI.Borders.empty(ACTION_BORDER)
         }
-        .apply { templatePresentation.icon = AllIcons.Actions.Expandall }
 
-internal fun collapseTreeAction(tree: JTree) =
-    action { TreeUtil.collapseAll(tree, 0) }
-        .apply {
-            templatePresentation.text =
-                ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.collapse")
-        }
-        .apply { templatePresentation.icon = AllIcons.Actions.Collapseall }
+internal fun separator() = JLabel(AllIcons.General.Divider).apply { border = JBUI.Borders.empty(ACTION_BORDER) }
+    .apply { font = JBUI.Fonts.toolbarSmallComboBoxFont() }
+
+internal fun expandTreeAction(tree: JTree) = action { TreeUtil.expandAll(tree) }.apply {
+        templatePresentation.text =
+            ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.expand")
+    }.apply { templatePresentation.icon = AllIcons.Actions.Expandall }
+
+internal fun collapseTreeAction(tree: JTree) = action { TreeUtil.collapseAll(tree, 0) }.apply {
+        templatePresentation.text =
+            ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.collapse")
+    }.apply { templatePresentation.icon = AllIcons.Actions.Collapseall }

@@ -1,6 +1,10 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
+import org.apache.commons.lang.StringUtils
+import java.awt.Component
+import javax.swing.*
+
 import com.intellij.ide.nls.NlsMessages
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Scope
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
@@ -18,9 +22,6 @@ import com.intellij.ui.components.DropDownLink
 import com.intellij.ui.components.JBList
 import com.intellij.util.ui.JBUI
 import com.intellij.util.ui.ThreeStateCheckBox
-import org.apache.commons.lang.StringUtils
-import java.awt.Component
-import javax.swing.*
 
 @Suppress("DEPRECATION")
 internal class SearchScopeSelector(property: ObservableMutableProperty<List<ScopeItem>>) : JPanel() {

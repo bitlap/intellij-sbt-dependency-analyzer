@@ -2,6 +2,7 @@
 package bitlap.sbt.analyzer.jbexternal
 
 import bitlap.sbt.analyzer.jbexternal.util.whenDisposed
+
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerExtension
