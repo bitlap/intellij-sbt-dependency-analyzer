@@ -2,6 +2,7 @@
 package bitlap.sbt.analyzer.jbexternal.util
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.ActionToolbar
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
@@ -16,6 +17,7 @@ import com.intellij.openapi.observable.properties.ObservableProperty
 import com.intellij.openapi.observable.util.bind
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.ui.SimpleToolWindowPanel
+import com.intellij.openapi.util.Disposer
 import com.intellij.ui.CardLayoutPanel
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBLoadingPanel
@@ -35,6 +37,11 @@ internal const val BORDER = 6
 internal const val INDENT = 16
 internal const val ICON_TEXT_GAP = 4
 internal const val ACTION_BORDER = 2
+
+// import com.intellij.openapi.observable.util.whenDisposed
+fun Disposable.whenDisposed(listener: () -> Unit) {
+    Disposer.register(this, Disposable { listener() })
+}
 
 internal fun emptyListBorder(): Border {
     return JBUI.Borders.empty()
