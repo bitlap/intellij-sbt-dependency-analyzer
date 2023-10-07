@@ -61,7 +61,8 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
       case _ =>
         selectedData.getDependencyNode match
           case pdn: ProjectDependencyNode  => DAModule(pdn.getProjectName)
-          case adn: ArtifactDependencyNode => DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
+          // TODO
+          case adn: ArtifactDependencyNode => SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, 100)
 
   end getDependencyData
 

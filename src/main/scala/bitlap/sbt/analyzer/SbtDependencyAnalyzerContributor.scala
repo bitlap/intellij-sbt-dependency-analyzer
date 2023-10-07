@@ -12,6 +12,7 @@ import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.activity.*
+import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
@@ -305,7 +306,8 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
           data.putUserData(Module_Data, moduleData)
           data
         case adn: ArtifactDependencyNode =>
-          DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
+          // TODO
+          SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, 100)
         case _ => null
       }
     end getDependencyData

@@ -66,6 +66,7 @@ class DependencyAnalyzerViewImpl(
     private val dependencyScopeFilterProperty = AtomicProperty(emptyList<ScopeItem>())
     private val showDependencyWarningsProperty = AtomicProperty(false)
     private val showDependencyGroupIdProperty = AtomicProperty(false).bindBooleanStorage(SHOW_GROUP_ID_PROPERTY)
+    private val showDependencySizeProperty = AtomicProperty(false).bindBooleanStorage(SHOW_ARTIFACT_SIZE_PROPERTY)
 
     private val dependencyModelProperty = AtomicProperty(emptyList<DependencyGroup>())
     private val dependencyProperty = AtomicProperty<Dependency?>(null)
@@ -78,6 +79,7 @@ class DependencyAnalyzerViewImpl(
     private var dependencyScopeFilter by dependencyScopeFilterProperty
     private var showDependencyWarnings by showDependencyWarningsProperty
     private var showDependencyGroupId by showDependencyGroupIdProperty
+    private var showDependencySize by showDependencySizeProperty
 
     private var dependencyModel by dependencyModelProperty
     private var dependency by dependencyProperty
@@ -157,7 +159,8 @@ class DependencyAnalyzerViewImpl(
         val dependencyDataFilter = dependencyDataFilter
         val dependencyScopeFilter = dependencyScopeFilter.filter { it.isSelected }.map { it.scope }
         val showDependencyWarnings = showDependencyWarnings
-        return filter { dependency -> dependencyDataFilter in dependency.data.getDisplayText(showDependencyGroupId) }.filter { dependency -> dependency.scope in dependencyScopeFilter }
+        return filter { dependency -> dependencyDataFilter in dependency.data.getDisplayText(showDependencyGroupId, showDependencySize) }
+            .filter { dependency -> dependency.scope in dependencyScopeFilter }
             .filter { dependency -> if (showDependencyWarnings) dependency.hasWarnings else true }
     }
 
@@ -211,7 +214,7 @@ class DependencyAnalyzerViewImpl(
     }
 
     private fun updateUsagesTitle() {
-        val text = dependency?.data?.getDisplayText(showDependencyGroupId)
+        val text = dependency?.data?.getDisplayText(showDependencyGroupId, showDependencySize)
         usagesTitle = if (text == null) "" else ExternalSystemBundle.message(
             "external.system.dependency.analyzer.usages.title", text
         )
@@ -310,7 +313,7 @@ class DependencyAnalyzerViewImpl(
     private fun Iterable<Dependency>.createDependencyGroups(): List<DependencyGroup> = sortedWith(
         Comparator.comparing(
             { it.data },
-            DependencyDataComparator(showDependencyGroupId)
+            DependencyDataComparator(showDependencyGroupId, showDependencySize)
         )
     ).groupBy { it.data.getGroup() }.map { DependencyGroup(it.value) }
 
@@ -325,30 +328,45 @@ class DependencyAnalyzerViewImpl(
         val scopeFilterSelector =
             SearchScopeSelector(dependencyScopeFilterProperty).bindEnabled(!dependencyLoadingProperty)
         val dependencyInspectionFilterButton = toggleAction(showDependencyWarningsProperty).apply {
-                templatePresentation.text =
-                    ExternalSystemBundle.message("external.system.dependency.analyzer.conflicts.show")
-            }.apply { templatePresentation.icon = AllIcons.General.ShowWarning }.asActionButton(ACTION_PLACE)
+            templatePresentation.text =
+                ExternalSystemBundle.message("external.system.dependency.analyzer.conflicts.show")
+        }.apply { templatePresentation.icon = AllIcons.General.ShowWarning }.asActionButton(ACTION_PLACE)
             .bindEnabled(!dependencyLoadingProperty)
         val showDependencyGroupIdAction = toggleAction(showDependencyGroupIdProperty).apply {
-                templatePresentation.text =
-                    ExternalSystemBundle.message("external.system.dependency.analyzer.groupId.show")
-            }
+            templatePresentation.text =
+                ExternalSystemBundle.message("external.system.dependency.analyzer.groupId.show")
+        }
+        val showDependencySizeAction = toggleAction(showDependencySizeProperty).apply {
+            templatePresentation.text = "Show Size"
+        }
         val viewOptionsButton =
-            popupActionGroup(showDependencyGroupIdAction).apply { templatePresentation.icon = AllIcons.Actions.Show }
+            popupActionGroup(showDependencyGroupIdAction, showDependencySizeAction).apply {
+                templatePresentation.icon = AllIcons.Actions.Show
+            }
                 .asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
         val reloadNotificationProperty = isNotificationVisibleProperty(project, systemId)
         val projectReloadSeparator = separator().bindVisible(reloadNotificationProperty)
         val projectReloadAction = action { ProjectRefreshAction.refreshProject(project) }.apply {
-                templatePresentation.icon = AllIcons.Actions.BuildLoadChanges
-            }.asActionButton(ACTION_PLACE).bindVisible(reloadNotificationProperty)
+            templatePresentation.icon = AllIcons.Actions.BuildLoadChanges
+        }.asActionButton(ACTION_PLACE).bindVisible(reloadNotificationProperty)
 
         val dependencyTitle = label(ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.title"))
-        val dependencyList = DependencyList(dependencyListModel, showDependencyGroupIdProperty, this).bindEmptyText(
-                dependencyEmptyTextProperty
-            ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
-        val dependencyTree = DependencyTree(dependencyTreeModel, showDependencyGroupIdProperty, this).bindEmptyText(
-                dependencyEmptyTextProperty
-            ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+        val dependencyList = DependencyList(
+            dependencyListModel,
+            showDependencyGroupIdProperty,
+            showDependencySizeProperty,
+            this
+        ).bindEmptyText(
+            dependencyEmptyTextProperty
+        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+        val dependencyTree = DependencyTree(
+            dependencyTreeModel,
+            showDependencyGroupIdProperty,
+            showDependencySizeProperty,
+            this
+        ).bindEmptyText(
+            dependencyEmptyTextProperty
+        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
         val dependencyPanel = cardPanel<Boolean> {
             ScrollPaneFactory.createScrollPane(
                 if (it) dependencyTree else dependencyList,
@@ -360,9 +378,9 @@ class DependencyAnalyzerViewImpl(
                 .apply { setLoadingText(ExternalSystemBundle.message("external.system.dependency.analyzer.dependency.loading")) }
                 .bind(dependencyLoadingProperty)
         val showDependencyTreeButton = toggleAction(showDependencyTreeProperty).apply {
-                templatePresentation.text =
-                    ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.show")
-            }.apply { templatePresentation.icon = AllIcons.Actions.ShowAsTree }.asActionButton(ACTION_PLACE)
+            templatePresentation.text =
+                ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.show")
+        }.apply { templatePresentation.icon = AllIcons.Actions.ShowAsTree }.asActionButton(ACTION_PLACE)
             .bindEnabled(!dependencyLoadingProperty)
         val expandDependencyTreeButton = expandTreeAction(dependencyTree).asActionButton(ACTION_PLACE)
             .bindEnabled(showDependencyTreeProperty and !dependencyLoadingProperty)
@@ -370,7 +388,12 @@ class DependencyAnalyzerViewImpl(
             .bindEnabled(showDependencyTreeProperty and !dependencyLoadingProperty)
 
         val usagesTitle = label(usagesTitleProperty)
-        val usagesTree = UsagesTree(usagesTreeModel, showDependencyGroupIdProperty, this).apply { emptyText.text = "" }
+        val usagesTree = UsagesTree(
+            usagesTreeModel,
+            showDependencyGroupIdProperty,
+            showDependencySizeProperty,
+            this
+        ).apply { emptyText.text = "" }
             .bindEnabled(!dependencyLoadingProperty)
         val expandUsagesTreeButton =
             expandTreeAction(usagesTree).asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
@@ -432,18 +455,20 @@ class DependencyAnalyzerViewImpl(
         dependencyScopeFilterProperty.afterChange { updateFilteredDependencyModel() }
         showDependencyWarningsProperty.afterChange { updateFilteredDependencyModel() }
         showDependencyGroupIdProperty.afterChange { updateFilteredDependencyModel() }
+        showDependencySizeProperty.afterChange { updateFilteredDependencyModel() }
         dependencyProperty.afterChange { updateUsagesTitle() }
         dependencyProperty.afterChange { updateUsagesModel() }
         showDependencyGroupIdProperty.afterChange { updateUsagesTitle() }
+        showDependencySizeProperty.afterChange { updateUsagesTitle() }
         dependencyLoadingProperty.afterChange { updateDependencyEmptyState() }
         contributor.whenDataChanged(::updateViewModel, parentDisposable)
         updateViewModel()
     }
 
-    private class DependencyDataComparator(private val showDependencyGroupId: Boolean) : Comparator<Dependency.Data> {
+    private class DependencyDataComparator(private val showDependencyGroupId: Boolean, private val showDependencySize:Boolean) : Comparator<Dependency.Data> {
         override fun compare(o1: Dependency.Data, o2: Dependency.Data): Int {
-            val text1 = o1.getDisplayText(showDependencyGroupId)
-            val text2 = o2.getDisplayText(showDependencyGroupId)
+            val text1 = o1.getDisplayText(showDependencyGroupId, showDependencySize)
+            val text2 = o2.getDisplayText(showDependencyGroupId, showDependencySize)
             return when (o1) {
                 is Dependency.Data.Module -> when (o2) {
                     is Dependency.Data.Module -> NaturalComparator.INSTANCE.compare(text1, text2)
@@ -463,5 +488,6 @@ class DependencyAnalyzerViewImpl(
         private const val SHOW_GROUP_ID_PROPERTY = "ExternalSystem.DependencyAnalyzerView.showGroupId"
         private const val SHOW_AS_TREE_PROPERTY = "ExternalSystem.DependencyAnalyzerView.showAsTree"
         private const val SPLIT_VIEW_PROPORTION_PROPERTY = "ExternalSystem.DependencyAnalyzerView.splitProportion"
+        private const val SHOW_ARTIFACT_SIZE_PROPERTY = "ExternalSystem.DependencyAnalyzerView.showSize"
     }
 }

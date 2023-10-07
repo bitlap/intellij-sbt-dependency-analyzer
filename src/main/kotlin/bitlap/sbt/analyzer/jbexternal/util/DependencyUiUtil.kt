@@ -7,6 +7,8 @@ import javax.swing.ListModel
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 
+import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
+
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.invokeLater
@@ -27,16 +29,30 @@ import com.intellij.ui.treeStructure.SimpleTree
 import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.tree.TreeUtil
 
-internal fun Dependency.Data.getDisplayText(showGroupId: Boolean): @NlsSafe String =
-    when (this) {
-        is Dependency.Data.Module -> name
-        is Dependency.Data.Artifact -> when (showGroupId) {
+const val UNIT = "KB"
+internal fun Dependency.Data.getDisplayText(showGroupId: Boolean, showSize: Boolean): @NlsSafe String = when (this) {
+    is Dependency.Data.Module -> name
+    is Dependency.Data.Artifact -> when (this) {
+        is SbtDAArtifact -> when (showGroupId) {
+            true -> when (showSize) {
+                true -> "$groupId:$artifactId:$version ($size $UNIT)"
+                else -> "$groupId:$artifactId:$version"
+            }
+            else -> when (showSize) {
+                true -> "$artifactId:$version ($size $UNIT)"
+                else -> "$artifactId:$version"
+            }
+        }
+        else -> when (showGroupId) {
             true -> "$groupId:$artifactId:$version"
             else -> "$artifactId:$version"
         }
     }
+}
 
-private fun SimpleColoredComponent.customizeCellRenderer(group: DependencyGroup, showGroupId: Boolean) {
+private fun SimpleColoredComponent.customizeCellRenderer(
+    group: DependencyGroup, showGroupId: Boolean, showSize: Boolean
+) {
     icon = when {
         group.hasWarnings -> AllIcons.General.Warning
         else -> when (group.data) {
@@ -44,19 +60,17 @@ private fun SimpleColoredComponent.customizeCellRenderer(group: DependencyGroup,
             is Dependency.Data.Artifact -> AllIcons.Nodes.PpLib
         }
     }
-    val dataText = group.data.getDisplayText(showGroupId)
+    val dataText = group.data.getDisplayText(showGroupId, showSize)
     append(dataText, if (group.isOmitted) GRAYED_ATTRIBUTES else REGULAR_ATTRIBUTES)
     val scopes = group.variances.map { it.scope.name }.toSet()
     val scopesText = scopes.singleOrNull() ?: ExternalSystemBundle.message(
-        "external.system.dependency.analyzer.scope.n",
-        scopes.size
+        "external.system.dependency.analyzer.scope.n", scopes.size
     )
     append(" ($scopesText)", GRAYED_ATTRIBUTES)
 }
 
 internal abstract class AbstractDependencyList(
-    model: ListModel<DependencyGroup>,
-    private val dataProvider: DataProvider
+    model: ListModel<DependencyGroup>, private val dataProvider: DataProvider
 ) : JBList<DependencyGroup>(model), DataProvider {
 
     private val dependencyProperty = AtomicProperty<Dependency?>(null)
@@ -76,21 +90,14 @@ internal abstract class AbstractDependencyList(
 
     init {
         bind(dependencyGroupProperty)
-        dependencyGroupProperty.bind(
-            dependencyProperty.transform(
-                { dependency ->
-                    model.asSequence()
-                        .find { it.data == dependency?.data }
-                },
-                { it?.dependency }
-            )
-        )
+        dependencyGroupProperty.bind(dependencyProperty.transform({ dependency ->
+            model.asSequence().find { it.data == dependency?.data }
+        }, { it?.dependency }))
     }
 }
 
 internal abstract class AbstractDependencyTree(
-    model: TreeModel,
-    private val dataProvider: DataProvider
+    model: TreeModel, private val dataProvider: DataProvider
 ) : SimpleTree(model), DataProvider {
 
     private val dependencyProperty = AtomicProperty<Dependency?>(null)
@@ -110,60 +117,53 @@ internal abstract class AbstractDependencyTree(
 
     init {
         bind(dependencyGroupProperty)
-        dependencyGroupProperty.bind(dependencyProperty.transform(
-            { dependency ->
-                model.asSequence()
-                    .map { it.userObject as DependencyGroup }
-                    .find { it.data == dependency?.data && dependency.parent in it.parents }
-            },
-            { it?.dependency }
-        ))
+        dependencyGroupProperty.bind(dependencyProperty.transform({ dependency ->
+            model.asSequence().map { it.userObject as DependencyGroup }
+                .find { it.data == dependency?.data && dependency.parent in it.parents }
+        }, { it?.dependency }))
     }
 }
 
 internal class DependencyList(
     model: ListModel<DependencyGroup>,
     showGroupIdProperty: ObservableProperty<Boolean>,
+    showSizeProperty: ObservableProperty<Boolean>,
     dataProvider: DataProvider
 ) : AbstractDependencyList(model, dataProvider) {
     init {
         ListUiUtil.Selection.installSelectionOnRightClick(this)
         PopupHandler.installPopupMenu(
-            this,
-            "ExternalSystem.DependencyAnalyzer.DependencyListGroup",
-            DependencyAnalyzerView.ACTION_PLACE
+            this, "ExternalSystem.DependencyAnalyzer.DependencyListGroup", DependencyAnalyzerView.ACTION_PLACE
         )
-        setCellRenderer(DependencyListRenderer(showGroupIdProperty))
+        setCellRenderer(DependencyListRenderer(showGroupIdProperty, showSizeProperty))
     }
 }
 
 internal class DependencyTree(
     model: TreeModel,
     showGroupIdProperty: ObservableProperty<Boolean>,
+    showSizeProperty: ObservableProperty<Boolean>,
     dataProvider: DataProvider
 ) : AbstractDependencyTree(model, dataProvider) {
     init {
         PopupHandler.installPopupMenu(
-            this,
-            "ExternalSystem.DependencyAnalyzer.DependencyTreeGroup",
-            DependencyAnalyzerView.ACTION_PLACE
+            this, "ExternalSystem.DependencyAnalyzer.DependencyTreeGroup", DependencyAnalyzerView.ACTION_PLACE
         )
-        setCellRenderer(DependencyTreeRenderer(showGroupIdProperty))
+        setCellRenderer(DependencyTreeRenderer(showGroupIdProperty, showSizeProperty))
     }
 }
 
 internal class UsagesTree(
     model: TreeModel,
     showGroupIdProperty: ObservableProperty<Boolean>,
+    showSizeProperty: ObservableProperty<Boolean>,
     dataProvider: DataProvider
 ) : AbstractDependencyTree(model, dataProvider) {
     init {
         PopupHandler.installPopupMenu(
-            this,
-            "ExternalSystem.DependencyAnalyzer.UsagesTreeGroup",
-            DependencyAnalyzerView.ACTION_PLACE
+            this, "ExternalSystem.DependencyAnalyzer.UsagesTreeGroup", DependencyAnalyzerView.ACTION_PLACE
         )
-        setCellRenderer(UsagesTreeRenderer(showGroupIdProperty))
+        setCellRenderer(UsagesTreeRenderer(showGroupIdProperty, showSizeProperty))
         whenTreeChanged {
             invokeLater {
                 TreeUtil.expandAll(this)
@@ -173,51 +173,40 @@ internal class UsagesTree(
 }
 
 private class DependencyListRenderer(
-    private val showGroupIdProperty: ObservableProperty<Boolean>
+    private val showGroupIdProperty: ObservableProperty<Boolean>,
+    private val showSizeProperty: ObservableProperty<Boolean>,
 ) : ColoredListCellRenderer<DependencyGroup>() {
     override fun customizeCellRenderer(
-        list: JList<out DependencyGroup>,
-        value: DependencyGroup?,
-        index: Int,
-        selected: Boolean,
-        hasFocus: Boolean
+        list: JList<out DependencyGroup>, value: DependencyGroup?, index: Int, selected: Boolean, hasFocus: Boolean
     ) {
         val group = value ?: return
-        customizeCellRenderer(group, showGroupIdProperty.get())
+        customizeCellRenderer(group, showGroupIdProperty.get(), showSizeProperty.get())
     }
 }
 
-private class DependencyTreeRenderer(private val showGroupIdProperty: ObservableProperty<Boolean>) :
-    ColoredTreeCellRenderer() {
+private class DependencyTreeRenderer(
+    private val showGroupIdProperty: ObservableProperty<Boolean>,
+    private val showSizeProperty: ObservableProperty<Boolean>
+) : ColoredTreeCellRenderer() {
     override fun customizeCellRenderer(
-        tree: JTree,
-        value: Any?,
-        selected: Boolean,
-        expanded: Boolean,
-        leaf: Boolean,
-        row: Int,
-        hasFocus: Boolean
+        tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean
     ) {
         val node = value as? DefaultMutableTreeNode ?: return
         val group = node.userObject as? DependencyGroup ?: return
-        customizeCellRenderer(group, showGroupIdProperty.get())
+        customizeCellRenderer(group, showGroupIdProperty.get(), showSizeProperty.get())
     }
 }
 
-private class UsagesTreeRenderer(private val showGroupIdProperty: ObservableProperty<Boolean>) :
-    ColoredTreeCellRenderer() {
+private class UsagesTreeRenderer(
+    private val showGroupIdProperty: ObservableProperty<Boolean>,
+    private val showSizeProperty: ObservableProperty<Boolean>
+) : ColoredTreeCellRenderer() {
     override fun customizeCellRenderer(
-        tree: JTree,
-        value: Any?,
-        selected: Boolean,
-        expanded: Boolean,
-        leaf: Boolean,
-        row: Int,
-        hasFocus: Boolean
+        tree: JTree, value: Any?, selected: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean
     ) {
         val node = value as? DefaultMutableTreeNode ?: return
         val group = node.userObject as? DependencyGroup ?: return
-        customizeCellRenderer(group, showGroupIdProperty.get())
+        customizeCellRenderer(group, showGroupIdProperty.get(), showSizeProperty.get())
         val warning = group.warnings.firstOrNull()
         if (warning != null) {
             append(" ${warning.message}", SimpleTextAttributes.ERROR_ATTRIBUTES)
