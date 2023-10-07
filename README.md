@@ -18,14 +18,13 @@ English | [中文](README-CN.md)
 - [x] Search Dependencies
 - [x] Locate Dependency (multi-module)
 - [x] Show Dependencies Between Modules
+- [x] Show JAR Size
 
 ## Usage Instructions
 
-This plugin will automatically generate `project/sdap.sbt` and insert the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it, please refrain from modifying or deleting `project/sdap.sbt`. 
+This plugin will automatically generate `project/sdap.sbt` when the first analysis fails and insert the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it. If generated, please do not modify or delete `project/sdap.sbt`. 
 
 This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now integrated into sbt by default (although it won't be enabled by default, as explained in this [sbt issue](https://github.com/sbt/sbt/pull/5880)).
-
-If the statement already exists in `*.sbt` files, `sdap.sbt` will not be created.
 
 **Let's explore how to use it!**
 

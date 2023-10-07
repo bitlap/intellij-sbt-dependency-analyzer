@@ -22,11 +22,14 @@ import org.jetbrains.sbt.settings.SbtSettings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
+import com.intellij.openapi.externalSystem.model.project.dependencies.{ ArtifactDependencyNode, DependencyNode }
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
 import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
 import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemUtil }
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.*
+import com.intellij.openapi.roots.OrderRootType
+import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 
 /** @author
  *    梦境迷离
@@ -35,6 +38,24 @@ import com.intellij.openapi.project.*
 object SbtUtils {
 
   private val log = Logger.getInstance(getClass)
+
+  /** sbt: com.softwaremill.sttp.shared:zio_3:1.3.7:jar
+   */
+  def getLibrarySize(project: Project, artifact: String): Long = {
+    val libraryTable = LibraryTablesRegistrar.getInstance.getLibraryTable(project)
+    val library      = libraryTable.getLibraryByName(s"sbt: $artifact:jar")
+    val vf           = library.getFiles(OrderRootType.CLASSES)
+    if (vf != null) {
+      vf.headOption.map(_.getLength).getOrElse(0)
+    } else 0
+  }
+
+  def getLibraryTotalSize(project: Project, ds: List[DependencyNode]): Long = {
+    if (ds.isEmpty) return 0L
+    ds.map(d =>
+      getLibrarySize(project, d.getDisplayName) + getLibraryTotalSize(project, d.getDependencies.asScala.toList)
+    ).sum
+  }
 
   def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
 

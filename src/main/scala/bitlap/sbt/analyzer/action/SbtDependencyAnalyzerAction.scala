@@ -1,11 +1,10 @@
-package bitlap
-package sbt
-package analyzer
-package action
+package bitlap.sbt.analyzer.action
 
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.*
+import bitlap.sbt.analyzer.jbexternal.*
+import bitlap.sbt.analyzer.util.SbtUtils
 
 import org.jetbrains.sbt.project.SbtProjectSystem
 
@@ -22,7 +21,7 @@ import com.intellij.openapi.module.Module
  *    梦境迷离
  *  @version 1.0,2023/8/1
  */
-final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[ExternalSystemNode[?]]:
+final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAction[ExternalSystemNode[?]]:
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -62,14 +61,17 @@ final class ViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerActio
       case md: ModuleData  => DAModule(md.getModuleName)
       case _ =>
         selectedData.getDependencyNode match
-          case pdn: ProjectDependencyNode  => DAModule(pdn.getProjectName)
-          case adn: ArtifactDependencyNode => DAArtifact(adn.getGroup, adn.getModule, adn.getVersion)
+          case pdn: ProjectDependencyNode => DAModule(pdn.getProjectName)
+          case adn: ArtifactDependencyNode =>
+            val size  = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName) / 1024
+            val total = SbtUtils.getLibraryTotalSize(selectedData.getProject, adn.getDependencies.asScala.toList) / 1024
+            SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size, size + total)
 
   end getDependencyData
 
 end ViewDependencyAnalyzerAction
 
-final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyzerAction[Module]:
+final class ProjectViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAction[Module]:
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -95,7 +97,7 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractDependencyAnalyz
 
 end ProjectViewDependencyAnalyzerAction
 
-final class ToolbarDependencyAnalyzerAction extends DependencyAnalyzerAction():
+final class ToolbarDependencyAnalyzerAction extends BaseDependencyAnalyzerAction():
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
