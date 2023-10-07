@@ -33,14 +33,13 @@ import com.intellij.util.ui.ListUiUtil
 import com.intellij.util.ui.tree.TreeUtil
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 
-internal fun Dependency.Data.getDisplayText(showGroupId: Boolean): @NlsSafe String =
-    when (this) {
-        is Dependency.Data.Module -> name
-        is Dependency.Data.Artifact -> when (showGroupId) {
-            true -> "$groupId:$artifactId:$version"
-            else -> "$artifactId:$version"
-        }
+internal fun Dependency.Data.getDisplayText(showGroupId: Boolean): @NlsSafe String = when (this) {
+    is Dependency.Data.Module -> name
+    is Dependency.Data.Artifact -> when (showGroupId) {
+        true -> "$groupId:$artifactId:$version"
+        else -> "$artifactId:$version"
     }
+}
 
 private fun SimpleColoredComponent.customizeCellRenderer(
     group: DependencyGroup, showGroupId: Boolean, showSize: Boolean
@@ -62,19 +61,20 @@ private fun SimpleColoredComponent.customizeCellRenderer(
 
     if (showSize) {
         when (group.data) {
-            is SbtDAArtifact ->
-            {
-                val selfSize =  formatThousands((group.data as SbtDAArtifact).totalSize)
-                val total = formatThousands((group.data as SbtDAArtifact).size)
-                if(selfSize == total) {
+            is SbtDAArtifact -> {
+                val selfSize = formatThousands((group.data as SbtDAArtifact).size)
+                val total = formatThousands(((group.data as SbtDAArtifact).totalSize))
+                if (selfSize == total) {
                     append(
-                        " - $selfSize KB",
-                        GRAYED_ATTRIBUTES
-                    ) 
+                        " - $selfSize KB", GRAYED_ATTRIBUTES
+                    )
+                } else if ((group.data as SbtDAArtifact).size.toInt() == 0) {
+                    append(
+                        " - ($total KB)", GRAYED_ATTRIBUTES
+                    )
                 } else {
                     append(
-                        " - $selfSize KB ($total KB)",
-                        GRAYED_ATTRIBUTES
+                        " - $total KB ($selfSize KB)", GRAYED_ATTRIBUTES
                     )
                 }
             }

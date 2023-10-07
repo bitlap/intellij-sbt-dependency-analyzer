@@ -44,7 +44,8 @@ object SbtUtils {
   def getLibrarySize(project: Project, artifact: String): Long = {
     val libraryTable = LibraryTablesRegistrar.getInstance.getLibraryTable(project)
     val library      = libraryTable.getLibraryByName(s"sbt: $artifact:jar")
-    val vf           = library.getFiles(OrderRootType.CLASSES)
+    if (library == null) return 0
+    val vf = library.getFiles(OrderRootType.CLASSES)
     if (vf != null) {
       vf.headOption.map(_.getLength).getOrElse(0)
     } else 0
