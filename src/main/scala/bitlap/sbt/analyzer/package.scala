@@ -88,5 +88,7 @@ def waitInterval(sleep: Duration = Constants.IntervalTimeout): Unit = {
 extension (bytes: Long)
 
   def convertToKB: Long = {
-    if (bytes < 1024) 1 else bytes / 1024
+    if (bytes == 0) 0
+    else if (bytes > 0 && bytes < 1024) 1
+    else bytes / 1024
   }
