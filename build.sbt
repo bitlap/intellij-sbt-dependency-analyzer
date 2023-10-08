@@ -74,6 +74,6 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       "org.jooq"       % "joor"                   % joorVersion,
       "org.scalatest" %% "scalatest"              % scalatestVersion % Test
     ),
-    kotlinVersion := "1.8.10",
+    kotlinVersion := "1.8.22",
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin"
   )
