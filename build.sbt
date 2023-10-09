@@ -78,6 +78,6 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
       "org.jetbrains.kotlin" % ".*" % ".*" -> None,
-      "org.jetbrains" % ".*" % ".*" -> None
+      "org.jetbrains"        % ".*" % ".*" -> None
     )
   )
