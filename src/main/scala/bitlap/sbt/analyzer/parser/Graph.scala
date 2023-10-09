@@ -1,30 +1,28 @@
 package bitlap.sbt.analyzer.parser;
 
-import java.util
-import java.util.List as JList
-import java.util.function.Consumer
+import scala.collection.mutable.ListBuffer
 
-class Graph(V: Integer) {
+class Graph(V: Int) {
 
-  private val adj = Array.fill(V)(new util.LinkedList[Integer]())
+  private val adj = Array.fill(V)(ListBuffer[Int]())
 
-  def addEdge(v: Integer, w: Integer): Unit = {
-    adj(v).add(w)
+  def addEdge(v: Int, w: Int): Unit = {
+    adj(v) += w
   }
 
-  def DFS(v: Integer): JList[Integer] = {
+  def DFS(v: Int): ListBuffer[Int] = {
     val visited = Array.fill(V + 1)(false)
-    val res     = new util.ArrayList[Integer]()
+    val res     = ListBuffer[Int]()
     DFSUtil(v, visited, res)
     res
   }
 
-  private def DFSUtil(v: Integer, visited: Array[Boolean], res: JList[Integer]): Unit = {
+  private def DFSUtil(v: Int, visited: Array[Boolean], res: ListBuffer[Int]): Unit = {
     visited(v) = true
 
-    res.add(v)
+    res += v
 
-    adj(v).forEach((n: Integer) => {
+    adj(v).foreach(n => {
       if (!visited(n))
         DFSUtil(n, visited, res)
     })
