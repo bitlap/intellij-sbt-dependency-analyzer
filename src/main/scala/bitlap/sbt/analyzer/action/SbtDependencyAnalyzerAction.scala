@@ -48,7 +48,10 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
   end getModule
 
   override def getSelectedData(anActionEvent: AnActionEvent): ExternalSystemNode[_] =
-    anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES).asScala.headOption.orNull
+    val module = anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES)
+    if (module == null) return null
+    module.asScala.headOption.orNull
+  end getSelectedData
 
   override def getSystemId(anActionEvent: AnActionEvent): ProjectSystemId = SbtProjectSystem.Id
 
