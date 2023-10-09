@@ -35,11 +35,11 @@
     <actions>
         <action id="Sbt.ViewDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ViewDependencyAnalyzerAction"/>
         <action id="Sbt.ToolbarDependencyAnalyzer" class="bitlap.sbt.analyzer.action.ToolbarDependencyAnalyzerAction">
-            <keyboard-shortcut keymap="$default" first-keystroke="control shift A"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ctrl shift A"/>
-            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift A" remove="true"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="ctrl shift A"/>
-            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift A" remove="true"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="control shift L"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="ctrl shift L"/>
+            <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta shift L" remove="true"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="ctrl shift L"/>
+            <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta shift L" remove="true"/>
         </action>
         <action id="Sbt.ProjectViewDependencyAnalyzer"
                 class="bitlap.sbt.analyzer.action.ProjectViewDependencyAnalyzerAction">
