@@ -124,6 +124,7 @@
             <ul>
                 <li>Add sdap.sbt to .git/info/exclude file.</li>
                 <li>Add Show Size to show jar package size.</li>
+                <li>Add shortcuts to open the analysis view: CTRL + SHIFT + L.</li>
             </ul>
             <!-- @@ -->
             

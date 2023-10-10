@@ -30,6 +30,8 @@ This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now 
 
 Simply click on the icon and wait for the analysis to complete:
 
+> Default shortcut: CTRL + SHIFT + L
+
 <img src="./docs/gotoAnalyze1.jpg" width = "400" height = "280" alt="settings" align="center" />
 
 Once the analysis is finished:
