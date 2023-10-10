@@ -16,6 +16,7 @@ import com.intellij.openapi.observable.util.whenMousePressed
 import com.intellij.ui.ListUtil
 import com.intellij.ui.components.DropDownLink
 import com.intellij.ui.components.JBList
+import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.JBUI
 
 @Suppress("DEPRECATION")
@@ -24,10 +25,17 @@ internal class ExternalProjectSelector(
     externalProjects: List<DependencyAnalyzerProject>,
     private val iconProvider: ExternalSystemIconProvider
 ) : JPanel() {
+
+    private val projectIcon = if (iconProvider.projectIcon is EmptyIcon) {
+        PROJECT_ICON
+    } else {
+        iconProvider.projectIcon
+    }
+
     init {
         val dropDownLink = ExternalProjectDropDownLink(property, externalProjects)
             .apply { border = JBUI.Borders.empty(BORDER, ICON_TEXT_GAP / 2, BORDER, BORDER) }
-        val label = JLabel(iconProvider.projectIcon)
+        val label = JLabel(projectIcon)
             .apply { border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2) }
             .apply { labelFor = dropDownLink }
 
@@ -70,7 +78,7 @@ internal class ExternalProjectSelector(
             cellHasFocus: Boolean
         ): Component {
             return JLabel()
-                .apply { if (value != null) icon = iconProvider.projectIcon }
+                .apply { if (value != null) icon = projectIcon }
                 .apply { if (value != null) text = value.title }
                 .apply { border = emptyListCellBorder(list, index) }
                 .apply { iconTextGap = JBUI.scale(ICON_TEXT_GAP) }
@@ -93,7 +101,7 @@ internal class ExternalProjectSelector(
             super.popupPoint()
                 .apply { x += insets.left }
                 .apply { x -= JBUI.scale(BORDER) }
-                .apply { x -= iconProvider.projectIcon.iconWidth }
+                .apply { x -= projectIcon.iconWidth }
                 .apply { x -= JBUI.scale(ICON_TEXT_GAP) }
 
         override fun itemToString(item: DependencyAnalyzerProject?): String = when (item) {

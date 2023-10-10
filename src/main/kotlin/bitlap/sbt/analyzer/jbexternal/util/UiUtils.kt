@@ -1,12 +1,14 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
+import bitlap.sbt.analyzer.jbexternal.DependencyAnalyzerManager
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JLabel
 import javax.swing.JList
 import javax.swing.JPanel
 import javax.swing.JTree
+import javax.swing.Icon
 import javax.swing.border.Border
 
 import com.intellij.icons.AllIcons
@@ -26,6 +28,7 @@ import com.intellij.openapi.observable.util.bind
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.ui.SimpleToolWindowPanel
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.IconLoader
 import com.intellij.ui.CardLayoutPanel
 import com.intellij.ui.OnePixelSplitter
 import com.intellij.ui.components.JBLoadingPanel
@@ -34,6 +37,7 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.util.ui.tree.TreeUtil
 
 
+internal val PROJECT_ICON: Icon = IconLoader.getIcon("/icons/sbt_dependency_analyzer.svg", DependencyAnalyzerManager::class.java)
 internal const val BORDER = 6
 internal const val INDENT = 16
 internal const val ICON_TEXT_GAP = 4
