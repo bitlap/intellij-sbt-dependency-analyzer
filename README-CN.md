@@ -29,7 +29,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 **让我们看看如何使用它！**
 
 只需点击图标并等待分析完成：
-> 默认快捷键: CTRL + SHIFT + L
+> 默认快捷键: Ctrl + Shift + L
 
 <img src="./docs/gotoAnalyze1.jpg" width="400" height="280" alt="settings" align="center" />
 
