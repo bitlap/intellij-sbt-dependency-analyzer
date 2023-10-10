@@ -1,10 +1,6 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.text.NumberFormat
-import java.util.*
 import javax.swing.JList
 import javax.swing.JTree
 import javax.swing.ListModel
@@ -62,23 +58,23 @@ private fun SimpleColoredComponent.customizeCellRenderer(
     if (showSize) {
         when (group.data) {
             is SbtDAArtifact -> {
-                val selfSize = formatThousands((group.data as SbtDAArtifact).size)
-                val total = formatThousands(((group.data as SbtDAArtifact).totalSize))
+                val selfSize = (group.data as SbtDAArtifact).size.formatAsFileSize
+                val total = (group.data as SbtDAArtifact).totalSize.formatAsFileSize
                 if (selfSize == total) {
                     // no child nodes
                     if ((group.data as SbtDAArtifact).size.toInt() != 0) {
                         append(
-                            " - ($selfSize KB)", GRAYED_ATTRIBUTES
+                            " - ($selfSize)", GRAYED_ATTRIBUTES
                         )
                     }
                 } else if ((group.data as SbtDAArtifact).size.toInt() == 0) {
                     // may have been evicted away by conflicts
                     append(
-                        " - $total KB", GRAYED_ATTRIBUTES
+                        " - $total", GRAYED_ATTRIBUTES
                     )
                 } else {
                     append(
-                        " - $total KB ($selfSize KB)", GRAYED_ATTRIBUTES
+                        " - $total ($selfSize)", GRAYED_ATTRIBUTES
                     )
                 }
             }
@@ -86,14 +82,6 @@ private fun SimpleColoredComponent.customizeCellRenderer(
             else -> return
         }
     }
-}
-
-fun formatThousands(l: Long): String {
-    val formatter: DecimalFormat = NumberFormat.getInstance(Locale.US) as DecimalFormat
-    val symbols: DecimalFormatSymbols = formatter.decimalFormatSymbols
-    symbols.setGroupingSeparator(' ')
-    formatter.decimalFormatSymbols = symbols
-    return formatter.format(l)
 }
 
 internal abstract class AbstractDependencyList(
