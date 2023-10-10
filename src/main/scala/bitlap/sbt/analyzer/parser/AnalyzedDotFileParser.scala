@@ -78,7 +78,6 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
     depMap.values.toSet.toSeq.foreach { topNode =>
       val path = graph
         .DFS(topNode.getId.toInt)
-        .asScala
         .tail
         .map(_.intValue())
         .filter(childId => filterOnlyDirectlyChild(topNode, childId, dependencies.relations))

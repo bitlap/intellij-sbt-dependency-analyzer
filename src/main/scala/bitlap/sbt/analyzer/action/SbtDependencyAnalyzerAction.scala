@@ -48,7 +48,10 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
   end getModule
 
   override def getSelectedData(anActionEvent: AnActionEvent): ExternalSystemNode[_] =
-    anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES).asScala.headOption.orNull
+    val module = anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES)
+    if (module == null) return null
+    module.asScala.headOption.orNull
+  end getSelectedData
 
   override def getSystemId(anActionEvent: AnActionEvent): ProjectSystemId = SbtProjectSystem.Id
 
@@ -63,9 +66,9 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
         selectedData.getDependencyNode match
           case pdn: ProjectDependencyNode => DAModule(pdn.getProjectName)
           case adn: ArtifactDependencyNode =>
-            val size = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName).convertToKB
+            val size = SbtUtils.getLibrarySize(selectedData.getProject, adn.getDisplayName)
             val total =
-              SbtUtils.getLibraryTotalSize(selectedData.getProject, adn.getDependencies.asScala.toList).convertToKB
+              SbtUtils.getLibraryTotalSize(selectedData.getProject, adn.getDependencies.asScala.toList)
             SbtDAArtifact(adn.getGroup, adn.getModule, adn.getVersion, size, size + total)
 
   end getDependencyData
