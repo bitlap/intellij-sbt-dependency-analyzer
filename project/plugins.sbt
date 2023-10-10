@@ -3,6 +3,6 @@ ThisBuild / resolvers ++= Seq(
   "Sonatype OSS Releases" at "https://s01.oss.sonatype.org/content/repositories/releases"
 )
 addSbtPlugin("org.jetbrains" % "sbt-ide-settings"  % "1.1.0")
-addSbtPlugin("org.jetbrains" % "sbt-idea-plugin"   % "3.20.4")
+addSbtPlugin("org.jetbrains" % "sbt-idea-plugin"   % "3.20.5")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt"      % "2.5.2")
 addSbtPlugin("org.bitlap"    % "sbt-kotlin-plugin" % "4.0.0")
