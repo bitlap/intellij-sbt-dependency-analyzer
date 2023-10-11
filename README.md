@@ -9,7 +9,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 English | [中文](README-CN.md)
 
-#### If you find the Sbt Dependency Analyzer interesting, please ⭐ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page to support us.
+**If you find the Sbt Dependency Analyzer interesting, please ⭐ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page to support us.**
 
 ## Features
 
