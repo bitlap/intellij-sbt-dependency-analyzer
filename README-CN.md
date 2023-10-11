@@ -9,6 +9,8 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 中文 | [English](README.md)
 
+#### 如果你喜欢这个项目，或者对你有用，[点击](https://github.com/bitlap/intellij-sbt-dependency-analyzer)右上角 ⭐️ Star 支持下吧~
+
 ## 特性
 
 > 支持自 IntelliJ IDEA 2023.1 (231.9392.1) 起
@@ -94,5 +96,3 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 
 
 <br />
-
-#### 如果你喜欢这个项目，或者对你有用，请[点击](https://github.com/bitlap/intellij-sbt-dependency-analyzer)右上角 ⭐️ Star 收藏吧~

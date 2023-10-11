@@ -9,6 +9,8 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 English | [中文](README-CN.md)
 
+#### If you find the Sbt Dependency Analyzer interesting, please ⭐ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page to support us.
+
 ## Features
 
 > Support available since IntelliJ IDEA 2023.1 (231.9392.1)
@@ -92,5 +94,3 @@ Ensure that you have applied one of the following settings to help identify the 
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
 
 <br />
-
-#### If you find Sbt Dependency Analyzer useful, please ⭐️ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page.
