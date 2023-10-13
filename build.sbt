@@ -9,7 +9,7 @@ lazy val scalatestVersion      = "3.2.16"
 lazy val pluginVerifierVersion = "1.301"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
-lazy val intellijVersion = "231.9392.1"
+lazy val intellijVersion = "233.9102.97"
 lazy val pluginVersion   = s"0.3.0-RC1-$intellijVersion"
 
 ThisBuild / version := pluginVersion

@@ -1,9 +1,13 @@
 // Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
 package bitlap.sbt.analyzer.jbexternal.util
 
-import org.apache.commons.lang.StringUtils
 import java.awt.Component
-import javax.swing.*
+import javax.swing.JCheckBox
+import javax.swing.JLabel
+import javax.swing.JList
+import javax.swing.JPanel
+import javax.swing.ListCellRenderer
+import javax.swing.ListSelectionModel
 
 import com.intellij.ide.nls.NlsMessages
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Scope
@@ -12,10 +16,10 @@ import com.intellij.openapi.observable.properties.GraphProperty
 import com.intellij.openapi.observable.properties.ObservableMutableProperty
 import com.intellij.openapi.observable.properties.PropertyGraph
 import com.intellij.openapi.observable.util.bind
-import com.intellij.openapi.ui.popup.JBPopup
-import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.observable.util.whenItemSelected
 import com.intellij.openapi.observable.util.whenMousePressed
+import com.intellij.openapi.ui.popup.JBPopup
+import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.ui.ListUtil
 import com.intellij.ui.components.DropDownLink
@@ -26,11 +30,12 @@ import com.intellij.util.ui.ThreeStateCheckBox
 @Suppress("DEPRECATION")
 internal class SearchScopeSelector(property: ObservableMutableProperty<List<ScopeItem>>) : JPanel() {
     init {
-        val dropDownLink = SearchScopeDropDownLink(property)
-            .apply { border = JBUI.Borders.empty(BORDER, ICON_TEXT_GAP / 2, BORDER, BORDER) }
-        val label = JLabel(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.label"))
-            .apply { border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2) }
-            .apply { labelFor = dropDownLink }
+        val dropDownLink = SearchScopeDropDownLink(property).apply {
+                border = JBUI.Borders.empty(BORDER, ICON_TEXT_GAP / 2, BORDER, BORDER)
+            }
+        val label = JLabel(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.label")).apply {
+                border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2)
+            }.apply { labelFor = dropDownLink }
 
         layout = com.intellij.ide.plugins.newui.HorizontalLayout(0)
         border = JBUI.Borders.empty()
@@ -102,52 +107,35 @@ private class SearchScopePopupContent(scopes: List<ScopeItem>) : JBList<ScopePro
         fun createPopup(scopes: List<ScopeItem>, onChange: (List<ScopeItem>) -> Unit): JBPopup {
             val content = SearchScopePopupContent(scopes)
             content.afterChange(onChange)
-            return JBPopupFactory.getInstance()
-                .createComponentPopupBuilder(content, null)
-                .createPopup()
+            return JBPopupFactory.getInstance().createComponentPopupBuilder(content, null).createPopup()
         }
     }
 }
 
 private class SearchScopePropertyRenderer : ListCellRenderer<ScopeProperty> {
     override fun getListCellRendererComponent(
-        list: JList<out ScopeProperty>,
-        value: ScopeProperty,
-        index: Int,
-        isSelected: Boolean,
-        cellHasFocus: Boolean
+        list: JList<out ScopeProperty>, value: ScopeProperty, index: Int, isSelected: Boolean, cellHasFocus: Boolean
     ): Component {
         val checkBox = when (value) {
-            is ScopeProperty.Any ->
-                ThreeStateCheckBox(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.any"))
-                    .apply { isThirdStateEnabled = false }
-                    .apply { state = value.property.get() }
-                    .bind(value.property)
+            is ScopeProperty.Any -> ThreeStateCheckBox(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.any")).apply {
+                    isThirdStateEnabled = false
+                }.apply { state = value.property.get() }.bind(value.property)
 
-            is ScopeProperty.Just ->
-                JCheckBox(value.scope.title)
-                    .apply { this@apply.isSelected = value.property.get() }
-                    .bind(value.property)
+            is ScopeProperty.Just -> JCheckBox(value.scope.title).apply { this@apply.isSelected = value.property.get() }
+                .bind(value.property)
         }
-        return checkBox
-            .apply { border = emptyListCellBorder(list, index, if (index > 0) 1 else 0) }
+        return checkBox.apply { border = emptyListCellBorder(list, index, if (index > 0) 1 else 0) }
             .apply { background = if (isSelected) list.selectionBackground else list.background }
             .apply { foreground = if (isSelected) list.selectionForeground else list.foreground }
-            .apply { isOpaque = true }
-            .apply { isEnabled = list.isEnabled }
-            .apply { font = list.font }
+            .apply { isOpaque = true }.apply { isEnabled = list.isEnabled }.apply { font = list.font }
     }
 }
 
 private class SearchScopeDropDownLink(
     property: ObservableMutableProperty<List<ScopeItem>>
-) : DropDownLink<List<ScopeItem>>(
-    property.get(),
-    { SearchScopePopupContent.createPopup(property.get(), it::selectedItem.setter) }
-) {
-    override fun popupPoint() =
-        super.popupPoint()
-            .apply { x += insets.left }
+) : DropDownLink<List<ScopeItem>>(property.get(),
+    { SearchScopePopupContent.createPopup(property.get(), it::selectedItem.setter) }) {
+    override fun popupPoint() = super.popupPoint().apply { x += insets.left }
 
     override fun itemToString(item: List<ScopeItem>): @NlsSafe String {
         return when {
@@ -155,7 +143,7 @@ private class SearchScopeDropDownLink(
             !item.any { it.isSelected } -> ExternalSystemBundle.message("external.system.dependency.analyzer.scope.none")
             else -> {
                 val scopes = item.filter { it.isSelected }.map { it.scope.title }
-                StringUtils.abbreviate(NlsMessages.formatNarrowAndList(scopes), 30)
+                abbreviate(NlsMessages.formatNarrowAndList(scopes), 30)
             }
         }
     }
@@ -169,8 +157,7 @@ private class SearchScopeDropDownLink(
 }
 
 internal class ScopeItem(
-    val scope: Scope,
-    val isSelected: Boolean
+    val scope: Scope, val isSelected: Boolean
 ) {
     override fun toString() = "$isSelected: $scope"
 }

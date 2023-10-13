@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
+import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.project.*
@@ -238,7 +239,7 @@ object DependencyUtils {
   def declaredDependencies(module: OpenapiModule.Module): java.util.List[DeclaredDependency] = try {
     // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
     // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
-    val scalaVer = SbtDependencyUtils.getScalaVerFromModule(module)
+    val scalaVer = module.scalaMinorVersion.map(_.major).getOrElse(ScalaVersion.default.major)
 
     inReadAction({
       val libDeps = SbtDependencyUtils

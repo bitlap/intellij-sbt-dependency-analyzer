@@ -53,7 +53,7 @@ object WhatsNew:
               BrowserUtil.browse(url)
           }
         },
-        ModalityState.NON_MODAL,
+        ModalityState.nonModal(),
         Conditions.is(project.getDisposed)
       )
     } else {

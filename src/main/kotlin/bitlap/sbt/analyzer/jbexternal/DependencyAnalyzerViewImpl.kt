@@ -79,7 +79,6 @@ class DependencyAnalyzerViewImpl(
     private var dependencyScopeFilter by dependencyScopeFilterProperty
     private var showDependencyWarnings by showDependencyWarningsProperty
     private var showDependencyGroupId by showDependencyGroupIdProperty
-    private var showDependencySize by showDependencySizeProperty
 
     private var dependencyModel by dependencyModelProperty
     private var dependency by dependencyProperty
@@ -337,7 +336,7 @@ class DependencyAnalyzerViewImpl(
                 ExternalSystemBundle.message("external.system.dependency.analyzer.groupId.show")
         }
         val showDependencySizeAction = toggleAction(showDependencySizeProperty).apply {
-            templatePresentation.text = "Show Size"
+            templatePresentation.text = SbtDependencyExternalBundle.message("analyzer.external.showSize.name")
         }
         val viewOptionsButton =
             popupActionGroup(showDependencyGroupIdAction, showDependencySizeAction).apply {
