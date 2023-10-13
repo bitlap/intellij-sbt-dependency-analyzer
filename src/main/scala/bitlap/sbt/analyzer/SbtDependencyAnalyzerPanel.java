@@ -11,7 +11,7 @@ import java.awt.*;
 
 /**
  * TODO create panel by kotlin DSL
- * 
+ *
  * @author 梦境迷离
  * @version 1.0, 2023/9/8
  */
@@ -96,42 +96,42 @@ public class SbtDependencyAnalyzerPanel {
         mainPanel.setAlignmentX(0.0f);
         mainPanel.setAlignmentY(0.0f);
         mainPanel.setAutoscrolls(false);
-        mainPanel.setMaximumSize(new Dimension(-1, -1));
+        mainPanel.setMaximumSize(new Dimension(400, 120));
         mainPanel.setMinimumSize(new Dimension(-1, -1));
-        mainPanel.setPreferredSize(new Dimension(600, 120));
+        mainPanel.setPreferredSize(new Dimension(350, 120));
         final JLabel label1 = new JLabel();
-        label1.setMaximumSize(new Dimension(-1, -1));
+        label1.setMaximumSize(new Dimension(80, 30));
         label1.setMinimumSize(new Dimension(-1, -1));
         label1.setPreferredSize(new Dimension(80, 30));
         label1.setText("Disable Scope:");
         CellConstraints cc = new CellConstraints();
         mainPanel.add(label1, cc.xy(1, 3));
         final JLabel label2 = new JLabel();
-        label2.setMaximumSize(new Dimension(-1, -1));
+        label2.setMaximumSize(new Dimension(80, 30));
         label2.setMinimumSize(new Dimension(-1, -1));
         label2.setPreferredSize(new Dimension(80, 30));
         label2.setText("Organization:");
         mainPanel.add(label2, cc.xy(1, 2));
         testCheckBox = new JCheckBox();
-        testCheckBox.setMaximumSize(new Dimension(-1, -1));
+        testCheckBox.setMaximumSize(new Dimension(60, 25));
         testCheckBox.setMinimumSize(new Dimension(-1, -1));
         testCheckBox.setPreferredSize(new Dimension(60, 25));
         testCheckBox.setText("Test");
         mainPanel.add(testCheckBox, cc.xy(2, 3));
         compileCheckBox = new JCheckBox();
-        compileCheckBox.setMaximumSize(new Dimension(-1, -1));
+        compileCheckBox.setMaximumSize(new Dimension(60, 25));
         compileCheckBox.setMinimumSize(new Dimension(-1, -1));
         compileCheckBox.setPreferredSize(new Dimension(60, 25));
         compileCheckBox.setText("Compile");
         mainPanel.add(compileCheckBox, cc.xy(3, 3));
         providedCheckBox = new JCheckBox();
-        providedCheckBox.setMaximumSize(new Dimension(-1, -1));
+        providedCheckBox.setMaximumSize(new Dimension(60, 25));
         providedCheckBox.setMinimumSize(new Dimension(-1, -1));
         providedCheckBox.setPreferredSize(new Dimension(60, 25));
         providedCheckBox.setText("Provided");
         mainPanel.add(providedCheckBox, cc.xy(4, 3));
         final JLabel label3 = new JLabel();
-        label3.setMaximumSize(new Dimension(-1, -1));
+        label3.setMaximumSize(new Dimension(80, 30));
         label3.setMinimumSize(new Dimension(-1, -1));
         label3.setPreferredSize(new Dimension(80, 30));
         label3.setText("File Cache Timeout:");
@@ -139,7 +139,7 @@ public class SbtDependencyAnalyzerPanel {
         fileCache = new JTextField();
         fileCache.setColumns(8);
         fileCache.setHorizontalAlignment(2);
-        fileCache.setMaximumSize(new Dimension(-1, -1));
+        fileCache.setMaximumSize(new Dimension(112, 30));
         fileCache.setMinimumSize(new Dimension(-1, -1));
         fileCache.setPreferredSize(new Dimension(112, 30));
         fileCache.setText("3600");
@@ -147,19 +147,19 @@ public class SbtDependencyAnalyzerPanel {
         organization = new JTextField();
         organization.setColumns(8);
         organization.setHorizontalAlignment(2);
-        organization.setMaximumSize(new Dimension(-1, -1));
+        organization.setMaximumSize(new Dimension(112, 30));
         organization.setMinimumSize(new Dimension(-1, -1));
         organization.setPreferredSize(new Dimension(112, 30));
         organization.setText("");
         mainPanel.add(organization, cc.xy(2, 2));
         final JLabel label4 = new JLabel();
-        label4.setMaximumSize(new Dimension(-1, -1));
+        label4.setMaximumSize(new Dimension(60, 30));
         label4.setMinimumSize(new Dimension(-1, -1));
         label4.setPreferredSize(new Dimension(60, 30));
         label4.setText("seconds");
         mainPanel.add(label4, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
         final Spacer spacer1 = new Spacer();
-        mainPanel.add(spacer1, cc.xy(2, 4, CellConstraints.CENTER, CellConstraints.FILL));
+        mainPanel.add(spacer1, cc.xyw(1, 4, 4, CellConstraints.CENTER, CellConstraints.FILL));
         final Spacer spacer2 = new Spacer();
         mainPanel.add(spacer2, cc.xywh(5, 1, 1, 4, CellConstraints.FILL, CellConstraints.DEFAULT));
     }

@@ -17,9 +17,9 @@
       <alignmentX value="0.0"/>
       <alignmentY value="0.0"/>
       <autoscrolls value="false"/>
-      <maximumSize width="-1" height="-1"/>
+      <maximumSize width="400" height="120"/>
       <minimumSize width="-1" height="-1"/>
-      <preferredSize width="600" height="120"/>
+      <preferredSize width="350" height="120"/>
     </properties>
     <border type="none">
       <font/>
@@ -31,7 +31,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="80" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="80" height="30"/>
           <text value="Disable Scope:"/>
@@ -43,7 +43,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="80" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="80" height="30"/>
           <text value="Organization:"/>
@@ -55,7 +55,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="60" height="25"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="60" height="25"/>
           <text value="Test"/>
@@ -67,7 +67,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="60" height="25"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="60" height="25"/>
           <text value="Compile"/>
@@ -79,7 +79,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="60" height="25"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="60" height="25"/>
           <text value="Provided"/>
@@ -91,7 +91,7 @@
           <forms/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="80" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="80" height="30"/>
           <text value="File Cache Timeout:"/>
@@ -105,7 +105,7 @@
         <properties>
           <columns value="8"/>
           <horizontalAlignment value="2"/>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="112" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="112" height="30"/>
           <text value="3600"/>
@@ -119,7 +119,7 @@
         <properties>
           <columns value="8"/>
           <horizontalAlignment value="2"/>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="112" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="112" height="30"/>
           <text value=""/>
@@ -131,7 +131,7 @@
           <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
-          <maximumSize width="-1" height="-1"/>
+          <maximumSize width="60" height="30"/>
           <minimumSize width="-1" height="-1"/>
           <preferredSize width="60" height="30"/>
           <text value="seconds"/>
