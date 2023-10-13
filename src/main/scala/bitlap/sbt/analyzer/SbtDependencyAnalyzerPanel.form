@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="bitlap.sbt.analyzer.SbtDependencyAnalyzerPanel">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="4" same-size-horizontally="true" same-size-vertically="false" hgap="0" vgap="0">
-    <margin top="0" left="0" bottom="0" right="0"/>
+  <grid id="27dc6" binding="mainPanel" layout-manager="FormLayout">
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="center:32px:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="center:12px:grow"/>
+    <colspec value="fill:d:grow"/>
+    <colspec value="fill:d:grow"/>
+    <colspec value="fill:d:grow"/>
+    <colspec value="fill:d:grow"/>
+    <colspec value="fill:d:grow"/>
     <constraints>
-      <xy x="9" y="9" width="600" height="120"/>
+      <xy x="9" y="9" width="629" height="135"/>
     </constraints>
     <properties>
       <alignmentX value="0.0"/>
@@ -20,84 +28,127 @@
       <component id="e47fd" class="javax.swing.JLabel">
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="80" height="30"/>
           <text value="Disable Scope:"/>
         </properties>
       </component>
       <component id="d76eb" class="javax.swing.JLabel">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="80" height="30"/>
           <text value="Organization:"/>
         </properties>
       </component>
       <component id="9adf2" class="javax.swing.JCheckBox" binding="testCheckBox" default-binding="true">
         <constraints>
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="60" height="25"/>
           <text value="Test"/>
         </properties>
       </component>
       <component id="1a5d3" class="javax.swing.JCheckBox" binding="compileCheckBox" default-binding="true">
         <constraints>
           <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="60" height="25"/>
           <text value="Compile"/>
         </properties>
       </component>
       <component id="e26b2" class="javax.swing.JCheckBox" binding="providedCheckBox" default-binding="true">
         <constraints>
           <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="60" height="25"/>
           <text value="Provided"/>
         </properties>
       </component>
       <component id="e19b" class="javax.swing.JLabel">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="80" height="30"/>
           <text value="File Cache Timeout:"/>
         </properties>
       </component>
       <component id="9f522" class="javax.swing.JTextField" binding="fileCache">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
-          <columns value="4"/>
+          <columns value="8"/>
           <horizontalAlignment value="2"/>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="112" height="30"/>
           <text value="3600"/>
         </properties>
       </component>
       <component id="7b57c" class="javax.swing.JTextField" binding="organization">
         <constraints>
           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms/>
         </constraints>
         <properties>
-          <columns value="12"/>
+          <columns value="8"/>
           <horizontalAlignment value="2"/>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="112" height="30"/>
           <text value=""/>
         </properties>
       </component>
       <component id="7e6b6" class="javax.swing.JLabel">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
+          <maximumSize width="-1" height="-1"/>
+          <minimumSize width="-1" height="-1"/>
+          <preferredSize width="60" height="30"/>
           <text value="seconds"/>
         </properties>
       </component>
-      <vspacer id="77ee8">
+      <vspacer id="1aa96">
         <constraints>
-          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
       </vspacer>
+      <hspacer id="a0c00">
+        <constraints>
+          <grid row="0" column="4" row-span="4" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>
