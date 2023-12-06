@@ -31,11 +31,11 @@ import com.intellij.util.ui.ThreeStateCheckBox
 internal class SearchScopeSelector(property: ObservableMutableProperty<List<ScopeItem>>) : JPanel() {
     init {
         val dropDownLink = SearchScopeDropDownLink(property).apply {
-                border = JBUI.Borders.empty(BORDER, ICON_TEXT_GAP / 2, BORDER, BORDER)
-            }
+            border = JBUI.Borders.empty(BORDER, ICON_TEXT_GAP / 2, BORDER, BORDER)
+        }
         val label = JLabel(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.label")).apply {
-                border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2)
-            }.apply { labelFor = dropDownLink }
+            border = JBUI.Borders.empty(BORDER, BORDER, BORDER, ICON_TEXT_GAP / 2)
+        }.apply { labelFor = dropDownLink }
 
         layout = com.intellij.ide.plugins.newui.HorizontalLayout(0)
         border = JBUI.Borders.empty()
@@ -118,8 +118,8 @@ private class SearchScopePropertyRenderer : ListCellRenderer<ScopeProperty> {
     ): Component {
         val checkBox = when (value) {
             is ScopeProperty.Any -> ThreeStateCheckBox(ExternalSystemBundle.message("external.system.dependency.analyzer.scope.any")).apply {
-                    isThirdStateEnabled = false
-                }.apply { state = value.property.get() }.bind(value.property)
+                isThirdStateEnabled = false
+            }.apply { state = value.property.get() }.bind(value.property)
 
             is ScopeProperty.Just -> JCheckBox(value.scope.title).apply { this@apply.isSelected = value.property.get() }
                 .bind(value.property)
@@ -133,7 +133,8 @@ private class SearchScopePropertyRenderer : ListCellRenderer<ScopeProperty> {
 
 private class SearchScopeDropDownLink(
     property: ObservableMutableProperty<List<ScopeItem>>
-) : DropDownLink<List<ScopeItem>>(property.get(),
+) : DropDownLink<List<ScopeItem>>(
+    property.get(),
     { SearchScopePopupContent.createPopup(property.get(), it::selectedItem.setter) }) {
     override fun popupPoint() = super.popupPoint().apply { x += insets.left }
 

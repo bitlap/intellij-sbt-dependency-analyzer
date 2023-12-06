@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * Copy from commons-lang3 [[org.apache.commons.lang.StringUtils]]
- * 
+ *
  * @author 梦境迷离
  * @version 1.0,2023/10/13
  */
@@ -44,15 +44,12 @@ fun abbreviate(str: String, abbrevMarker: String, stringOffset: Int, maxWidth: I
                 } else if (maxWidth < minAbbrevWidthOffset) {
                     throw IllegalArgumentException(
                         String.format(
-                            "Minimum abbreviation width with offset is %d",
-                            minAbbrevWidthOffset
+                            "Minimum abbreviation width with offset is %d", minAbbrevWidthOffset
                         )
                     )
                 } else {
                     if (offset + maxWidth - abbrevMarkerLength < strLen) abbrevMarker + abbreviate(
-                        str.substring(offset),
-                        abbrevMarker,
-                        maxWidth - abbrevMarkerLength
+                        str.substring(offset), abbrevMarker, maxWidth - abbrevMarkerLength
                     ) else abbrevMarker + str.substring(strLen - (maxWidth - abbrevMarkerLength))
                 }
             }
