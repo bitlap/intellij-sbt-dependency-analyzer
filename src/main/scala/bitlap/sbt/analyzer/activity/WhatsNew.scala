@@ -12,10 +12,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Conditions
 import com.intellij.ui.jcef.JBCefApp
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/2
- */
 object WhatsNew:
   private lazy val Log     = Logger.getInstance(classOf[WhatsNew.type])
   private val ReleaseNotes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"

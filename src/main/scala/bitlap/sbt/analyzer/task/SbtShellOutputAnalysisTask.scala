@@ -13,23 +13,15 @@ import com.intellij.openapi.project.Project
 import Constants.*
 
 /** Tasks depend on the output of the SBT console.
- *
- *  @author
- *    梦境迷离
- *  @version 1.0,2023/8/11
  */
 trait SbtShellOutputAnalysisTask[T]:
   private val log = Logger.getInstance(getClass)
 
   protected final def getCommandOutputLines(project: Project, command: String): List[String] =
-    val comms = SbtShellCommunication.forProject(project)
-    val executed: Future[StringBuilder] = comms.command(
-      command,
-      new StringBuilder(),
-      SbtShellCommunication.messageAggregator
-    )
-    val res    = Await.result(executed.map(_.result()), Constants.Timeout)
-    val result = res.split(Constants.LineSeparator).toList.filter(_.startsWith("[info]"))
+    val shellCommunication       = SbtShellCommunication.forProject(project)
+    val executed: Future[String] = shellCommunication.command(command)
+    val res                      = Await.result(executed, Constants.TIMEOUT)
+    val result                   = res.split(Constants.LINE_SEPARATOR).toList.filter(_.startsWith("[info]"))
     if (result.isEmpty) {
       log.warn("Sbt Dependency Analyzer cannot find any output lines")
     }

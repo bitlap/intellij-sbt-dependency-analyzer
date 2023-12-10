@@ -13,10 +13,6 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 import guru.nidi.graphviz.model.*
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/8
- */
 class DotUtilSpec extends AnyFlatSpec {
 
   "parse file as MutableNode" should "ok" in {

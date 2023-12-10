@@ -39,10 +39,6 @@ import com.intellij.openapi.project.Project
 
 import kotlin.jvm.functions
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/1
- */
 final class SbtDependencyAnalyzerContributor(project: Project) extends DependencyAnalyzerContributor {
 
   import SbtDependencyAnalyzerContributor.*
@@ -228,7 +224,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     // we don't actively delete configurations
     val settingsState = SettingsState.getSettings(project)
     val org           = settingsState.organization
-    if (org != null && org != Constants.EmptyString) {
+    if (org != null && org != Constants.EMPTY_STRING) {
       return org
     }
 
@@ -260,7 +256,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] =
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
-    if (moduleData.getModuleName == Constants.Project) return Collections.emptyList()
+    if (moduleData.getModuleName == Constants.PROJECT) return Collections.emptyList()
 
     val result = configurationNodesMap.computeIfAbsent(
       moduleData.getLinkedExternalProjectPath,

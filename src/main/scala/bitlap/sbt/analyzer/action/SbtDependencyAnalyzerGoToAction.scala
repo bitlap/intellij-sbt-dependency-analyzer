@@ -66,7 +66,7 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
         if (
           DependencyScopeEnum.values.exists(d =>
             d.toString
-              .toLowerCase() == dc.getCoordinates.getVersion.toLowerCase || Constants.Protobuf == dc.getCoordinates.getVersion.toLowerCase
+              .toLowerCase() == dc.getCoordinates.getVersion.toLowerCase || Constants.PROTOBUF == dc.getCoordinates.getVersion.toLowerCase
           )
         ) {
           dc.getCoordinates.getArtifactId == coordinates.getArtifactId && dc.getCoordinates.getGroupId == coordinates.getGroupId

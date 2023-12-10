@@ -16,9 +16,6 @@ import com.intellij.openapi.project.Project
 
 /** Process the `sbt dependencyDot` command, when the command execution is completed, use a callback to parse the file
  *  content.
- *  @author
- *    梦境迷离
- *  @version 1.0,2023/8/19
  */
 final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
 

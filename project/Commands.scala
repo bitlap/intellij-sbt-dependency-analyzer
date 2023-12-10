@@ -1,10 +1,5 @@
 import sbt.Command
 
-/** @author
- *    梦境迷离
- *  @since 2023/4/25
- *  @version 1.0
- */
 object Commands {
 
   val FmtSbtCommand = Command.command("fmt")(state => "scalafmtSbt" :: "scalafmtAll" :: state)

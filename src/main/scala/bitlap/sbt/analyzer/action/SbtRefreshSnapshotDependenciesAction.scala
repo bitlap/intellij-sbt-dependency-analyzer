@@ -10,10 +10,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/23
- */
 final class SbtRefreshSnapshotDependenciesAction extends BaseRefreshDependenciesAction:
 
   override lazy val eventText: String =

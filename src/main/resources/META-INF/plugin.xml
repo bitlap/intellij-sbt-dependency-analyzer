@@ -2,10 +2,12 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.3.0-233.9102.97</version>
+    <version>0.3.0-233.11799.241</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
-    <idea-version since-build="231.0"/>
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
+    <!-- old version support, see branch idea231.x   -->
+    <idea-version since-build="233.0" until-build="233.*"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -127,17 +129,17 @@
 
         <![CDATA[
         
-            <h1>0.3.0-233.9102.97</h1>
+            <h1>0.3.0-233.11799.241</h1>
             <ul>
-                <li>Support idea 2023.3 since 233.9102.97.</li>
+                <li>Support idea 2023.3.</li>
             </ul>
             <!-- @@ -->
             
             <h1>0.3.0-RC1-231.9392.1</h1>
             <ul>
-                <li>Add sdap.sbt to .git/info/exclude file.</li>
+                <li>Add `sdap.sbt` to .git/info/exclude file.</li>
                 <li>Add Show Size to show jar package size.</li>
-                <li>Add shortcuts to open the analysis view: Ctrl + Shift + L.</li>
+                <li>Add shortcuts to open the analysis view: `Ctrl + Shift + L`.</li>
             </ul>
             <!-- @@ -->
             

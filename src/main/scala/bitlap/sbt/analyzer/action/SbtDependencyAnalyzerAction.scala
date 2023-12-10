@@ -17,10 +17,6 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.externalSystem.view.*
 import com.intellij.openapi.module.Module
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/1
- */
 final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAction[ExternalSystemNode[?]]:
 
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))

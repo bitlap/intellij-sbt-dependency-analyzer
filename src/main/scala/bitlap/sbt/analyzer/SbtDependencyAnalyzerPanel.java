@@ -11,9 +11,6 @@ import java.awt.*;
 
 /**
  * TODO create panel by kotlin DSL
- *
- * @author 梦境迷离
- * @version 1.0, 2023/9/8
  */
 @SuppressWarnings("unchecked")
 public class SbtDependencyAnalyzerPanel {

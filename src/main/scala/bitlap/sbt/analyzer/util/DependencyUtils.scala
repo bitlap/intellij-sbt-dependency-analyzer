@@ -31,10 +31,6 @@ import com.intellij.openapi.util.text.StringUtil
 import model.*
 import parser.*
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/7
- */
 object DependencyUtils {
 
   final val DefaultConfiguration = toDAScope("default")
@@ -124,8 +120,8 @@ object DependencyUtils {
 
     mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
       val artifact   = getArtifactInfoFromDisplayName(None, node.getDisplayName)
-      val artifactId = artifact.map(_.artifact).getOrElse(Constants.EmptyString)
-      val group      = artifact.map(_.group).getOrElse(Constants.EmptyString)
+      val artifactId = artifact.map(_.artifact).getOrElse(Constants.EMPTY_STRING)
+      val group      = artifact.map(_.group).getOrElse(Constants.EMPTY_STRING)
       // Use artifact to determine whether there are modules in the dependency.
       if (
         context.ideaModuleIdSbtModuleNames.values
@@ -146,8 +142,8 @@ object DependencyUtils {
       context.ideaModuleIdSbtModuleNames.getOrElse(
         context.currentModuleId,
         context.ideaModuleIdSbtModuleNames.getOrElse(
-          Constants.SingleSbtModule,
-          context.ideaModuleIdSbtModuleNames.getOrElse(Constants.RootSbtModule, context.currentModuleId)
+          Constants.SINGLE_SBT_MODULE,
+          context.ideaModuleIdSbtModuleNames.getOrElse(Constants.ROOT_SBT_MODULE, context.currentModuleId)
         )
       )
 
@@ -201,7 +197,7 @@ object DependencyUtils {
     val projectPath =
       ideaModuleName
         .flatMap(m => context.ideaModuleNamePaths.get(m))
-        .getOrElse(context.ideaModuleNamePaths.getOrElse(sbtModuleName, Constants.EmptyString))
+        .getOrElse(context.ideaModuleNamePaths.getOrElse(sbtModuleName, Constants.EMPTY_STRING))
 
     val p = new ProjectDependencyNodeImpl(
       dn.getId,

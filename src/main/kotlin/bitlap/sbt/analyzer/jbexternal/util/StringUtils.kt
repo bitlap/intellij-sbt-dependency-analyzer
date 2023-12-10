@@ -4,9 +4,6 @@ import org.apache.commons.lang3.StringUtils
 
 /**
  * Copy from commons-lang3 [[org.apache.commons.lang.StringUtils]]
- *
- * @author 梦境迷离
- * @version 1.0,2023/10/13
  */
 fun abbreviate(str: String, maxWidth: Int): String {
     return abbreviate(str, "...", 0, maxWidth)
