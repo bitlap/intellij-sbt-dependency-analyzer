@@ -6,10 +6,6 @@ import com.intellij.openapi.options.*
 import com.intellij.openapi.options.Configurable.Composite
 import com.intellij.openapi.project.Project
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/7
- */
 final class SbtDependencyAnalyzerConfigurable(project: Project) extends SearchableConfigurable {
 
   // create a ui form

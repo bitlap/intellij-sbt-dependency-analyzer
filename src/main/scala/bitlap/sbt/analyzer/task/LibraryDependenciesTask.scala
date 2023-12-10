@@ -11,9 +11,6 @@ import Constants.*
 import SbtShellOutputAnalysisTask.*
 
 /** TODO: Process the `sbt libraryDependencies` command, get all user explicitly declared dependencies.
- *  @author
- *    梦境迷离
- *  @version 1.0,2023/8/19
  */
 final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[String, List[LibraryModuleID]]]:
 
@@ -43,7 +40,7 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
       }.collect { case Some(value) =>
         value
       }
-      return Map(SingleSbtModule -> libraries)
+      return Map(SINGLE_SBT_MODULE -> libraries)
 
     }
     // multi-module
@@ -56,8 +53,8 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
     moduleIdSbtLibrariesMap.map { (k, v) =>
       val key = k match
         case libraryDependenciesInputRegex(_, _, moduleName, _, _) => moduleName.trim
-        case rootLibraryDependenciesInputRegex(_, _)               => RootSbtModule
-        case _                                                     => EmptyString
+        case rootLibraryDependenciesInputRegex(_, _)               => ROOT_SBT_MODULE
+        case _                                                     => EMPTY_STRING
 
       val value = v match
         case shellOutputResultRegex(_, _, output) =>
@@ -71,7 +68,7 @@ final class LibraryDependenciesTask extends SbtShellOutputAnalysisTask[Map[Strin
 
       key -> value
     }.collect {
-      case (k, v) if k != EmptyString => k -> v
+      case (k, v) if k != EMPTY_STRING => k -> v
     }.toMap
   end executeCommand
 

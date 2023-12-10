@@ -11,9 +11,6 @@ import Constants.*
 
 /** Process the `sbt moduleName` command, get all module names in sbt, it refers to the module name declared through
  *  `name =: ` in `build.sbt` instead of Intellij IDEA.
- *  @author
- *    梦境迷离
- *  @version 1.0,2023/8/19
  */
 final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]]:
   import SbtShellOutputAnalysisTask.*
@@ -43,22 +40,22 @@ final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String
       for (i <- 0 until mms.size - 1 by 2) {
         moduleIdSbtModuleNameMap.put(mms(i).trim, mms(i + 1).trim)
       }
-    } else if (mms.size == 1) moduleIdSbtModuleNameMap.put(SingleSbtModule, mms(0))
+    } else if (mms.size == 1) moduleIdSbtModuleNameMap.put(SINGLE_SBT_MODULE, mms(0))
 
     moduleIdSbtModuleNameMap.map { (k, v) =>
       val key = k match
         case moduleNameInputRegex(_, _, moduleName, _, _) => moduleName.trim
-        case rootModuleNameInputRegex(_, _)               => RootSbtModule
-        case SingleSbtModule                              => SingleSbtModule
-        case _                                            => EmptyString
+        case rootModuleNameInputRegex(_, _)               => ROOT_SBT_MODULE
+        case SINGLE_SBT_MODULE                            => SINGLE_SBT_MODULE
+        case _                                            => EMPTY_STRING
 
       val value = v match
         case shellOutputResultRegex(_, _, sbtModuleName) => sbtModuleName.trim
-        case _                                           => EmptyString
+        case _                                           => EMPTY_STRING
 
       key -> value
 
-    }.filter(kv => kv._1 != EmptyString && kv._2 != EmptyString).toMap
+    }.filter(kv => kv._1 != EMPTY_STRING && kv._2 != EMPTY_STRING).toMap
 
   end executeCommand
 

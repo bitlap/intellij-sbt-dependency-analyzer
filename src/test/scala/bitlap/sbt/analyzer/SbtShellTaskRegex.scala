@@ -4,10 +4,6 @@ import bitlap.sbt.analyzer.task.SbtShellOutputAnalysisTask
 
 import org.scalatest.flatspec.AnyFlatSpec
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/11
- */
 class SbtShellTaskRegex extends AnyFlatSpec {
 
   "regex match" should "ok" in {

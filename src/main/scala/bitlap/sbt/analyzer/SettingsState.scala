@@ -19,10 +19,6 @@ import com.intellij.util.xmlb.annotations.Transient
 
 import kotlin.jvm.Volatile
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/7
- */
 @State(name = "SbtDependencyAnalyzer.Settings", storages = Array(new Storage("bitlap.sbt.dependency.analyzer.xml")))
 final class SettingsState extends PersistentStateComponent[SettingsState] {
 

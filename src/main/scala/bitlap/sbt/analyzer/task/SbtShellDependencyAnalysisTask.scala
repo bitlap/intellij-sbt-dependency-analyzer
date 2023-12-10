@@ -17,9 +17,6 @@ import parser.*
 import util.DependencyUtils.*
 
 /** Tasks depend on the `addDependencyTreePlugin` plugin of the SBT.
- *  @author
- *    梦境迷离
- *  @version 1.0,2023/8/11
  */
 trait SbtShellDependencyAnalysisTask:
 
@@ -39,12 +36,12 @@ trait SbtShellDependencyAnalysisTask:
     project: Project,
     moduleData: ModuleData,
     scope: DependencyScopeEnum
-  )(rootNode: String => DependencyScopeNode): DependencyScopeNode = {
-    val comms    = SbtShellCommunication.forProject(project)
-    val moduleId = moduleData.getId.split(" ")(0)
-    val promise  = Promise[Boolean]()
-    val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
-    val result = comms
+  )(buildNodeFunc: String => DependencyScopeNode): DependencyScopeNode = {
+    val shellCommunication = SbtShellCommunication.forProject(project)
+    val moduleId           = moduleData.getId.split(" ")(0)
+    val promise            = Promise[Boolean]()
+    val file               = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
+    val result = shellCommunication
       .command(
         getScopedCommandKey(moduleId, scope, parserTypeEnum.cmd),
         new StringBuilder(),
@@ -81,14 +78,14 @@ trait SbtShellDependencyAnalysisTask:
                 )
               )
             }
-          case SbtShellCommunication.TaskStart =>
+          case _ =>
 
         }
       )
       .flatMap(_ => promise.future)
 
-    Await.result(result, Constants.Timeout)
-    rootNode(file)
+    Await.result(result, Constants.TIMEOUT)
+    buildNodeFunc(file)
   }
 
 end SbtShellDependencyAnalysisTask

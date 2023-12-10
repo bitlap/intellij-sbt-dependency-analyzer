@@ -21,11 +21,6 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/1
- */
-
 lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAnalyzerContributor.ModuleData")
 
 given ExecutionContext = ExecutionContext.Implicits.global
@@ -77,7 +72,7 @@ def findModule(project: Project, projectPath: String): Module = {
   findModule(project, moduleNode.getData)
 }
 
-def waitInterval(sleep: Duration = Constants.IntervalTimeout): Unit = {
+def waitInterval(sleep: Duration = Constants.INTERVAL_TIMEOUT): Unit = {
   try {
     Thread.sleep(sleep.toMillis)
   } catch {

@@ -20,10 +20,6 @@ import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
 import model.ModuleContext
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/3
- */
 object DotUtil {
 
   private val LOG = Logger.getInstance(classOf[DotUtil.type])
@@ -48,7 +44,7 @@ object DotUtil {
         if (vfsFile != null) {
           VfsUtil.markDirtyAndRefresh(false, false, false, vfsFile)
         } else {
-          if (System.currentTimeMillis() - start > Constants.Timeout.toMillis) {
+          if (System.currentTimeMillis() - start > Constants.TIMEOUT.toMillis) {
             LOG.error(s"Cannot get dot file: $file")
             Notifications.notifyParseFileError(file)
             return null

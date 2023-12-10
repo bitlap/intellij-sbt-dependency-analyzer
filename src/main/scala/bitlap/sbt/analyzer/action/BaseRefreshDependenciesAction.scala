@@ -10,10 +10,6 @@ import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
 import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
 import com.intellij.openapi.project.*
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/5
- */
 abstract class BaseRefreshDependenciesAction extends DumbAwareAction() {
 
   lazy val eventText: String

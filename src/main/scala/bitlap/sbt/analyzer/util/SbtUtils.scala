@@ -31,10 +31,6 @@ import com.intellij.openapi.project.*
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/8/24
- */
 object SbtUtils {
 
   private val log = Logger.getInstance(getClass)

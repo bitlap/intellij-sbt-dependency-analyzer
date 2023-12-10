@@ -14,10 +14,6 @@ import com.intellij.util.ui.JBUI
 
 import analyzer.util.Notifications
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/1
- */
 object PluginUpdateActivity:
   private val InitialVersion       = "0.0.0"
   private lazy val VersionProperty = s"${SbtDependencyAnalyzerPlugin.PLUGIN_ID}.version"
@@ -61,7 +57,7 @@ final class PluginUpdateActivity extends BaseProjectActivity {
   ): Boolean = {
     val latestChangeNotes =
       if (plugin.getChangeNotes == null) "<ul><li></li></ul>"
-      else plugin.getChangeNotes.split(Constants.ChangeNotesSeparator)(0)
+      else plugin.getChangeNotes.split(Constants.CHANGE_NOTES_SEPARATOR)(0)
     val title = SbtDependencyAnalyzerBundle.message(
       "analyzer.notification.updated.title",
       plugin.getName,

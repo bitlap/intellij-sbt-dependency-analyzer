@@ -37,7 +37,8 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import com.intellij.util.ui.tree.TreeUtil
 
 
-internal val PROJECT_ICON: Icon = IconLoader.getIcon("/icons/sbt_dependency_analyzer.svg", DependencyAnalyzerManager::class.java)
+internal val PROJECT_ICON: Icon =
+    IconLoader.getIcon("/icons/sbt_dependency_analyzer.svg", DependencyAnalyzerManager::class.java)
 internal const val BORDER = 6
 internal const val INDENT = 16
 internal const val ICON_TEXT_GAP = 4
@@ -122,18 +123,17 @@ internal fun popupActionGroup(vararg actions: AnAction) = DefaultActionGroup(*ac
 
 internal fun AnAction.asActionButton(place: String) =
     ActionButton(this, templatePresentation.clone(), place, ActionToolbar.DEFAULT_MINIMUM_BUTTON_SIZE).apply {
-            border = JBUI.Borders.empty(ACTION_BORDER)
-        }
+        border = JBUI.Borders.empty(ACTION_BORDER)
+    }
 
 internal fun separator() = JLabel(AllIcons.General.Divider).apply { border = JBUI.Borders.empty(ACTION_BORDER) }
     .apply { font = JBUI.Fonts.toolbarSmallComboBoxFont() }
 
 internal fun expandTreeAction(tree: JTree) = action { TreeUtil.expandAll(tree) }.apply {
-        templatePresentation.text =
-            ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.expand")
-    }.apply { templatePresentation.icon = AllIcons.Actions.Expandall }
+    templatePresentation.text = ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.expand")
+}.apply { templatePresentation.icon = AllIcons.Actions.Expandall }
 
 internal fun collapseTreeAction(tree: JTree) = action { TreeUtil.collapseAll(tree, 0) }.apply {
-        templatePresentation.text =
-            ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.collapse")
-    }.apply { templatePresentation.icon = AllIcons.Actions.Collapseall }
+    templatePresentation.text =
+        ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.tree.collapse")
+}.apply { templatePresentation.icon = AllIcons.Actions.Collapseall }

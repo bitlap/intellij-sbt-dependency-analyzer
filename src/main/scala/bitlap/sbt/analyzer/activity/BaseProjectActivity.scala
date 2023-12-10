@@ -6,10 +6,6 @@ import com.intellij.openapi.startup.ProjectActivity
 
 import kotlin.coroutines.Continuation
 
-/** @author
- *    梦境迷离
- *  @version 1.0,2023/9/1
- */
 abstract class BaseProjectActivity(private val runOnlyOnce: Boolean = false) extends ProjectActivity {
   private var veryFirstProjectOpening: Boolean = true
 

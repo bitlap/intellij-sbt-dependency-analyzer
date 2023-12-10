@@ -6,11 +6,13 @@ lazy val logbackVersion        = "1.4.14"
 lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
 lazy val scalatestVersion      = "3.2.16"
-lazy val pluginVerifierVersion = "1.301"
+lazy val pluginVerifierVersion = "1.305"
+lazy val ktVersion             = "1.9.10"
 
-// https://youtrack.jetbrains.com/articles/IDEA-A-2100661425/IntelliJ-IDEA-2023.1-Latest-Builds
-lazy val intellijVersion = "231.9392.1"
-lazy val pluginVersion   = s"0.3.0-RC1-$intellijVersion"
+// https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
+// NOTE: Latest-Builds 233
+lazy val intellijVersion = "233.11799.241"
+lazy val pluginVersion   = s"0.3.0-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -54,8 +56,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     pluginVerifierOptions := pluginVerifierOptions.value.copy(
       version = pluginVerifierVersion, // use a specific verifier version
       offline = true,                  // forbid the verifier from reaching the internet
-      failureLevels =
-        Set(FailureLevel.INTERNAL_API_USAGES, FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.COMPATIBILITY_WARNINGS)
+      failureLevels = Set(FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.COMPATIBILITY_WARNINGS)
     ),
     Global / intellijAttachSources := true,
     intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
@@ -74,7 +75,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       "org.jooq"       % "joor"                   % joorVersion,
       "org.scalatest" %% "scalatest"              % scalatestVersion % Test
     ),
-    kotlinVersion := "1.9.21",
+    kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
       "org.jetbrains.kotlin" % ".*" % ".*" -> None,
