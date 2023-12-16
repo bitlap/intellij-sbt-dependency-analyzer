@@ -12,12 +12,14 @@ import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
 import com.intellij.openapi.project.Project
 import com.intellij.util.containers.DisposableWrapperList
 
-internal class DependencyAnalyzerVirtualFile(
-    private val project: Project, private val systemId: ProjectSystemId
-) : UIComponentVirtualFile(
-    ExternalSystemBundle.message("external.system.dependency.analyzer.editor.tab.name"),
-    AllIcons.Actions.DependencyAnalyzer
-) {
+/**
+ * https://github.com/JetBrains/intellij-community/blob/idea/233.11799.300/platform/external-system-impl/src/com/intellij/openapi/externalSystem/dependency/analyzer/DependencyAnalyzerVirtualFile.kt
+ */
+internal class DependencyAnalyzerVirtualFile(private val project: Project, private val systemId: ProjectSystemId) :
+    UIComponentVirtualFile(
+        ExternalSystemBundle.message("external.system.dependency.analyzer.editor.tab.name"),
+        AllIcons.Actions.DependencyAnalyzer
+    ) {
     private val views = DisposableWrapperList<DependencyAnalyzerView>()
 
     fun getViews(): List<DependencyAnalyzerView> = views.toList()

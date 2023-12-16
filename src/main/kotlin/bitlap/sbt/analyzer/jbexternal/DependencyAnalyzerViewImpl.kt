@@ -48,6 +48,9 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 
+/**
+ * https://github.com/JetBrains/intellij-community/blob/idea/233.11799.300/platform/external-system-impl/src/com/intellij/openapi/externalSystem/dependency/analyzer/DependencyAnalyzerViewImpl.kt
+ */
 class DependencyAnalyzerViewImpl(
     private val project: Project, private val systemId: ProjectSystemId, private val parentDisposable: Disposable
 ) : DependencyAnalyzerView {
@@ -160,9 +163,8 @@ class DependencyAnalyzerViewImpl(
         val dependencyScopeFilter = dependencyScopeFilter.filter { it.isSelected }.map { it.scope }
         val showDependencyWarnings = showDependencyWarnings
         return filter { dependency ->
-            dependencyDataFilter.lowercase(Locale.ENGLISH) in dependency.data.getDisplayText(
-                showDependencyGroupId
-            ).lowercase(Locale.ENGLISH)
+            dependencyDataFilter.lowercase(Locale.ENGLISH) in dependency.data.getDisplayText(showDependencyGroupId)
+                .lowercase(Locale.ENGLISH)
         }.filter { dependency -> dependency.scope in dependencyScopeFilter }
             .filter { dependency -> if (showDependencyWarnings) dependency.hasWarnings else true }
     }
@@ -352,18 +354,14 @@ class DependencyAnalyzerViewImpl(
         val dependencyTitle = label(ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.title"))
         val dependencyList = DependencyList(
             dependencyListModel, showDependencyGroupIdProperty, showDependencySizeProperty, this
-        ).bindEmptyText(
-            dependencyEmptyTextProperty
-        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+        ).bindEmptyText(dependencyEmptyTextProperty).bindDependency(dependencyProperty)
+            .bindEnabled(!dependencyLoadingProperty)
         val dependencyTree = DependencyTree(
             dependencyTreeModel, showDependencyGroupIdProperty, showDependencySizeProperty, this
-        ).bindEmptyText(
-            dependencyEmptyTextProperty
-        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+        ).bindEmptyText(dependencyEmptyTextProperty).bindDependency(dependencyProperty)
+            .bindEnabled(!dependencyLoadingProperty)
         val dependencyPanel = cardPanel<Boolean> {
-            ScrollPaneFactory.createScrollPane(
-                if (it) dependencyTree else dependencyList, true
-            )
+            ScrollPaneFactory.createScrollPane(if (it) dependencyTree else dependencyList, true)
         }.bind(showDependencyTreeProperty)
         val dependencyLoadingPanel =
             JBLoadingPanel(BorderLayout(), parentDisposable).apply { add(dependencyPanel, BorderLayout.CENTER) }
@@ -421,11 +419,7 @@ class DependencyAnalyzerViewImpl(
                 secondComponent = toolWindowPanel {
                     toolbar = toolbarPanel {
                         addToLeft(usagesTitle)
-                        addToRight(
-                            horizontalPanel(
-                                expandUsagesTreeButton, collapseUsagesTreeButton
-                            )
-                        )
+                        addToRight(horizontalPanel(expandUsagesTreeButton, collapseUsagesTreeButton))
                     }
                     setContent(ScrollPaneFactory.createScrollPane(usagesTree, true))
                 }
