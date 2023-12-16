@@ -132,6 +132,7 @@
             <h1>0.3.1-233.11799.241</h1>
             <ul>
                 <li>Suppress errors and delete some errors</li>
+                <li>Filter ignores case</li>
             </ul>
             <!-- @@ -->
                     
