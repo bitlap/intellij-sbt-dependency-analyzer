@@ -52,7 +52,7 @@ object DependencyUtils {
     scalaVersion: String
   )
 
-  private val LOG = Logger.getInstance(classOf[DependencyUtils.type])
+  private val LOG: Logger = Logger.getInstance(classOf[DependencyUtils.type])
 
   def getDeclaredDependency(module: Module): List[DeclaredDependency] = {
     declaredDependencies(module).asScala.toList
@@ -298,7 +298,7 @@ object DependencyUtils {
   } catch {
     case c: ControlFlowException => throw c
     case e: Exception =>
-      LOG.error(
+      LOG.warn(
         s"Error occurs when obtaining the list of dependencies for module ${module.getName} using package search plugin",
         e
       )

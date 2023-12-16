@@ -95,6 +95,11 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractSbtDependencyAna
     selectedData: Module
   ): DependencyAnalyzerDependency.Data = DAModule(selectedData.getName)
 
+  override def isEnabledAndVisible(e: AnActionEvent): Boolean = {
+    super.isEnabledAndVisible(e)
+    && (e.getData(LangDataKeys.MODULE_CONTEXT_ARRAY) != null || !ActionPlaces.isPopupPlace(e.getPlace))
+  }
+
 end ProjectViewDependencyAnalyzerAction
 
 final class ToolbarDependencyAnalyzerAction extends BaseDependencyAnalyzerAction():

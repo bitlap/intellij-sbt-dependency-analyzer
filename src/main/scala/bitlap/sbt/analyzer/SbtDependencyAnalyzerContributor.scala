@@ -10,6 +10,7 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
 import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
+import scala.util.Try
 
 import bitlap.sbt.analyzer.activity.*
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
