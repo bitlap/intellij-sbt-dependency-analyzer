@@ -13,8 +13,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.util.containers.DisposableWrapperList
 
 internal class DependencyAnalyzerVirtualFile(
-    private val project: Project,
-    private val systemId: ProjectSystemId
+    private val project: Project, private val systemId: ProjectSystemId
 ) : UIComponentVirtualFile(
     ExternalSystemBundle.message("external.system.dependency.analyzer.editor.tab.name"),
     AllIcons.Actions.DependencyAnalyzer
