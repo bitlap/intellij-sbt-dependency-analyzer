@@ -11,15 +11,15 @@ final class SbtDependencyAnalyzerConfigurable(project: Project) extends Searchab
   // create a ui form
   private val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(project)
 
-  override def getId(): String = SbtDependencyAnalyzerPlugin.PLUGIN_ID
+  override def getId: String = SbtDependencyAnalyzerPlugin.PLUGIN_ID
 
-  override def getDisplayName(): String = SbtDependencyAnalyzerBundle.message("analyzer.settings.page.name")
+  override def getDisplayName: String = SbtDependencyAnalyzerBundle.message("analyzer.settings.page.name")
 
-  override def getHelpTopic(): String = "default"
+  override def getHelpTopic: String = "default"
 
   override def createComponent(): JComponent = panel.$$$getRootComponent$$$()
 
-  override def isModified(): Boolean = panel.isModified
+  override def isModified: Boolean = panel.isModified
 
   override def apply(): Unit = panel.apply()
 

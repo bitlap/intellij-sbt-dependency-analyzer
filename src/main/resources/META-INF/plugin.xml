@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.3.0-233.11799.241</version>
+    <version>0.3.1-233.11799.241</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
@@ -128,7 +128,14 @@
     <change-notes>
 
         <![CDATA[
-        
+
+            <h1>0.3.1-233.11799.241</h1>
+            <ul>
+                <li>Suppress errors and delete some errors</li>
+                <li>Filter ignores case</li>
+            </ul>
+            <!-- @@ -->
+                    
             <h1>0.3.0-233.11799.241</h1>
             <ul>
                 <li>Support idea 2023.3.</li>

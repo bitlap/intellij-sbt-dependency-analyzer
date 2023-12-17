@@ -5,6 +5,7 @@ import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
+import java.util.Locale
 
 import bitlap.sbt.analyzer.jbexternal.util.*
 import bitlap.sbt.analyzer.jbexternal.util.DependencyGroup.Companion.hasWarnings
@@ -47,6 +48,9 @@ import com.intellij.util.concurrency.AppExecutorUtil
 import com.intellij.util.ui.JBUI
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency as Dependency
 
+/**
+ * https://github.com/JetBrains/intellij-community/blob/idea/233.11799.300/platform/external-system-impl/src/com/intellij/openapi/externalSystem/dependency/analyzer/DependencyAnalyzerViewImpl.kt
+ */
 class DependencyAnalyzerViewImpl(
     private val project: Project, private val systemId: ProjectSystemId, private val parentDisposable: Disposable
 ) : DependencyAnalyzerView {
@@ -158,8 +162,10 @@ class DependencyAnalyzerViewImpl(
         val dependencyDataFilter = dependencyDataFilter
         val dependencyScopeFilter = dependencyScopeFilter.filter { it.isSelected }.map { it.scope }
         val showDependencyWarnings = showDependencyWarnings
-        return filter { dependency -> dependencyDataFilter in dependency.data.getDisplayText(showDependencyGroupId) }
-            .filter { dependency -> dependency.scope in dependencyScopeFilter }
+        return filter { dependency ->
+            dependencyDataFilter.lowercase(Locale.ENGLISH) in dependency.data.getDisplayText(showDependencyGroupId)
+                .lowercase(Locale.ENGLISH)
+        }.filter { dependency -> dependency.scope in dependencyScopeFilter }
             .filter { dependency -> if (showDependencyWarnings) dependency.hasWarnings else true }
     }
 
@@ -206,9 +212,11 @@ class DependencyAnalyzerViewImpl(
     }
 
     private fun updateDependencyEmptyState() {
-        dependencyEmptyState = when {
-            dependencyLoadingOperation.isOperationInProgress() -> ""
-            else -> ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.empty")
+        runInEdt {
+            dependencyEmptyState = when {
+                dependencyLoadingOperation.isOperationInProgress() -> ""
+                else -> ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.empty")
+            }
         }
     }
 
@@ -311,16 +319,13 @@ class DependencyAnalyzerViewImpl(
 
     private fun Iterable<Dependency>.createDependencyGroups(): List<DependencyGroup> = sortedWith(
         Comparator.comparing(
-            { it.data },
-            DependencyDataComparator(showDependencyGroupId)
+            { it.data }, DependencyDataComparator(showDependencyGroupId)
         )
     ).groupBy { it.data.getGroup() }.map { DependencyGroup(it.value) }
 
     fun createComponent(): JComponent {
         val externalProjectSelector = ExternalProjectSelector(
-            externalProjectProperty,
-            externalProjects,
-            iconsProvider
+            externalProjectProperty, externalProjects, iconsProvider
         ).bindEnabled(!dependencyLoadingProperty)
         val dataFilterField = SearchTextField(SEARCH_HISTORY_PROPERTY).apply { setPreferredWidth(JBUI.scale(240)) }
             .apply { textEditor.bind(dependencyDataFilterProperty) }.bindEnabled(!dependencyLoadingProperty)
@@ -332,17 +337,14 @@ class DependencyAnalyzerViewImpl(
         }.apply { templatePresentation.icon = AllIcons.General.ShowWarning }.asActionButton(ACTION_PLACE)
             .bindEnabled(!dependencyLoadingProperty)
         val showDependencyGroupIdAction = toggleAction(showDependencyGroupIdProperty).apply {
-            templatePresentation.text =
-                ExternalSystemBundle.message("external.system.dependency.analyzer.groupId.show")
+            templatePresentation.text = ExternalSystemBundle.message("external.system.dependency.analyzer.groupId.show")
         }
         val showDependencySizeAction = toggleAction(showDependencySizeProperty).apply {
             templatePresentation.text = SbtDependencyExternalBundle.message("analyzer.external.showSize.name")
         }
-        val viewOptionsButton =
-            popupActionGroup(showDependencyGroupIdAction, showDependencySizeAction).apply {
-                templatePresentation.icon = AllIcons.Actions.Show
-            }
-                .asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
+        val viewOptionsButton = popupActionGroup(showDependencyGroupIdAction, showDependencySizeAction).apply {
+            templatePresentation.icon = AllIcons.Actions.Show
+        }.asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
         val reloadNotificationProperty = isNotificationVisibleProperty(project, systemId)
         val projectReloadSeparator = separator().bindVisible(reloadNotificationProperty)
         val projectReloadAction = action { ProjectRefreshAction.refreshProject(project) }.apply {
@@ -351,26 +353,15 @@ class DependencyAnalyzerViewImpl(
 
         val dependencyTitle = label(ExternalSystemBundle.message("external.system.dependency.analyzer.resolved.title"))
         val dependencyList = DependencyList(
-            dependencyListModel,
-            showDependencyGroupIdProperty,
-            showDependencySizeProperty,
-            this
-        ).bindEmptyText(
-            dependencyEmptyTextProperty
-        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+            dependencyListModel, showDependencyGroupIdProperty, showDependencySizeProperty, this
+        ).bindEmptyText(dependencyEmptyTextProperty).bindDependency(dependencyProperty)
+            .bindEnabled(!dependencyLoadingProperty)
         val dependencyTree = DependencyTree(
-            dependencyTreeModel,
-            showDependencyGroupIdProperty,
-            showDependencySizeProperty,
-            this
-        ).bindEmptyText(
-            dependencyEmptyTextProperty
-        ).bindDependency(dependencyProperty).bindEnabled(!dependencyLoadingProperty)
+            dependencyTreeModel, showDependencyGroupIdProperty, showDependencySizeProperty, this
+        ).bindEmptyText(dependencyEmptyTextProperty).bindDependency(dependencyProperty)
+            .bindEnabled(!dependencyLoadingProperty)
         val dependencyPanel = cardPanel<Boolean> {
-            ScrollPaneFactory.createScrollPane(
-                if (it) dependencyTree else dependencyList,
-                true
-            )
+            ScrollPaneFactory.createScrollPane(if (it) dependencyTree else dependencyList, true)
         }.bind(showDependencyTreeProperty)
         val dependencyLoadingPanel =
             JBLoadingPanel(BorderLayout(), parentDisposable).apply { add(dependencyPanel, BorderLayout.CENTER) }
@@ -388,12 +379,8 @@ class DependencyAnalyzerViewImpl(
 
         val usagesTitle = label(usagesTitleProperty)
         val usagesTree = UsagesTree(
-            usagesTreeModel,
-            showDependencyGroupIdProperty,
-            showDependencySizeProperty,
-            this
-        ).apply { emptyText.text = "" }
-            .bindEnabled(!dependencyLoadingProperty)
+            usagesTreeModel, showDependencyGroupIdProperty, showDependencySizeProperty, this
+        ).apply { emptyText.text = "" }.bindEnabled(!dependencyLoadingProperty)
         val expandUsagesTreeButton =
             expandTreeAction(usagesTree).asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
         val collapseUsagesTreeButton =
@@ -432,11 +419,7 @@ class DependencyAnalyzerViewImpl(
                 secondComponent = toolWindowPanel {
                     toolbar = toolbarPanel {
                         addToLeft(usagesTitle)
-                        addToRight(
-                            horizontalPanel(
-                                expandUsagesTreeButton, collapseUsagesTreeButton
-                            )
-                        )
+                        addToRight(horizontalPanel(expandUsagesTreeButton, collapseUsagesTreeButton))
                     }
                     setContent(ScrollPaneFactory.createScrollPane(usagesTree, true))
                 }

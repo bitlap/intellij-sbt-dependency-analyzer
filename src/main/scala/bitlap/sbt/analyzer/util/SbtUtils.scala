@@ -58,13 +58,16 @@ object SbtUtils {
 
   def refreshProject(project: Project): Unit = {
     ExternalSystemUtil.refreshProjects(
-      new ImportSpecBuilder(project, SbtProjectSystem.Id).dontReportRefreshErrors().build()
+      new ImportSpecBuilder(project, SbtProjectSystem.Id)
+        .dontNavigateToError()
+        .dontReportRefreshErrors()
+        .build()
     )
   }
 
   def untilProjectReady(project: Project): Boolean = {
     while (!SbtUtils.isProjectReady(project)) {
-      waitInterval(1.second)
+      waitInterval(100.millis)
     }
     true
   }
@@ -78,8 +81,6 @@ object SbtUtils {
         if (
           processingManager
             .findTask(ExternalSystemTaskType.RESOLVE_PROJECT, SbtProjectSystem.Id, externalProjectPath) != null
-          || processingManager
-            .findTask(ExternalSystemTaskType.EXECUTE_TASK, SbtProjectSystem.Id, externalProjectPath) != null
           || processingManager
             .findTask(ExternalSystemTaskType.REFRESH_TASKS_LIST, SbtProjectSystem.Id, externalProjectPath) != null
         ) {

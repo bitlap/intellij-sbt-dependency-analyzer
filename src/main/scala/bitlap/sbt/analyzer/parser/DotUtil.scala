@@ -22,13 +22,12 @@ import model.ModuleContext
 
 object DotUtil {
 
-  private val LOG = Logger.getInstance(classOf[DotUtil.type])
+  private val LOG: Logger = Logger.getInstance(classOf[DotUtil.type])
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
   private def parseAsGraphTestOnly(file: String): MutableGraph = {
     Try(parser.read(new File(file))).getOrElse(null)
-
   }
 
   def parseAsGraph(context: ModuleContext): MutableGraph = {
@@ -45,7 +44,7 @@ object DotUtil {
           VfsUtil.markDirtyAndRefresh(false, false, false, vfsFile)
         } else {
           if (System.currentTimeMillis() - start > Constants.TIMEOUT.toMillis) {
-            LOG.error(s"Cannot get dot file: $file")
+            LOG.warn(s"The dot file: $file has expired, try to click refresh")
             Notifications.notifyParseFileError(file)
             return null
           }
