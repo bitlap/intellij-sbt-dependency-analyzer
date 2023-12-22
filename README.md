@@ -94,4 +94,13 @@ Ensure that you have applied one of the following settings to help identify the 
 - The `organization` in [Advanced Setup](#advanced-setup) has been configured.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
 
+## JetBrains Support
+
+This project is developed using JetBrains IDEA.
+Thanks to JetBrains for providing me with a free license, which is a strong support for me.
+
+<a href="www.jetbrains.com">
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg?_gl=1*8f2ovk*_ga*NTY2NTA4Mzg1LjE2NzU3MzgzMTI.*_ga_9J976DJZ68*MTcwMzIwOTE4NS4xODUuMS4xNzAzMjA5NDYzLjI4LjAuMA..&_ga=2.177269094.2105719560.1703209186-566508385.1675738312" alt="IntelliJ IDEA logo.">
+</a>
+
 <br />

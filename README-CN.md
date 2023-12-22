@@ -95,4 +95,12 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 - 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
 
 
+## 特别感谢
+
+本项目使用 JetBrains IDEA 开发。 感谢 JetBrains 提供的免费许可证。
+
+<a href="www.jetbrains.com">
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg?_gl=1*8f2ovk*_ga*NTY2NTA4Mzg1LjE2NzU3MzgzMTI.*_ga_9J976DJZ68*MTcwMzIwOTE4NS4xODUuMS4xNzAzMjA5NDYzLjI4LjAuMA..&_ga=2.177269094.2105719560.1703209186-566508385.1675738312" alt="IntelliJ IDEA logo.">
+</a>
+
 <br />
