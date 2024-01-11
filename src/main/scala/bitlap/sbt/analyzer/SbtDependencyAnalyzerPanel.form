@@ -2,16 +2,16 @@
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="bitlap.sbt.analyzer.SbtDependencyAnalyzerPanel">
   <grid id="27dc6" binding="mainPanel" layout-manager="FormLayout">
     <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="center:32px:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="center:12px:grow"/>
-    <colspec value="fill:d:grow"/>
-    <colspec value="fill:d:grow"/>
-    <colspec value="fill:d:grow"/>
-    <colspec value="fill:d:grow"/>
-    <colspec value="fill:d:grow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="fill:d:grow(0.1)"/>
+    <colspec value="fill:d:grow(0.1)"/>
+    <colspec value="fill:d:grow(0.1)"/>
+    <colspec value="fill:d:grow(0.1)"/>
+    <colspec value="fill:d:grow(0.1)"/>
+    <colspec value="fill:d:grow(0.1)"/>
     <constraints>
-      <xy x="9" y="9" width="629" height="135"/>
+      <xy x="9" y="9" width="732" height="141"/>
     </constraints>
     <properties>
       <alignmentX value="0.0"/>
@@ -107,7 +107,7 @@
           <horizontalAlignment value="2"/>
           <maximumSize width="112" height="30"/>
           <minimumSize width="-1" height="-1"/>
-          <preferredSize width="112" height="30"/>
+          <preferredSize width="94" height="30"/>
           <text value="3600"/>
         </properties>
       </component>
@@ -121,7 +121,7 @@
           <horizontalAlignment value="2"/>
           <maximumSize width="112" height="30"/>
           <minimumSize width="-1" height="-1"/>
-          <preferredSize width="112" height="30"/>
+          <preferredSize width="94" height="30"/>
           <text value=""/>
         </properties>
       </component>
@@ -137,18 +137,18 @@
           <text value="seconds"/>
         </properties>
       </component>
-      <vspacer id="1aa96">
-        <constraints>
-          <grid row="3" column="0" row-span="1" col-span="4" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-          <forms defaultalign-horz="false" defaultalign-vert="false"/>
-        </constraints>
-      </vspacer>
       <hspacer id="a0c00">
         <constraints>
-          <grid row="0" column="4" row-span="4" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-          <forms defaultalign-horz="false"/>
+          <grid row="0" column="4" row-span="3" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
       </hspacer>
+      <vspacer id="5fe27">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="5" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-vert="false"/>
+        </constraints>
+      </vspacer>
     </children>
   </grid>
 </form>
