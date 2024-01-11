@@ -63,15 +63,15 @@ object DependencyUtils {
    */
   def isSelfModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
-      case ArtifactRegex(group, artifact, version) =>
+      case ArtifactRegex(group, artifact, _) =>
         context.organization == group && isSelfArtifact(artifact, context)
       case _ => false
   }
 
-  def getArtifactInfoFromDisplayName(idOpt: Option[Int], displayName: String): Option[ArtifactInfo] = {
+  def getArtifactInfoFromDisplayName(displayName: String): Option[ArtifactInfo] = {
     displayName match
       case ArtifactRegex(group, artifact, version) =>
-        Some(ArtifactInfo(idOpt.getOrElse(artifactId.getAndIncrement().toInt), group, artifact, version))
+        Some(ArtifactInfo(artifactId.getAndIncrement().toInt, group, artifact, version))
       case _ => None
   }
 
@@ -119,7 +119,7 @@ object DependencyUtils {
     parentNode.getDependencies.addAll(mds.asJava)
 
     mds.filter(_.isInstanceOf[ArtifactDependencyNodeImpl]).foreach { node =>
-      val artifact   = getArtifactInfoFromDisplayName(None, node.getDisplayName)
+      val artifact   = getArtifactInfoFromDisplayName(node.getDisplayName)
       val artifactId = artifact.map(_.artifact).getOrElse(Constants.EMPTY_STRING)
       val group      = artifact.map(_.group).getOrElse(Constants.EMPTY_STRING)
       // Use artifact to determine whether there are modules in the dependency.
@@ -187,7 +187,7 @@ object DependencyUtils {
   }
 
   private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
-    val artifactInfo = getArtifactInfoFromDisplayName(Some(dn.getId.toInt), dn.getDisplayName).orNull
+    val artifactInfo = getArtifactInfoFromDisplayName(dn.getDisplayName).orNull
     if (artifactInfo == null) return None
     val sbtModuleName  = toPlatformModule(artifactInfo.artifact).module
     val ideaModuleName = context.ideaModuleIdSbtModuleNames.find(_._2 == sbtModuleName).map(_._1)
@@ -219,7 +219,7 @@ object DependencyUtils {
 
   private def isProjectModule(dn: DependencyNode, context: ModuleContext): Boolean = {
     // module dependency
-    val artifactInfo = getArtifactInfoFromDisplayName(Some(dn.getId.toInt), dn.getDisplayName).orNull
+    val artifactInfo = getArtifactInfoFromDisplayName(dn.getDisplayName).orNull
     if (artifactInfo == null) return false
     if (artifactInfo.group != context.organization) return false
     // Use artifact to determine whether there are modules in the dependency.
@@ -259,8 +259,8 @@ object DependencyUtils {
               if (isScalaLibraryDependency(libDepInfixAndString._1))
                 new DeclaredDependency(
                   new UnifiedDependency(
-                    libDepArr(0),
-                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr(0), libDepArr(1), scalaVer),
+                    libDepArr.head,
+                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
                     scope,
                     scope
                   ),
@@ -268,7 +268,7 @@ object DependencyUtils {
                 )
               else
                 new DeclaredDependency(
-                  new UnifiedDependency(libDepArr(0), libDepArr(1), scope, scope),
+                  new UnifiedDependency(libDepArr.head, libDepArr(1), scope, scope),
                   dataContext
                 )
             case x if x < 3 || x > 4 => null
@@ -277,8 +277,8 @@ object DependencyUtils {
               if (isScalaLibraryDependency(libDepInfixAndString._1))
                 new DeclaredDependency(
                   new UnifiedDependency(
-                    libDepArr(0),
-                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr(0), libDepArr(1), scalaVer),
+                    libDepArr.head,
+                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
                     libDepArr(2),
                     scope
                   ),
@@ -286,7 +286,7 @@ object DependencyUtils {
                 )
               else
                 new DeclaredDependency(
-                  new UnifiedDependency(libDepArr(0), libDepArr(1), libDepArr(2), scope),
+                  new UnifiedDependency(libDepArr.head, libDepArr(1), libDepArr(2), scope),
                   dataContext
                 )
           }

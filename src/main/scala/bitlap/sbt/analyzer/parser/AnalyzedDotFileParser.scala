@@ -35,11 +35,33 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
   /** transforming dependencies data into view data
    */
   private def toDependencyNode(dep: ArtifactInfo): DependencyNode = {
-    if (dep == null) return null
     // module dependency
     val node = new ArtifactDependencyNodeImpl(dep.id.toLong, dep.group, dep.artifact, dep.version)
     node.setResolutionState(ResolutionState.RESOLVED)
     node
+  }
+
+  private def buildChildrenRelationsData(
+    dependencies: Dependencies,
+    depMap: Map[String, DependencyNode]
+  ): (Map[String, String], Map[String, List[Int]]) = {
+    val max =
+      dependencies.relations.view.map(r => Math.max(r.head, r.tail)).sortWith((a, b) => a > b).headOption.getOrElse(0)
+    val graph = new Graph(max + 1)
+    val relationLabelsMap = dependencies.relations.map { r =>
+      graph.addEdge(r.head, r.tail)
+      s"${r.head}-${r.tail}" -> r.label
+    }.toMap
+    // find children all nodes nodes,there may be indirect dependencies here.
+    val parentChildrenMap = depMap.values.toSet.toSeq.map { topNode =>
+      val path = graph
+        .dfs(topNode.getId.toInt)
+        .tail
+        .map(_.intValue())
+        .filter(childId => filterOnlyDirectlyChild(topNode, childId, dependencies.relations))
+      topNode.getId.toString -> path.toList
+    }
+    (relationLabelsMap, parentChildrenMap.toMap)
   }
 
   /** build tree for dependency analyzer view
@@ -49,44 +71,23 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
     root: DependencyScopeNode,
     declared: List[UnifiedCoordinates]
   ): DependencyScopeNode = {
-    val data = getDependencyRelations(context)
-    val depMap =
-      data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(a)).toMap).getOrElse(Map.empty)
-
+    val data                       = getDependencyRelations(context)
     val dependencies: Dependencies = data.orNull
+    val depMap = data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(a)).toMap).getOrElse(Map.empty)
 
     // if no relations for dependency object
-    if (dependencies == null || dependencies.relations.isEmpty) return {
-      val dep             = data.map(_.dependencies.map(d => toDependencyNode(d)).toList).toList.flatten
-      val excludeSelfNode = dep.filterNot(d => isSelfModule(d, context))
+    if (dependencies == null || dependencies.relations.isEmpty) {
+      val excludeSelfNode = depMap.values.toSeq.filterNot(d => isSelfModule(d, context))
       appendChildrenAndFixProjectNodes(root, excludeSelfNode, context)
-      root
+      return root
     }
-    val graph = getGraph(dependencies, depMap)
-
-    val relationLabelsMap = dependencies.relations.map { r =>
-      // build graph
-      graph.addEdge(r.head, r.tail)
-      s"${r.head}-${r.tail}" -> r.label
-    }.toMap
-    val parentChildrenMap = mutable.HashMap[String, JList[Int]]()
-
-    // find children all nodes nodes,there may be indirect dependencies here.
-    depMap.values.toSet.toSeq.foreach { topNode =>
-      val path = graph
-        .DFS(topNode.getId.toInt)
-        .tail
-        .map(_.intValue())
-        .filter(childId => filterOnlyDirectlyChild(topNode, childId, dependencies.relations))
-        .asJava
-      parentChildrenMap.put(topNode.getId.toString, path)
-    }
-
+    // build graph
+    val (relationLabelsMap, parentChildrenMap) = buildChildrenRelationsData(dependencies, depMap)
     // get self
     val selfNode = depMap.values.toSet.toSeq.filter(d => isSelfModule(d, context))
     // append children for self
     selfNode.foreach { node =>
-      toNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
+      buildNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
     }
 
     // transfer from self to root
@@ -102,18 +103,16 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
 
   /** Recursively create and add child nodes to root
    */
-  private def toNodes(
+  private def buildNodes(
     parentNode: DependencyNode,
-    parentChildrenMap: mutable.HashMap[String, JList[Int]],
+    parentChildrenMap: Map[String, List[Int]],
     depMap: Map[String, DependencyNode],
     relationLabelsMap: Map[String, String],
     context: ModuleContext,
     relations: List[Relation]
   ): Unit = {
     val childIds = parentChildrenMap
-      .get(parentNode.getId.toString)
-      .map(_.asScala.toList)
-      .getOrElse(List.empty)
+      .getOrElse(parentNode.getId.toString, List.empty)
       .filter(cid => filterOnlyDirectlyChild(parentNode, cid, relations))
     if (childIds.isEmpty) return
     val childNodes = childIds.flatMap { id =>
@@ -132,16 +131,8 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
         }
         .toList
     }
-    childNodes.foreach(d => toNodes(d, parentChildrenMap, depMap, relationLabelsMap, context, relations))
+    childNodes.foreach(d => buildNodes(d, parentChildrenMap, depMap, relationLabelsMap, context, relations))
     appendChildrenAndFixProjectNodes(parentNode, childNodes, context)
-  }
-
-  private def getGraph(relation: Dependencies, depMap: Map[String, DependencyNode]): Graph = {
-    val tailMax = relation.relations.view.map(_.tail).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val headMax = relation.relations.view.map(_.head).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val nodeMax = depMap.keys.view.map(_.toInt).toList.sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val graph   = new Graph(Math.max(Math.max(tailMax, headMax), nodeMax) + 1)
-    graph
   }
 
   /** parse dot file, get graph data
@@ -154,7 +145,7 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
       val links: java.util.Collection[Link]             = mutableGraph.edges()
 
       val nodes = graphNodes.asScala.map { graphNode =>
-        graphNode.name().value() -> getArtifactInfoFromDisplayName(None, graphNode.name().value())
+        graphNode.name().value() -> getArtifactInfoFromDisplayName(graphNode.name().value())
       }.collect { case (name, Some(value)) =>
         name -> value
       }.toMap

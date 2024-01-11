@@ -10,6 +10,8 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.*
 class AnalyzedDotFileParserSpec extends AnyFlatSpec {
 
   "parse dot file" should "convert to object successfully " in {
+    val start = System.currentTimeMillis()
+
     val root = new DependencyScopeNode(
       0,
       "compile",
@@ -32,6 +34,8 @@ class AnalyzedDotFileParserSpec extends AnyFlatSpec {
     val relations = AnalyzedParserFactory
       .getInstance(AnalyzedFileType.Dot)
       .buildDependencyTree(ctx, root, List.empty)
+
+    println(s"analyze dot cost:${System.currentTimeMillis() - start}ms")
 
     assert(relations.getDependencies.size() > 0)
   }
