@@ -46,7 +46,7 @@ def getParentModule(project: Project, dependency: DependencyAnalyzerDependency):
   val parentData = dependency.getParent
   if (parentData == null) return null
   dependency.getParent.getData match
-    case module: Data.Module =>
+    case _: Data.Module =>
       val data = dependency.getParent.getData.asInstanceOf[DependencyAnalyzerDependency.Data.Module]
       getModule(project, data)
     case _ => null
@@ -76,6 +76,6 @@ def waitInterval(sleep: Duration = Constants.INTERVAL_TIMEOUT): Unit = {
   try {
     Thread.sleep(sleep.toMillis)
   } catch {
-    case ignore: Throwable =>
+    case _: Throwable =>
   }
 }

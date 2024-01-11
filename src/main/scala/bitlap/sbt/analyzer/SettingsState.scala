@@ -17,8 +17,6 @@ import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.XmlSerializerUtil
 import com.intellij.util.xmlb.annotations.Transient
 
-import kotlin.jvm.Volatile
-
 @State(name = "SbtDependencyAnalyzer.Settings", storages = Array(new Storage("bitlap.sbt.dependency.analyzer.xml")))
 final class SettingsState extends PersistentStateComponent[SettingsState] {
 
@@ -42,7 +40,7 @@ final class SettingsState extends PersistentStateComponent[SettingsState] {
   @BeanProperty
   var fileCacheTimeout: Int = 3600
 
-  override def getState(): SettingsState = this
+  override def getState: SettingsState = this
 
   override def loadState(state: SettingsState): Unit = {
     XmlSerializerUtil.copyBean(state, this)

@@ -63,7 +63,7 @@ object SbtDependencyAnalyzerBundle:
     try {
       DynamicBundle.getLocale
     } catch {
-      case e: NoSuchMethodError =>
+      case _: NoSuchMethodError =>
         LOG.debug("NoSuchMethodError: DynamicBundle.getLocale()")
         null
     }

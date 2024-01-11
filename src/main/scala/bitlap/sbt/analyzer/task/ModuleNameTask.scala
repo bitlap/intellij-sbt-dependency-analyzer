@@ -29,18 +29,15 @@ final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String
    *  at present, if do not `aggregate` module rolls-docs, module rolls-docs cannot be analyzed.
    *
    *  TODO fallback, exec cmd for single module: `rolls-docs / moduleName` to get module Name
-   *
-   *  @param project
-   *  @return
    */
   override def executeCommand(project: Project): Map[String, String] =
     val mms                      = getCommandOutputLines(project, "moduleName")
     val moduleIdSbtModuleNameMap = mutable.HashMap[String, String]()
-    if (mms.size % 2 == 0) {
+    if ((mms.size & 1) == 0) {
       for (i <- 0 until mms.size - 1 by 2) {
         moduleIdSbtModuleNameMap.put(mms(i).trim, mms(i + 1).trim)
       }
-    } else if (mms.size == 1) moduleIdSbtModuleNameMap.put(SINGLE_SBT_MODULE, mms(0))
+    } else if (mms.size == 1) moduleIdSbtModuleNameMap.put(SINGLE_SBT_MODULE, mms.head)
 
     moduleIdSbtModuleNameMap.map { (k, v) =>
       val key = k match
