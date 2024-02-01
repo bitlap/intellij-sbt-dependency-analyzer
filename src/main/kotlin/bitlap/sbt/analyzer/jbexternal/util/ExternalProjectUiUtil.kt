@@ -16,7 +16,6 @@ import com.intellij.openapi.observable.util.whenMousePressed
 import com.intellij.ui.ListUtil
 import com.intellij.ui.components.DropDownLink
 import com.intellij.ui.components.JBList
-import com.intellij.ui.components.panels.ListLayout
 import com.intellij.util.ui.EmptyIcon
 import com.intellij.util.ui.JBUI
 
