@@ -1,7 +1,5 @@
 package bitlap.sbt.analyzer
 
-import java.util.concurrent.TimeUnit
-
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 
