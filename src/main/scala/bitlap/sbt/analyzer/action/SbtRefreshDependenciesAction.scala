@@ -5,11 +5,7 @@ package action
 
 import bitlap.sbt.analyzer.util.SbtUtils
 
-import org.jetbrains.sbt.project.SbtProjectSystem
-
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
-import com.intellij.openapi.externalSystem.util.ExternalSystemUtil
 
 final class SbtRefreshDependenciesAction extends BaseRefreshDependenciesAction:
 

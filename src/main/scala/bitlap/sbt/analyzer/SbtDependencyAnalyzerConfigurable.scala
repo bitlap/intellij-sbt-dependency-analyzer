@@ -3,13 +3,11 @@ package bitlap.sbt.analyzer
 import javax.swing.JComponent
 
 import com.intellij.openapi.options.*
-import com.intellij.openapi.options.Configurable.Composite
 import com.intellij.openapi.project.Project
 
-final class SbtDependencyAnalyzerConfigurable(project: Project) extends SearchableConfigurable {
+final class SbtDependencyAnalyzerConfigurable(project: Project) extends SearchableConfigurable.Parent.Abstract {
 
-  // create a ui form
-  private val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(project)
+  private lazy val panel: SbtDependencyAnalyzerPanel = new SbtDependencyAnalyzerPanel(project)
 
   override def getId: String = SbtDependencyAnalyzerPlugin.PLUGIN_ID
 
@@ -27,4 +25,5 @@ final class SbtDependencyAnalyzerConfigurable(project: Project) extends Searchab
 
   override def disposeUIResources(): Unit = {}
 
+  override def buildConfigurables(): Array[Configurable] = Array()
 }

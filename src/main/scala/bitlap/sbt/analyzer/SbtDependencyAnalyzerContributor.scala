@@ -8,16 +8,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.*
-import scala.concurrent.duration.*
 import scala.jdk.CollectionConverters.*
-import scala.util.Try
 
-import bitlap.sbt.analyzer.activity.*
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
 import bitlap.sbt.analyzer.model.*
 import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.task.*
-import bitlap.sbt.analyzer.util.{ DependencyUtils, Notifications, SbtUtils }
+import bitlap.sbt.analyzer.util.*
 import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt

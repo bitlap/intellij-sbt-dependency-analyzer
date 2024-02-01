@@ -45,12 +45,12 @@ object Notifications {
       + line + Constants.LINE_SEPARATOR
   }
 
-  def notifyParseFileError(file: String): Unit = {
+  def notifyParseFileError(file: String, msg: String): Unit = {
     // add notification when gets vfsFile timeout
     val notification = NotificationGroup
       .createNotification(
         SbtDependencyAnalyzerBundle.message("analyzer.task.error.title"),
-        SbtDependencyAnalyzerBundle.message("analyzer.task.error.text", file),
+        SbtDependencyAnalyzerBundle.message("analyzer.task.error.text", file, msg),
         NotificationType.ERROR
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)

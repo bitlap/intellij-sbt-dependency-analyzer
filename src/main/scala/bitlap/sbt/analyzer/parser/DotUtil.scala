@@ -11,7 +11,6 @@ import scala.util.Try
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
 
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VfsUtil
 
 import analyzer.util.Notifications
@@ -21,8 +20,6 @@ import guru.nidi.graphviz.parse.Parser
 import model.ModuleContext
 
 object DotUtil {
-
-  private val LOG: Logger = Logger.getInstance(classOf[DotUtil.type])
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
@@ -41,11 +38,10 @@ object DotUtil {
       while (vfsFile == null) {
         vfsFile = VfsUtil.findFile(Path.of(file), true)
         if (vfsFile != null) {
-          VfsUtil.markDirtyAndRefresh(false, false, false, vfsFile)
+          VfsUtil.markDirtyAndRefresh(true, true, true, vfsFile)
         } else {
           if (System.currentTimeMillis() - start > Constants.TIMEOUT.toMillis) {
-            LOG.warn(s"The dot file: $file has expired, try to click refresh")
-            Notifications.notifyParseFileError(file)
+            Notifications.notifyParseFileError(file, "The file has expired")
             return null
           }
         }
@@ -57,8 +53,7 @@ object DotUtil {
 
     } catch {
       case e: Throwable =>
-        Notifications.notifyParseFileError(file)
-        LOG.error(s"Cannot parse dot file: $file", e)
+        Notifications.notifyParseFileError(file, "Parsing file failed")
         null
     }
   }
