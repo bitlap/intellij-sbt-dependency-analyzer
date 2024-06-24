@@ -5,7 +5,7 @@ lazy val scala3Version         = "3.3.3"
 lazy val logbackVersion        = "1.5.6"
 lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
-lazy val scalatestVersion      = "3.2.18"
+lazy val scalatestVersion      = "3.2.19"
 lazy val pluginVerifierVersion = "1.305"
 lazy val ktVersion             = "1.9.10"
 

@@ -39,9 +39,9 @@ class SbtShellTaskRegex extends AnyFlatSpec {
         )
       case _ => assert(false)
 
-    "[info] * org.scalatest:scalatest:3.2.18:test" match
+    "[info] * org.scalatest:scalatest:3.2.19:test" match
       case SbtShellOutputAnalysisTask.shellOutputStarResultRegex(_, _, _, _, artifact) =>
-        assert(artifact == "org.scalatest:scalatest:3.2.18:test")
+        assert(artifact == "org.scalatest:scalatest:3.2.19:test")
       case _ => assert(false)
 
     "org.scalatest:scalatest:3.2.17" match
@@ -49,22 +49,22 @@ class SbtShellTaskRegex extends AnyFlatSpec {
         assert(group == "org.scalatest")
       case _ => assert(false)
 
-    "org.scalatest:scalatest:3.2.18:optional" match
+    "org.scalatest:scalatest:3.2.19:optional" match
       case SbtShellOutputAnalysisTask.libraryDependenciesOutput2(group, _, _, _) =>
         assert(group == "org.scalatest")
       case _ => assert(false)
 
-    "org.scalatest:scalatest:3.2.18:test" match
+    "org.scalatest:scalatest:3.2.19:test" match
       case SbtShellOutputAnalysisTask.libraryDependenciesOutput2(group, _, _, _) =>
         assert(group == "org.scalatest")
       case _ => assert(false)
 
-    "org.scalatest:scalatest:3.2.18:test force" match
+    "org.scalatest:scalatest:3.2.19:test force" match
       case SbtShellOutputAnalysisTask.libraryDependenciesOutput4(group, _, _, _, _, _) =>
         assert(group == "org.scalatest")
       case _ => assert(false)
 
-    "org.scalatest:scalatest:3.2.18:optional;provided" match
+    "org.scalatest:scalatest:3.2.19:optional;provided" match
       case SbtShellOutputAnalysisTask.libraryDependenciesOutput3(group, _, _, opt, _) =>
         assert(group == "org.scalatest")
         assert(opt == "optional")
