@@ -22,13 +22,13 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
   getTemplatePresentation.setText(SbtDependencyAnalyzerBundle.message("analyzer.action.name"))
   getTemplatePresentation.setIcon(SbtDependencyAnalyzerIcons.ICON)
 
-  override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): String =
+  override def getDependencyScope(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[?]): String =
     val node = selectedData.findDependencyNode(classOf[DependencyScopeNode])
     if (node == null) return null
     node.getScope
   end getDependencyScope
 
-  override def getModule(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[_]): Module =
+  override def getModule(anActionEvent: AnActionEvent, selectedData: ExternalSystemNode[?]): Module =
     val project = anActionEvent.getProject
     if (project == null) return null
     val node = selectedData.findNode(classOf[ModuleNode])
@@ -43,7 +43,7 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
     findModule(project, projectData)
   end getModule
 
-  override def getSelectedData(anActionEvent: AnActionEvent): ExternalSystemNode[_] =
+  override def getSelectedData(anActionEvent: AnActionEvent): ExternalSystemNode[?] =
     val module = anActionEvent.getData(ExternalSystemDataKeys.SELECTED_NODES)
     if (module == null) return null
     module.asScala.headOption.orNull
@@ -53,7 +53,7 @@ final class ViewDependencyAnalyzerAction extends AbstractSbtDependencyAnalyzerAc
 
   override def getDependencyData(
     anActionEvent: AnActionEvent,
-    selectedData: ExternalSystemNode[_]
+    selectedData: ExternalSystemNode[?]
   ): DependencyAnalyzerDependency.Data =
     selectedData.getData match
       case pd: ProjectData => DAModule(pd.getInternalName)

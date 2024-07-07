@@ -1,7 +1,7 @@
 import org.jetbrains.sbtidea.Keys.*
 import org.jetbrains.sbtidea.verifier.FailureLevel
 
-lazy val scala3Version         = "3.3.1"
+lazy val scala3Version         = "3.4.1"
 lazy val logbackVersion        = "1.4.14"
 lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
@@ -41,7 +41,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
   .settings(
     scalaVersion := scala3Version,
     organization := "org.bitlap",
-    scalacOptions ++= Seq("-deprecation", "-Xfatal-warnings"),
+    scalacOptions ++= Seq("-deprecation", "-rewrite", "-source:3.4-migration"),
     version                        := (ThisBuild / version).value,
     ThisBuild / intellijPluginName := "Sbt Dependency Analyzer",
     ThisBuild / intellijBuild      := intellijVersion,

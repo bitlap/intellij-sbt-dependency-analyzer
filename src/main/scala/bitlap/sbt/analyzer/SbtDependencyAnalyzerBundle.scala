@@ -34,7 +34,7 @@ final class SbtDependencyAnalyzerBundle(private val pathToBundle: String) extend
   }
 
   def getAdaptedMessage(@PropertyKey(resourceBundle = BUNDLE) key: String, params: Any*): String = {
-    if (adaptedBundle != null) adaptedBundle.getMessage(key, params: _*) else getMessage(key, params: _*)
+    if (adaptedBundle != null) adaptedBundle.getMessage(key, params*) else getMessage(key, params*)
   }
 
   override def findBundle(
@@ -74,6 +74,6 @@ object SbtDependencyAnalyzerBundle:
   final val INSTANCE = new SbtDependencyAnalyzerBundle(BUNDLE)
 
   @Nls def message(@NotNull @PropertyKey(resourceBundle = BUNDLE) key: String, @NotNull params: AnyRef*): String =
-    INSTANCE.getAdaptedMessage(key, params: _*)
+    INSTANCE.getAdaptedMessage(key, params*)
 
 end SbtDependencyAnalyzerBundle

@@ -42,7 +42,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   import SbtDependencyAnalyzerContributor.*
 
   @volatile
-  private var organization: String = _
+  private var organization: String = scala.compiletime.uninitialized
 
   @volatile
   private var ideaModuleIdSbtModules: Map[String, String] = Map.empty
