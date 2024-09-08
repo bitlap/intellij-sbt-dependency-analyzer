@@ -1,7 +1,6 @@
 import org.jetbrains.sbtidea.Keys.*
 import org.jetbrains.sbtidea.verifier.FailureLevel
 
-
 lazy val scala3Version         = "3.5.0"
 lazy val logbackVersion        = "1.5.7"
 lazy val graphvizVersion       = "0.18.1"
@@ -12,8 +11,8 @@ lazy val ktVersion             = "1.9.10"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
-lazy val intellijVersion = "233.11799.241"
-lazy val pluginVersion   = s"0.3.1-$intellijVersion"
+lazy val intellijVersion = "242.21829.142"
+lazy val pluginVersion   = s"0.4.0-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 

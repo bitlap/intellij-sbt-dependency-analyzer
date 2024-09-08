@@ -24,7 +24,7 @@ final class PluginUpdateActivity extends BaseProjectActivity {
 
   import PluginUpdateActivity.*
 
-  override def onRunActivity(project: Project) = {
+  override def onRunActivity(project: Project): Unit = {
     checkUpdate(project)
   }
 
