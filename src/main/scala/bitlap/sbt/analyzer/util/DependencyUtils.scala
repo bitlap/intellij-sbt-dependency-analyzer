@@ -42,6 +42,7 @@ object DependencyUtils {
   private val `ModuleWithScalaRegex`          = "(.*)(_)(.*)".r
   private val `ModuleWithScalaJs0.6Regex`     = "(.*)(_sjs0\\.6_)(.*)".r
   private val `ModuleWithScalaJs1Regex`       = "(.*)(_sjs1_)(.*)".r
+  private val `ModuleWithScalaNative0.5Regex` = "(.*)(_native0\\.5_)(.*)".r
   private val `ModuleWithScalaNative0.4Regex` = "(.*)(_native0\\.4_)(.*)".r
   private val `ModuleWithScalaNative0.3Regex` = "(.*)(_native0\\.3)(.*)".r
   private val `ModuleWithScalaNative0.2Regex` = "(.*)(_native0\\.2)(.*)".r
@@ -137,7 +138,7 @@ object DependencyUtils {
   }
 
   private def isSelfArtifact(artifact: String, context: ModuleContext): Boolean = {
-    // processing cross platform, module name is not artifact!
+    // processing cross-platform, module name is not artifact!
     val currentModuleName =
       context.ideaModuleIdSbtModuleNames.getOrElse(
         context.currentModuleId,
@@ -150,6 +151,8 @@ object DependencyUtils {
     // NOTE: we don't determine the Scala version number.
     if (context.isScalaNative) {
       artifact match
+        case `ModuleWithScalaNative0.5Regex`(module, _, _) =>
+          currentModuleName == module
         case `ModuleWithScalaNative0.4Regex`(module, _, _) =>
           currentModuleName == module
         case `ModuleWithScalaNative0.3Regex`(module, _, _) =>
@@ -179,6 +182,7 @@ object DependencyUtils {
     artifact match
       case `ModuleWithScalaJs0.6Regex`(module, _, scalaVer)     => PlatformModule(module, "sjs0.6", scalaVer)
       case `ModuleWithScalaJs1Regex`(module, _, scalaVer)       => PlatformModule(module, "sjs1", scalaVer)
+      case `ModuleWithScalaNative0.5Regex`(module, _, scalaVer) => PlatformModule(module, "native0.5", scalaVer)
       case `ModuleWithScalaNative0.4Regex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
       case `ModuleWithScalaNative0.3Regex`(module, _, scalaVer) => PlatformModule(module, "native0.3", scalaVer)
       case `ModuleWithScalaNative0.2Regex`(module, _, scalaVer) => PlatformModule(module, "native0.2", scalaVer)
@@ -192,8 +196,8 @@ object DependencyUtils {
     val sbtModuleName  = toPlatformModule(artifactInfo.artifact).module
     val ideaModuleName = context.ideaModuleIdSbtModuleNames.find(_._2 == sbtModuleName).map(_._1)
 
-    // Processing cross platform, module name is not artifact
-    // This is a project node, we need a module not a artifact to get project path!
+    // Processing cross-platform, module name is not artifact
+    // This is a project node, we need a module not an artifact to get project path!
     val projectPath =
       ideaModuleName
         .flatMap(m => context.ideaModuleNamePaths.get(m))

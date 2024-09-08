@@ -52,10 +52,9 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     ThisBuild / intellijPlatform   := (Global / intellijPlatform).??(IntelliJPlatform.IdeaCommunity).value,
     signPluginOptions := signPluginOptions.value.copy(
       enabled = true,
-      certFile = Some(file("/Users/liguobin/chain.crt")),        // or via PLUGIN_SIGN_KEY env var
-      privateKeyFile = Some(file("/Users/liguobin/private.pem")) // or via PLUGIN_SIGN_CERT env var
-//      keyPassphrase =
-//        Some("xxx") // or None if password is not set(or via PLUGIN_SIGN_KEY_PWD env var)
+      certFile = Some(file(sys.env.getOrElse("PLUGIN_SIGN_KEY", "/Users/liguobin/chain.crt"))),
+      privateKeyFile = Some(file(sys.env.getOrElse("PLUGIN_SIGN_CERT", "/Users/liguobin/private.pem"))),
+      keyPassphrase = Some(sys.env.getOrElse("PLUGIN_SIGN_KEY_PWD", "123456"))
     ),
     pluginVerifierOptions := pluginVerifierOptions.value.copy(
       version = pluginVerifierVersion, // use a specific verifier version

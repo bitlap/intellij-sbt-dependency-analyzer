@@ -7,20 +7,19 @@ assignees: ''
 
 ---
 ### Preparation action completed
-- [ ] have added `addDependencyTreePlugin` into `plugins.sbt` (sbt.1.4+)
-- [ ] have set `organization := ` for root project and cross-platform
+- [ ] I have added `addDependencyTreePlugin` into `plugins.sbt` (sbt.1.4+) or the file `sdap.sbt` exists and contains `addDependencyTreePlugin`
+- [ ] I have set `organization := ` for root project and cross-platform
 
 ### Screenshot of the current sbt Shell
 
-your images
+some images or descriptions
 
 ### Screenshot of the current dependency tree 
 
-your images
+some images or descriptions
 
+### Scala platform (scala js, scala jvm, scala native) and version (scala 2.x, scala 3.x)
 
-### Scala platform（scala js, scala jvm, scala native）and version (scala 2.x, scala 3.x)
-
-your images or text
+some images or descriptions
 
 ### IDEA version comes from `About Intellij IDEA`

@@ -11,7 +11,6 @@ import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
 import com.intellij.openapi.externalSystem.model.project.*
-import com.intellij.openapi.externalSystem.service.execution.*
 import com.intellij.openapi.externalSystem.service.execution.ExternalSystemRunnableState.*
 import com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl
 import com.intellij.openapi.externalSystem.util.*
