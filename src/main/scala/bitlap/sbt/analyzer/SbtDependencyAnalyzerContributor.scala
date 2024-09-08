@@ -1,14 +1,13 @@
 package bitlap.sbt.analyzer
 
 import java.nio.file.*
-import java.util
 import java.util.{ Collections, List as JList }
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
-import scala.concurrent.*
 import scala.jdk.CollectionConverters.*
+import scala.language.postfixOps
 
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
 import bitlap.sbt.analyzer.model.*
@@ -18,15 +17,18 @@ import bitlap.sbt.analyzer.util.*
 import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
+import org.jetbrains.sbt.SbtUtil
+import org.jetbrains.sbt.project.*
 import org.jetbrains.sbt.project.SbtProjectSystem
-import org.jetbrains.sbt.project.data.ModuleNode
+import org.jetbrains.sbt.project.data.*
+import org.jetbrains.sbt.project.module.*
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
-import com.intellij.openapi.externalSystem.model.ProjectKeys
+import com.intellij.openapi.externalSystem.model.*
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.model.task.*
@@ -42,7 +44,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   import SbtDependencyAnalyzerContributor.*
 
   @volatile
-  private var organization: String = _
+  private var organization: String = scala.compiletime.uninitialized
 
   @volatile
   private var ideaModuleIdSbtModules: Map[String, String] = Map.empty
@@ -81,9 +83,19 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
       projectDataManager.getExternalProjectsData(project, SbtProjectSystem.Id).asScala.foreach { projectInfo =>
         if (projectInfo.getExternalProjectStructure != null) {
           val projectStructure = projectInfo.getExternalProjectStructure
-          ExternalSystemApiUtil.findAll(projectStructure, ProjectKeys.MODULE).asScala.foreach { moduleNode =>
-            val moduleData = moduleNode.getData
-            val module     = findModule(project, moduleData)
+          val childrenModules = ExternalSystemApiUtil
+            .findAll(projectStructure, ProjectKeys.MODULE)
+            .asScala
+            .toList
+            .flatMap(_.getChildren.asScala)
+          val dataNodes          = childrenModules.groupBy(_.getKey)
+          val rootModuleDataList = dataNodes.getOrElse(SbtModuleData.Key, Seq.empty).map(_.getData(SbtModuleData.Key))
+          val moduleDataList =
+            Seq(SbtNestedModuleData.Key)
+              .flatMap(k => dataNodes.getOrElse(k, Seq.empty))
+              .map(_.getData(SbtNestedModuleData.Key))
+          moduleDataList.foreach { moduleData =>
+            val module = findModule(project, moduleData)
             if (module != null) {
               val externalProject = DAProject(module, moduleData.getModuleName)
               if (!DependencyUtils.canIgnoreModule(module)) {
@@ -91,7 +103,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
               }
             }
           }
-
+          rootModuleDataList.foreach { moduleData =>
+            val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
+            if (module != null) {
+              val externalProject   = DAProject(module, moduleData.id)
+              val moduleDataNodeOpt = SbtUtil.getSbtModuleDataNode(module)
+              moduleDataNodeOpt.foreach { moduleDataNode =>
+                projects.put(externalProject, new ModuleNode(moduleDataNode.getData))
+              }
+            }
+          }
         }
 
       }
@@ -108,11 +129,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   override def whenDataChanged(listener: functions.Function0[kotlin.Unit], parentDisposable: Disposable): Unit = {
     val progressManager = ExternalSystemProgressNotificationManager.getInstance()
     progressManager.addNotificationListener(
-      new ExternalSystemTaskNotificationListenerAdapter() {
+      new ExternalSystemTaskNotificationListener() {
         override def onEnd(id: ExternalSystemTaskId): Unit = {
-          if (id.getType != ExternalSystemTaskType.RESOLVE_PROJECT) ()
-          else if (id.getProjectSystemId != SbtProjectSystem.Id) ()
-          else {
+          if (id.getType == ExternalSystemTaskType.RESOLVE_PROJECT && id.getProjectSystemId == SbtProjectSystem.Id) {
             // if dependencies have changed, we must delete all analysis files (.dot)
             // however, this can only be used to monitor whether the view is open
             projects
@@ -164,7 +183,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     usage: Dependency
   ): Dependency = {
     dependencyNode match
-      case rn: ReferenceNode =>
+      case _: ReferenceNode =>
         val dependency = dependencyMap.get(dependencyNode.getId)
         if (dependency == null) null
         else {

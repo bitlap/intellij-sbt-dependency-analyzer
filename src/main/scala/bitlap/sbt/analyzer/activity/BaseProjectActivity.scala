@@ -9,7 +9,7 @@ import kotlin.coroutines.Continuation
 abstract class BaseProjectActivity(private val runOnlyOnce: Boolean = false) extends ProjectActivity {
   private var veryFirstProjectOpening: Boolean = true
 
-  override def execute(project: Project, continuation: Continuation[_ >: kotlin.Unit]): AnyRef = {
+  override def execute(project: Project, continuation: Continuation[? >: kotlin.Unit]): AnyRef = {
     if (
       ApplicationManager.getApplication.isUnitTestMode || (runOnlyOnce && !veryFirstProjectOpening) || project.isDisposed
     ) {
