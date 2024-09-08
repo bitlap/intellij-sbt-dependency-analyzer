@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.collection.mutable.ListBuffer
+import scala.jdk.CollectionConverters.*
 import scala.language.postfixOps
 
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
