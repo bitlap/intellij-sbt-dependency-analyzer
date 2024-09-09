@@ -198,10 +198,21 @@ object DependencyUtils {
 
     // Processing cross-platform, module name is not artifact
     // This is a project node, we need a module not an artifact to get project path!
+
+    val fixedCustomName = context.ideaModuleNamePaths.map { case (name, path) =>
+      if (name.exists(_ == ' '))
+        name.toLowerCase.replace(' ', '-') -> path
+      else
+        name -> path
+    }
+
     val projectPath =
       ideaModuleName
         .flatMap(m => context.ideaModuleNamePaths.get(m))
-        .getOrElse(context.ideaModuleNamePaths.getOrElse(sbtModuleName, Constants.EMPTY_STRING))
+        .getOrElse(
+          context.ideaModuleNamePaths
+            .getOrElse(sbtModuleName, fixedCustomName.getOrElse(sbtModuleName.toLowerCase, Constants.EMPTY_STRING))
+        )
 
     val p = new ProjectDependencyNodeImpl(
       dn.getId,
