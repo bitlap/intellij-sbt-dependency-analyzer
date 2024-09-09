@@ -3,13 +3,7 @@ package sbt
 package analyzer
 package parser
 
-import java.util.List as JList
-import java.util.concurrent.atomic.*
-
-import scala.collection.mutable
 import scala.jdk.CollectionConverters.*
-
-import org.jetbrains.sbt.language.utils.SbtDependencyCommon
 
 import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
@@ -45,14 +39,18 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
     dependencies: Dependencies,
     depMap: Map[String, DependencyNode]
   ): (Map[String, String], Map[String, List[Int]]) = {
-    val max =
-      dependencies.relations.view.map(r => Math.max(r.head, r.tail)).sortWith((a, b) => a > b).headOption.getOrElse(0)
-    val graph = new Graph(max + 1)
+    val maxId =
+      dependencies.dependencies.view
+        .map(_.id)
+        .sortWith((a, b) => a > b)
+        .headOption
+        .getOrElse(0)
+    val graph = new Graph(maxId + 1)
     val relationLabelsMap = dependencies.relations.map { r =>
       graph.addEdge(r.head, r.tail)
       s"${r.head}-${r.tail}" -> r.label
     }.toMap
-    // find children all nodes nodes,there may be indirect dependencies here.
+    // find children all nodes,there may be indirect dependencies here.
     val parentChildrenMap = depMap.values.toSet.toSeq.map { topNode =>
       val path = graph
         .dfs(topNode.getId.toInt)
@@ -95,7 +93,7 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
     root
   }
 
-  /** This is important to filter out non direct dependencies
+  /** This is important to filter out non-direct dependencies
    */
   private def filterOnlyDirectlyChild(parent: DependencyNode, childId: Int, relations: List[Relation]) = {
     relations.exists(r => r.head == parent.getId && r.tail == childId)
