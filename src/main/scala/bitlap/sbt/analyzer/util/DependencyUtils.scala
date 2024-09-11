@@ -8,25 +8,33 @@ import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.util.SbtDependencyUtils
+
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
+import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
+import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.sbt.SbtUtil as SSbtUtil
+import org.jetbrains.sbt.language.SbtFileImpl
 import org.jetbrains.sbt.language.utils.*
-import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
-import org.jetbrains.sbt.language.utils.SbtDependencyUtils.*
-import org.jetbrains.sbt.language.utils.SbtDependencyUtils.GetMode.GetDep
+import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.buildsystem.model.unified.*
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.diagnostic.*
 import com.intellij.openapi.externalSystem.dependency.analyzer.DAScope
+import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
-import com.intellij.openapi.module.Module
-import com.intellij.openapi.module as OpenapiModule
+import com.intellij.openapi.externalSystem.service.project.nameGenerator.ModuleNameGenerator
+import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings
+import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
+import com.intellij.openapi.module.Module as OpenapiModule
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
+import com.intellij.psi.PsiManager
 
 import model.*
 import parser.*
@@ -39,13 +47,13 @@ object DependencyUtils {
   private final val artifactId = new AtomicLong(0)
 
   private val ArtifactRegex                   = "(.*):(.*):(.*)".r
-  private val `ModuleWithScalaRegex`          = "(.*)(_)(.*)".r
-  private val `ModuleWithScalaJs0.6Regex`     = "(.*)(_sjs0\\.6_)(.*)".r
-  private val `ModuleWithScalaJs1Regex`       = "(.*)(_sjs1_)(.*)".r
-  private val `ModuleWithScalaNative0.5Regex` = "(.*)(_native0\\.5_)(.*)".r
-  private val `ModuleWithScalaNative0.4Regex` = "(.*)(_native0\\.4_)(.*)".r
-  private val `ModuleWithScalaNative0.3Regex` = "(.*)(_native0\\.3)(.*)".r
-  private val `ModuleWithScalaNative0.2Regex` = "(.*)(_native0\\.2)(.*)".r
+  private val `ModuleWithScalaRegex`          = "(.*)_(.*)".r
+  private val `ModuleWithScalaJs0.6Regex`     = "(.*)(_sjs0\\.6)_(.*)".r
+  private val `ModuleWithScalaJs1Regex`       = "(.*)(_sjs1)_(.*)".r
+  private val `ModuleWithScalaNative0.5Regex` = "(.*)(_native0\\.5)_(.*)".r
+  private val `ModuleWithScalaNative0.4Regex` = "(.*)(_native0\\.4)_(.*)".r
+  private val `ModuleWithScalaNative0.3Regex` = "(.*)(_native0\\.3)_(.*)".r
+  private val `ModuleWithScalaNative0.2Regex` = "(.*)(_native0\\.2)_(.*)".r
 
   private final case class PlatformModule(
     module: String,
@@ -55,7 +63,7 @@ object DependencyUtils {
 
   private val LOG: Logger = Logger.getInstance(classOf[DependencyUtils.type])
 
-  def getDeclaredDependency(module: Module): List[DeclaredDependency] = {
+  def getDeclaredDependency(module: OpenapiModule): List[DeclaredDependency] = {
     declaredDependencies(module).asScala.toList
   }
 
@@ -80,7 +88,7 @@ object DependencyUtils {
 
   /** do not analyze this module
    */
-  def canIgnoreModule(module: Module): Boolean = {
+  def canIgnoreModule(module: OpenapiModule): Boolean = {
     // if module is itself a build module, skip build module
     val isBuildModule = module.isBuildModule
     isBuildModule || module.isSharedSourceModule
@@ -171,7 +179,7 @@ object DependencyUtils {
 
     } else {
       artifact match
-        case `ModuleWithScalaRegex`(module, _, _) =>
+        case `ModuleWithScalaRegex`(module, _) =>
           currentModuleName == module
         // it is a java project
         case _ => artifact == currentModuleName
@@ -186,7 +194,7 @@ object DependencyUtils {
       case `ModuleWithScalaNative0.4Regex`(module, _, scalaVer) => PlatformModule(module, "native0.4", scalaVer)
       case `ModuleWithScalaNative0.3Regex`(module, _, scalaVer) => PlatformModule(module, "native0.3", scalaVer)
       case `ModuleWithScalaNative0.2Regex`(module, _, scalaVer) => PlatformModule(module, "native0.2", scalaVer)
-      case `ModuleWithScalaRegex`(module, _, scalaVer)          => PlatformModule(module, "", scalaVer)
+      case `ModuleWithScalaRegex`(module, scalaVer)             => PlatformModule(module, "", scalaVer)
       case _                                                    => PlatformModule(artifact, "", "")
   }
 
@@ -247,14 +255,18 @@ object DependencyUtils {
 
   /** copy from DependencyModifierService, and fix
    */
-  def declaredDependencies(module: OpenapiModule.Module): java.util.List[DeclaredDependency] = try {
+  def declaredDependencies(module: OpenapiModule): java.util.List[DeclaredDependency] = try {
     // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
     // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
     val scalaVer = module.scalaMinorVersion.map(_.major).getOrElse(ScalaVersion.default.major)
-
     inReadAction({
       val libDeps = SbtDependencyUtils
-        .getLibraryDependenciesOrPlaces(getSbtFileOpt(module), module.getProject, module, GetDep)
+        .getLibraryDependenciesOrPlaces(
+          SbtDependencyUtils.getSbtFileOpt(module),
+          module.getProject,
+          module,
+          SbtDependencyUtils.GetMode.GetDep
+        )
         .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
       libDeps
         .map(libDepInfixAndString => {
@@ -271,7 +283,7 @@ object DependencyUtils {
             case x if x == 2 =>
               val scope = SbtDependencyCommon.defaultLibScope
               // if version is a val, not a string, cannot get it
-              if (isScalaLibraryDependency(libDepInfixAndString._1))
+              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
                 new DeclaredDependency(
                   new UnifiedDependency(
                     libDepArr.head,
@@ -289,7 +301,7 @@ object DependencyUtils {
             case x if x < 3 || x > 4 => null
             case x if x >= 3 =>
               val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
-              if (isScalaLibraryDependency(libDepInfixAndString._1))
+              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
                 new DeclaredDependency(
                   new UnifiedDependency(
                     libDepArr.head,
@@ -320,4 +332,30 @@ object DependencyUtils {
       Collections.emptyList()
   }
 
+  def containsModuleName(proj: ScPatternDefinition, module: OpenapiModule): Boolean = {
+    val project    = module.getProject
+    val moduleName = module.getName
+    val settings   = SSbtUtil.sbtSettings(project)
+    val moduleData = SSbtUtil.getSbtModuleDataNode(module)
+    if (moduleData.isEmpty) {
+      return false
+    }
+    val projectSettings = settings.getLinkedProjectSettings(moduleData.orNull.getData.getLinkedExternalProjectPath)
+    val moduleExists    = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
+    val fixModuleName = if (!projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '-')) {
+      proj.getText.toLowerCase.contains("`" + moduleName.split('-').last + "`".toLowerCase)
+    } else {
+      if (projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '.')) {
+        val mname = if (moduleName.exists(_ == ' ')) {
+          val mm = moduleName.split(' ').last
+          if (mm.exists(_ == '.')) mm.split('.').head else mm
+        } else moduleName.split('.').last
+        proj.getText.toLowerCase.contains("`" + mname + "`".toLowerCase) ||
+          proj.getText.toLowerCase.contains("\"" + mname + "\"".toLowerCase)
+      } else {
+        proj.getText.toLowerCase.contains("`" + moduleName + "`".toLowerCase)
+      }
+    }
+    moduleExists || fixModuleName
+  }
 }

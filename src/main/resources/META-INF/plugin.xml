@@ -132,6 +132,7 @@
             <h1>0.4.0-242.21829.142</h1>
             <ul>
                 <li>Support idea 2024.2.</li>
+                <li>Fix Goto dependency (Now supports custom dependencies for all projects).</li>
             </ul>
             <!-- @@ -->
             
