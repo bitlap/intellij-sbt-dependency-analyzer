@@ -324,13 +324,18 @@ object DependencyUtils {
     val fixModuleName = if (!projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '-')) {
       proj.getText.toLowerCase.contains("`" + moduleName.split('-').last + "`".toLowerCase)
     } else {
+      // hard code
       if (projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '.')) {
         val mname = if (moduleName.exists(_ == ' ')) {
           val mm = moduleName.split(' ').last
           if (mm.exists(_ == '.')) mm.split('.').head else mm
-        } else moduleName.split('.').last
+        } else {
+          if (moduleName.exists(_ == '.')) moduleName.split('.').last.replace("-", ".") else moduleName.split('.').last
+        }
+        val fixname = if (mname.count(_ == '.') == 2) mname.split('.').tail.mkString("-") else mname
         proj.getText.toLowerCase.contains("`" + mname + "`".toLowerCase) ||
-          proj.getText.toLowerCase.contains("\"" + mname + "\"".toLowerCase)
+          proj.getText.toLowerCase.contains("\"" + mname + "\"".toLowerCase) ||
+          proj.getText.toLowerCase.contains("\"" + fixname + "\"".toLowerCase)
       } else {
         proj.getText.toLowerCase.contains("`" + moduleName + "`".toLowerCase)
       }
