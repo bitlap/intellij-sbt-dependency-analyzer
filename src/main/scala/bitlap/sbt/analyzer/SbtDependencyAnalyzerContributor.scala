@@ -33,10 +33,9 @@ import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 import com.intellij.openapi.externalSystem.model.task.*
 import com.intellij.openapi.externalSystem.service.notification.ExternalSystemProgressNotificationManager
-import com.intellij.openapi.externalSystem.service.project.{ IdeModelsProviderImpl, ProjectDataManager }
+import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.project.Project
-import com.intellij.workspaceModel.ide.impl.legacyBridge.module.ModuleBridgeImpl
 
 import kotlin.jvm.functions
 
@@ -91,6 +90,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             .flatMap(_.getChildren.asScala)
           val dataNodes          = childrenModules.groupBy(_.getKey)
           val rootModuleDataList = dataNodes.getOrElse(SbtModuleData.Key, Seq.empty).map(_.getData(SbtModuleData.Key))
+          rootModuleDataList.foreach { moduleData =>
+            val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
+            if (module != null) {
+              val externalProject   = DAProject(module, moduleData.id)
+              val moduleDataNodeOpt = SbtUtil.getSbtModuleDataNode(module)
+              moduleDataNodeOpt.foreach { moduleDataNode =>
+                projects.put(externalProject, new ModuleNode(moduleDataNode.getData))
+              }
+            }
+          }
           val moduleDataList =
             Seq(SbtNestedModuleData.Key)
               .flatMap(k => dataNodes.getOrElse(k, Seq.empty))
@@ -102,16 +111,9 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
               if (!DependencyUtils.canIgnoreModule(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
-            }
-          }
-          rootModuleDataList.foreach { moduleData =>
-            val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
-            if (module != null) {
-              val externalProject   = DAProject(module, moduleData.id)
-              val moduleDataNodeOpt = SbtUtil.getSbtModuleDataNode(module)
-              moduleDataNodeOpt.foreach { moduleDataNode =>
-                projects.put(externalProject, new ModuleNode(moduleDataNode.getData))
-              }
+            } else {
+              // ignore if modules not in dependsOn
+              print("")
             }
           }
         }

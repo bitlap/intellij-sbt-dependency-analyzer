@@ -15,12 +15,7 @@ import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResultExt
 import org.jetbrains.plugins.scala.project.{ ProjectContext, ProjectExt, ProjectPsiElementExt }
 import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.SbtUtil.{ getBuildModuleData, getSbtModuleData }
-import org.jetbrains.sbt.language.utils.{
-  DependencyOrRepositoryPlaceInfo,
-  SbtArtifactInfo,
-  SbtDependencyCommon,
-  SbtDependencyTraverser
-}
+import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
 
 import com.intellij.buildsystem.model.unified.{ UnifiedDependency, UnifiedDependencyRepository }
 import com.intellij.openapi.command.WriteCommandAction
@@ -32,6 +27,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.{ PsiElement, PsiFile, PsiManager }
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/sbt/sbt-impl/src/org/jetbrains/sbt/language/utils/SbtDependencyUtils.scala
+// we have changed some
 object SbtDependencyUtils {
   val LIBRARY_DEPENDENCIES: String = "libraryDependencies"
   val SETTINGS: String             = "settings"
@@ -386,6 +382,15 @@ object SbtDependencyUtils {
                   infix.right.`type`().getOrAny.canonicalText.equals(SBT_LIB_CONFIGURATION) =>
               val configuration = cleanUpDependencyPart(infix.right.getText).toLowerCase.capitalize
               result ++= Seq((infix.left, configuration, infix))
+              return false
+            case _
+                if infix.right.isInstanceOf[ScReferenceExpression] && infix.left.getText
+                  .split('%')
+                  .map(_.trim)
+                  .count(_.nonEmpty) == 2 =>
+              // our fix to  resolve if version is a val/var,e.g., pass artifact through configuration
+              val fixed = infix.left.getText.split('%').filter(_.trim.nonEmpty).last
+              result ++= Seq((infix, fixed, infix))
               return false
             case _ =>
               result ++= Seq((infix, "", infix))

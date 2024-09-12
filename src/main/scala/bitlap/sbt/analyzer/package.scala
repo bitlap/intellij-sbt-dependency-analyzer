@@ -2,6 +2,7 @@ package bitlap.sbt.analyzer
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
+import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.parser.AnalyzedFileType
 
@@ -53,6 +54,11 @@ def getModule(project: Project, data: DependencyAnalyzerDependency.Data.Module):
   val moduleData: ModuleData = data.getUserData(Module_Data)
   if (moduleData == null) return null
   findModule(project, moduleData)
+}
+
+def findDependsModules(module: Module): List[Module] = {
+  val modelsProvider = new IdeModelsProviderImpl(module.getProject)
+  modelsProvider.getAllDependentModules(module).asScala.toList
 }
 
 def findModule(project: Project, moduleData: ModuleData): Module = {
