@@ -111,9 +111,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
               if (!DependencyUtils.canIgnoreModule(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
               }
-            } else {
-              // ignore if modules not in dependsOn
-              print("")
             }
           }
         }
