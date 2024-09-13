@@ -11,6 +11,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
+import org.jetbrains.plugins.scala.lang.psi.impl.expr.*
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResultExt
 import org.jetbrains.plugins.scala.project.{ ProjectContext, ProjectExt, ProjectPsiElementExt }
 import org.jetbrains.sbt.Sbt
@@ -31,6 +32,7 @@ import com.intellij.psi.{ PsiElement, PsiFile, PsiManager }
 object SbtDependencyUtils {
   val LIBRARY_DEPENDENCIES: String = "libraryDependencies"
   val SETTINGS: String             = "settings"
+  val PLATFORM_SETTINGS: String    = "platformsSettings"
   val SEQ: String                  = "Seq"
   val ANY: String                  = "Any"
 
@@ -378,22 +380,29 @@ object SbtDependencyUtils {
                 false
               }
             case _
-                if infix.right.isInstanceOf[ScReferenceExpression] &&
+                if !infix.left.asInstanceOf[ScInfixExpr].right.isInstanceOf[ScReferenceExpression] &&
+                  infix.right.isInstanceOf[ScReferenceExpression] &&
                   infix.right.`type`().getOrAny.canonicalText.equals(SBT_LIB_CONFIGURATION) =>
               val configuration = cleanUpDependencyPart(infix.right.getText).toLowerCase.capitalize
               result ++= Seq((infix.left, configuration, infix))
               return false
-            case _
-                if infix.right.isInstanceOf[ScReferenceExpression] && infix.left.getText
-                  .split('%')
-                  .map(_.trim)
-                  .count(_.nonEmpty) == 2 =>
-              // our fix to  resolve if version is a val/var,e.g., pass artifact through configuration
-              val fixed = infix.left.getText.split('%').filter(_.trim.nonEmpty).last
-              result ++= Seq((infix, fixed, infix))
-              return false
             case _ =>
-              result ++= Seq((infix, "", infix))
+              // our fix to  resolve if version is a val/var,e.g., pass artifact through configuration
+              val fixedSplits = infix.left.asInstanceOf[ScInfixExpr].right match
+                case _: ScStringLiteral =>
+                  infix.getText.split('%').filter(_.nonEmpty)
+                case _: ScReferenceExpression =>
+                  infix.getText.split('%').filter(_.nonEmpty)
+                case _ =>
+                  Array.empty[String]()
+
+              if (fixedSplits.length == 3) {
+                result ++= Seq((infix, fixedSplits(1), infix))
+              } else if (fixedSplits.length == 4) {
+                result ++= Seq((infix.left.asInstanceOf[ScInfixExpr], fixedSplits(1), infix))
+              } else {
+                result ++= Seq((infix, "", infix))
+              }
               return false
           }
         case ref: ScReferenceExpression if ref.`type`().getOrAny.canonicalText.equals(SBT_MODULE_ID_TYPE) =>

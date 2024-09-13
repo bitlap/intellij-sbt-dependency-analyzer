@@ -94,6 +94,8 @@ Ensure that you have applied one of the following settings to help identify the 
 - The `organization` in [Advanced Setup](#advanced-setup) has been configured.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
 
+> Note: Sub modules that are not in the `dependsOn` of the root project will not be parsed and their dependencies will be empty.
+
 ## JetBrains Support
 
 This project is developed using JetBrains IDEA.

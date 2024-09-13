@@ -171,10 +171,10 @@ object DependencyUtils {
 
   private def toPlatformModule(artifact: String): PlatformModule = {
     artifact match
-      case SJS_ARTIFACT_REGEX(module, _, _, scalaVer)   => PlatformModule(module, scalaVer)
+      case SJS_ARTIFACT_REGEX(module, _, _, scalaVer)    => PlatformModule(module, scalaVer)
       case NATIVE_ARTIFACT_REGEX(module, _, _, scalaVer) => PlatformModule(module, scalaVer)
-      case SCALA_ARTIFACT_REGEX(module, scalaVer)      => PlatformModule(module, scalaVer)
-      case _                                            => PlatformModule(artifact, Constants.EMPTY_STRING)
+      case SCALA_ARTIFACT_REGEX(module, scalaVer)        => PlatformModule(module, scalaVer)
+      case _                                             => PlatformModule(artifact, Constants.EMPTY_STRING)
   }
 
   private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
@@ -259,32 +259,36 @@ object DependencyUtils {
           }
 
           libDepArr.length match {
-            case x if x == 2 =>
-              val scope = SbtDependencyCommon.defaultLibScope
-              // if version is a val, not a string, cannot get it
-              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
-                new DeclaredDependency(
-                  new UnifiedDependency(
-                    libDepArr.head,
-                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
-                    scope,
-                    scope
-                  ),
-                  dataContext
-                )
-              else
-                new DeclaredDependency(
-                  new UnifiedDependency(libDepArr.head, libDepArr(1), scope, scope),
-                  dataContext
-                )
+//            case x if x == 2 =>
+//              val scope = SbtDependencyCommon.defaultLibScope
+//              // if version is a val, not a string, cannot get it
+//              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
+//                new DeclaredDependency(
+//                  new UnifiedDependency(
+//                    libDepArr.head,
+//                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
+//                    scope,
+//                    scope
+//                  ),
+//                  dataContext
+//                )
+//              else
+//                new DeclaredDependency(
+//                  new UnifiedDependency(libDepArr.head, libDepArr(1), scope, scope),
+//                  dataContext
+//                )
             case x if x < 3 || x > 4 => null
             case x if x >= 3 =>
               val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
+              val fixedArtifact =
+                if (!DependencyScopeEnum.values.exists(_.toString.toLowerCase.contains(scope.toLowerCase))) {
+                  scope
+                } else libDepArr(1)
               if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
                 new DeclaredDependency(
                   new UnifiedDependency(
                     libDepArr.head,
-                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
+                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, fixedArtifact, scalaVer),
                     libDepArr(2),
                     scope
                   ),
@@ -292,7 +296,7 @@ object DependencyUtils {
                 )
               else
                 new DeclaredDependency(
-                  new UnifiedDependency(libDepArr.head, libDepArr(1), libDepArr(2), scope),
+                  new UnifiedDependency(libDepArr.head, fixedArtifact, libDepArr(2), scope),
                   dataContext
                 )
           }
@@ -344,14 +348,14 @@ object DependencyUtils {
             isEqualModule(moduleName.split(' ').tail.mkString("/")) || isEqualModule(
               moduleName.split(' ').tail.mkString("-")
             ) ||
-              // root.Circe numbers testing.numbersTestingJS
-              isEqualModule(moduleName.split(' ').last.split('.').head.replace(" ", "-"))
+            // root.Circe numbers testing.numbersTestingJS
+            isEqualModule(moduleName.split(' ').last.split('.').head.replace(" ", "-"))
           case 0 =>
             // pekko-root.pekko.actor, pekko-root.pekko-actor
             if (moduleName.exists(_ == '-')) {
               val splits = moduleName.split('.')
               isEqualModule(splits.last) ||
-              isEqualModule(splits.last.replace("-", ".")) ||
+                isEqualModule(splits.last.replace("-", ".")) ||
                 isEqualModule(splits.last.split('-').tail.mkString("-")) ||
                 isEqualModule(splits.last.split('.').tail.mkString("."))
             } else isEqualModule(moduleName)

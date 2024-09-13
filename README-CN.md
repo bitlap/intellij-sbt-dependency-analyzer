@@ -94,6 +94,7 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 - 在 [高级设置](#高级设置) 中已配置 `organization`。
 - 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
 
+> 注意：不在根项目的`dependsOn`中的子模块不会被分析，依赖为空。
 
 ## 特别感谢
 

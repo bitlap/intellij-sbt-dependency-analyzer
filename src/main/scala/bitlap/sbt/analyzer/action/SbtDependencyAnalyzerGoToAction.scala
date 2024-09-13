@@ -62,8 +62,12 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
           if (
             coordinates.getArtifactId.endsWith("_3") || coordinates.getArtifactId.endsWith("_2.13") ||
             coordinates.getArtifactId.endsWith("_2.12") || coordinates.getArtifactId.endsWith("_2.11")
-          ) coordinates.getArtifactId.split('_').head else coordinates.getArtifactId
-        (dc.getCoordinates.getArtifactId == coordinates.getArtifactId || dc.getCoordinates.getArtifactId == artifactName || dc.getCoordinates.getVersion == artifactName) &&
+          ) coordinates.getArtifactId.split('_').head
+          else coordinates.getArtifactId
+        (dc.getCoordinates.getArtifactId == coordinates.getArtifactId ||
+          dc.getCoordinates.getArtifactId == artifactName ||
+          // maybe a fixed artifact
+          dc.getCoordinates.getVersion == artifactName) &&
           dc.getCoordinates.getGroupId == coordinates.getGroupId
       )
       .orNull
