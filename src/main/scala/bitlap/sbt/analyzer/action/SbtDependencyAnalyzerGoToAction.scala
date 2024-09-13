@@ -58,8 +58,13 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     declared
       .find(dc =>
         // hard code, see SbtDependencyUtils#getLibraryDependenciesOrPlacesFromPsi
-        (dc.getCoordinates.getArtifactId == coordinates.getArtifactId || dc.getCoordinates.getVersion == coordinates.getArtifactId) &&
-        dc.getCoordinates.getGroupId == coordinates.getGroupId
+        val artifactName =
+          if (
+            coordinates.getArtifactId.endsWith("_3") || coordinates.getArtifactId.endsWith("_2.13") ||
+            coordinates.getArtifactId.endsWith("_2.12") || coordinates.getArtifactId.endsWith("_2.11")
+          ) coordinates.getArtifactId.split('_').head else coordinates.getArtifactId
+        (dc.getCoordinates.getArtifactId == coordinates.getArtifactId || dc.getCoordinates.getArtifactId == artifactName || dc.getCoordinates.getVersion == artifactName) &&
+          dc.getCoordinates.getGroupId == coordinates.getGroupId
       )
       .orNull
   end getDeclaredDependency

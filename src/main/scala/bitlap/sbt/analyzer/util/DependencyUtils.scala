@@ -50,8 +50,8 @@ object DependencyUtils {
   private val SCALA_ARTIFACT_REGEX    = "(.*)_(.*)".r
   private val NATIVE_ARTIFACT_PATTERN = "_native\\d(\\.\\d+)?_\\d(\\.\\d+)?"
   private val SJS_ARTIFACT_PATTERN    = "_sjs\\d(\\.\\d+)?_\\d(\\.\\d+)?"
-  private val NATIVE_ARTIFACT_REGEX   = "(.*)(_native.*)_(.*)".r
-  private val SJS_ARTIFACT_REGEX      = "(.*)(_sjs.*)_(.*)".r
+  private val NATIVE_ARTIFACT_REGEX   = "(.*)(_native\\d(\\.\\d+)?)_(.*)".r
+  private val SJS_ARTIFACT_REGEX      = "(.*)(_sjs\\d(\\.\\d+)?)_(.*)".r
 
   private final case class PlatformModule(
     module: String,
@@ -156,25 +156,25 @@ object DependencyUtils {
     // NOTE: we don't determine the Scala version number.
     if (context.isScalaNative) {
       val module = artifact.replaceAll(NATIVE_ARTIFACT_PATTERN, Constants.EMPTY_STRING)
-      currentModuleName == module
+      currentModuleName.equalsIgnoreCase(module)
     } else if (context.isScalaJs) {
       val module = artifact.replaceAll(SJS_ARTIFACT_PATTERN, Constants.EMPTY_STRING)
-      currentModuleName == module
+      currentModuleName.equalsIgnoreCase(module)
     } else {
       artifact match
         case SCALA_ARTIFACT_REGEX(module, _) =>
-          currentModuleName == module
+          currentModuleName.equalsIgnoreCase(module)
         // it is a java project
-        case _ => artifact == currentModuleName
+        case _ => artifact.equalsIgnoreCase(currentModuleName)
     }
   }
 
   private def toPlatformModule(artifact: String): PlatformModule = {
     artifact match
-      case NATIVE_ARTIFACT_REGEX(module, scalaVer) => PlatformModule(module, scalaVer)
-      case SJS_ARTIFACT_REGEX(module, scalaVer)    => PlatformModule(module, scalaVer)
-      case SCALA_ARTIFACT_REGEX(module, scalaVer)  => PlatformModule(module, scalaVer)
-      case _                                       => PlatformModule(artifact, Constants.EMPTY_STRING)
+      case SJS_ARTIFACT_REGEX(module, _, _, scalaVer)   => PlatformModule(module, scalaVer)
+      case NATIVE_ARTIFACT_REGEX(module, _, _, scalaVer) => PlatformModule(module, scalaVer)
+      case SCALA_ARTIFACT_REGEX(module, scalaVer)      => PlatformModule(module, scalaVer)
+      case _                                            => PlatformModule(artifact, Constants.EMPTY_STRING)
   }
 
   private def toProjectDependencyNode(dn: DependencyNode, context: ModuleContext): Option[DependencyNode] = {
@@ -319,25 +319,44 @@ object DependencyUtils {
     if (moduleData.isEmpty) {
       return false
     }
+    def isEqualModule(name: String) =
+      proj.getText.toLowerCase.contains("\"" + name + "\"".toLowerCase) ||
+      proj.getText.toLowerCase.contains("lazy val `" + name + "`".toLowerCase) || // if project doesn't set module name
+      proj.getText.toLowerCase.contains("val `" + name + "`".toLowerCase)         // if project doesn't set module name
+
     val projectSettings = settings.getLinkedProjectSettings(moduleData.orNull.getData.getLinkedExternalProjectPath)
     val moduleExists    = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
     val fixModuleName = if (!projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '-')) {
-      proj.getText.toLowerCase.contains("`" + moduleName.split('-').last + "`".toLowerCase)
+      isEqualModule(moduleName)
     } else {
       // hard code
       if (projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '.')) {
-        val mname = if (moduleName.exists(_ == ' ')) {
-          val mm = moduleName.split(' ').last
-          if (mm.exists(_ == '.')) mm.split('.').head else mm
-        } else {
-          if (moduleName.exists(_ == '.')) moduleName.split('.').last.replace("-", ".") else moduleName.split('.').last
-        }
-        val fixname = if (mname.count(_ == '.') == 2) mname.split('.').tail.mkString("-") else mname
-        proj.getText.toLowerCase.contains("`" + mname + "`".toLowerCase) ||
-          proj.getText.toLowerCase.contains("\"" + mname + "\"".toLowerCase) ||
-          proj.getText.toLowerCase.contains("\"" + fixname + "\"".toLowerCase)
+        moduleName.count(_ == ' ') match
+          case 1 =>
+            val mm = moduleName.split(' ').last // root.Circe core.coreJs
+            if (mm.count(_ == '.') == 1) {
+              if (module.isScalaJs || module.isScalaNative) isEqualModule(mm.split('.').head) // core.coreJs
+              else isEqualModule(mm.split('.').last) || isEqualModule(mm.split('.').head)     // zim.zim-api
+            } else isEqualModule(mm)
+
+          case i if i > 1 =>
+            // root.Circe scalafix internal input
+            isEqualModule(moduleName.split(' ').tail.mkString("/")) || isEqualModule(
+              moduleName.split(' ').tail.mkString("-")
+            ) ||
+              // root.Circe numbers testing.numbersTestingJS
+              isEqualModule(moduleName.split(' ').last.split('.').head.replace(" ", "-"))
+          case 0 =>
+            // pekko-root.pekko.actor, pekko-root.pekko-actor
+            if (moduleName.exists(_ == '-')) {
+              val splits = moduleName.split('.')
+              isEqualModule(splits.last) ||
+              isEqualModule(splits.last.replace("-", ".")) ||
+                isEqualModule(splits.last.split('-').tail.mkString("-")) ||
+                isEqualModule(splits.last.split('.').tail.mkString("."))
+            } else isEqualModule(moduleName)
       } else {
-        proj.getText.toLowerCase.contains("`" + moduleName + "`".toLowerCase)
+        isEqualModule(moduleName)
       }
     }
     moduleExists || fixModuleName
