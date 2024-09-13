@@ -177,6 +177,8 @@ object SbtDependencyTraverser {
       })
     }
 
+    // TODO: support cross-platform, platformSettings
+
     traverse(patternDef)
 
     res
