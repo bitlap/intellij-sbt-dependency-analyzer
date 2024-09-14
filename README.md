@@ -33,7 +33,7 @@ This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now 
 
 > Default shortcut: Ctrl + Shift + L
 
-<img width="1194" height="806" src="docs/how_to_use_goto.gif" />
+![image](docs/how_to_use_goto.gif)
 
 ## More Details
 

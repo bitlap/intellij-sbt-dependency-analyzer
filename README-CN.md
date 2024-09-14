@@ -32,7 +32,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 > 默认快捷键: Ctrl + Shift + L
 
-<img width="1194" height="806" src="docs/how_to_use_goto.gif" />
+![image](docs/how_to_use_goto.gif)
 
 ## 更多细节
 
