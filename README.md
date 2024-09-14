@@ -33,10 +33,7 @@ This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now 
 
 > Default shortcut: Ctrl + Shift + L
 
-<video width="358" height="224" controls>
-  <source src="docs/how_to_use_goto.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+<img width="1194" height="806" src="docs/how_to_use_goto.gif" />
 
 ## More Details
 
