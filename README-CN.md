@@ -18,7 +18,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 - [x] 查看依赖树
 - [x] 显示冲突
 - [x] 搜索依赖
-- [x] 定位依赖（多模块）
+- [x] 定位依赖（跳转到依赖定义的位置）
 - [x] 显示模块间依赖关系
 - [x] 查看 JAR 包大小
 
@@ -30,14 +30,9 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 **让我们看看如何使用它！**
 
-只需点击图标并等待分析完成：
 > 默认快捷键: Ctrl + Shift + L
 
-<img src="./docs/gotoAnalyze1.jpg" width="400" height="280" alt="settings" align="center" />
-
-分析完成后：
-
-<img src="./docs/dependencyTreeConflicts.jpg" width="1000" height="400" alt="settings" align="center" />
+![image](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
 
 ## 更多细节
 
@@ -94,6 +89,7 @@ Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load59647
 - 在 [高级设置](#高级设置) 中已配置 `organization`。
 - 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
 
+> 注意：不在根项目的`dependsOn`中的子模块不会被分析，依赖为空。
 
 ## 特别感谢
 

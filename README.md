@@ -19,7 +19,7 @@ English | [中文](README-CN.md)
 - [x] View Dependency Tree
 - [x] Show Conflicts
 - [x] Search Dependencies
-- [x] Locate Dependency (multi-module)
+- [x] Locate Dependency (Jump to the location defined by the dependency)
 - [x] Show Dependencies Between Modules
 - [x] Show JAR Size
 
@@ -31,15 +31,9 @@ This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now 
 
 **Let's explore how to use it!**
 
-Simply click on the icon and wait for the analysis to complete:
-
 > Default shortcut: Ctrl + Shift + L
 
-<img src="./docs/gotoAnalyze1.jpg" width = "400" height = "280" alt="settings" align="center" />
-
-Once the analysis is finished:
-
-<img src="./docs/dependencyTreeConflicts.jpg" width = "1000" height = "400" alt="settings" align="center" />
+![image](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
 
 ## More Details
 
@@ -93,6 +87,8 @@ To avoid this problem, utilize sbt shell for reloading or building the project:
 Ensure that you have applied one of the following settings to help identify the correct module:
 - The `organization` in [Advanced Setup](#advanced-setup) has been configured.
 - The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
+
+> Note: Sub modules that are not in the `dependsOn` of the root project will not be parsed and their dependencies will be empty.
 
 ## JetBrains Support
 

@@ -57,16 +57,18 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
     val declared = DependencyUtils.getDeclaredDependency(module)
     declared
       .find(dc =>
-        if (
-          DependencyScopeEnum.values.exists(d =>
-            d.toString
-              .toLowerCase() == dc.getCoordinates.getVersion.toLowerCase || Constants.PROTOBUF == dc.getCoordinates.getVersion.toLowerCase
-          )
-        ) {
-          dc.getCoordinates.getArtifactId == coordinates.getArtifactId && dc.getCoordinates.getGroupId == coordinates.getGroupId
-        } else {
-          dc.getCoordinates.equals(coordinates)
-        }
+        // hard code, see SbtDependencyUtils#getLibraryDependenciesOrPlacesFromPsi
+        val artifactName =
+          if (
+            coordinates.getArtifactId.endsWith("_3") || coordinates.getArtifactId.endsWith("_2.13") ||
+            coordinates.getArtifactId.endsWith("_2.12") || coordinates.getArtifactId.endsWith("_2.11")
+          ) coordinates.getArtifactId.split('_').head
+          else coordinates.getArtifactId
+        (dc.getCoordinates.getArtifactId == coordinates.getArtifactId ||
+          dc.getCoordinates.getArtifactId == artifactName ||
+          // maybe a fixed artifact
+          dc.getCoordinates.getVersion == artifactName) &&
+          dc.getCoordinates.getGroupId == coordinates.getGroupId
       )
       .orNull
   end getDeclaredDependency

@@ -90,6 +90,16 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
             .flatMap(_.getChildren.asScala)
           val dataNodes          = childrenModules.groupBy(_.getKey)
           val rootModuleDataList = dataNodes.getOrElse(SbtModuleData.Key, Seq.empty).map(_.getData(SbtModuleData.Key))
+          rootModuleDataList.foreach { moduleData =>
+            val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
+            if (module != null) {
+              val externalProject   = DAProject(module, moduleData.id)
+              val moduleDataNodeOpt = SbtUtil.getSbtModuleDataNode(module)
+              moduleDataNodeOpt.foreach { moduleDataNode =>
+                projects.put(externalProject, new ModuleNode(moduleDataNode.getData))
+              }
+            }
+          }
           val moduleDataList =
             Seq(SbtNestedModuleData.Key)
               .flatMap(k => dataNodes.getOrElse(k, Seq.empty))
@@ -100,16 +110,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
               val externalProject = DAProject(module, moduleData.getModuleName)
               if (!DependencyUtils.canIgnoreModule(module)) {
                 projects.put(externalProject, new ModuleNode(moduleData))
-              }
-            }
-          }
-          rootModuleDataList.foreach { moduleData =>
-            val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
-            if (module != null) {
-              val externalProject   = DAProject(module, moduleData.id)
-              val moduleDataNodeOpt = SbtUtil.getSbtModuleDataNode(module)
-              moduleDataNodeOpt.foreach { moduleDataNode =>
-                projects.put(externalProject, new ModuleNode(moduleDataNode.getData))
               }
             }
           }

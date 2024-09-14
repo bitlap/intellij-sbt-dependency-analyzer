@@ -10,8 +10,8 @@ object Constants:
   final val ARTIFACT_SEPARATOR: String = ":"
   final val EMPTY_STRING: String       = ""
 
-  final val SINGLE_SBT_MODULE = "__Single_Module__"
-  final val ROOT_SBT_MODULE   = "__Root_Module__"
+  final val SINGLE_SBT_MODULE = "__SINGLE_MODULE__"
+  final val ROOT_SBT_MODULE   = "__ROOT_MODULE__"
 
   final val PROJECT = "project"
 
