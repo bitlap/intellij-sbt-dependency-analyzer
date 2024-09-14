@@ -32,7 +32,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 > 默认快捷键: Ctrl + Shift + L
 
-![image](docs/how_to_use_goto.gif)
+![image](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
 
 ## 更多细节
 
