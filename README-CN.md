@@ -30,14 +30,12 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 **让我们看看如何使用它！**
 
-只需点击图标并等待分析完成：
 > 默认快捷键: Ctrl + Shift + L
 
-<img src="./docs/gotoAnalyze1.jpg" width="400" height="280" alt="settings" align="center" />
-
-分析完成后：
-
-<img src="./docs/dependencyTreeConflicts.jpg" width="1000" height="400" alt="settings" align="center" />
+<video width="358" height="224" controls>
+  <source src="docs/how_to_use_goto.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 ## 更多细节
 

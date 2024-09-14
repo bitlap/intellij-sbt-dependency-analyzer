@@ -25,12 +25,15 @@ object SbtDependencyTraverser {
 
     def traverse(expr: ScExpression): Unit = {
       expr match {
-        case subInfix: ScInfixExpr          => traverseInfixExpr(subInfix)(callback)
-        case call: ScMethodCall             => traverseMethodCall(call)(callback)
-        case refExpr: ScReferenceExpression => traverseReferenceExpr(refExpr)(callback)
-        case stringLiteral: ScStringLiteral => traverseStringLiteral(stringLiteral)(callback)
-        case blockExpr: ScBlockExpr         => traverseBlockExpr(blockExpr)(callback)
-        case _                              =>
+        case subInfix: ScInfixExpr                  => traverseInfixExpr(subInfix)(callback)
+        case call: ScMethodCall                     => traverseMethodCall(call)(callback)
+        case refExpr: ScReferenceExpression         => traverseReferenceExpr(refExpr)(callback)
+        case stringLiteral: ScStringLiteral         => traverseStringLiteral(stringLiteral)(callback)
+        case blockExpr: ScBlockExpr                 => traverseBlockExpr(blockExpr)(callback)
+        case parenthesisedExpr: ScParenthesisedExpr =>
+          // +=("com.chuusai" %%% "shapeless" % shapelessVersion)
+          traverseParenthesisedExpr(parenthesisedExpr)(callback)
+        case _ =>
       }
     }
 
@@ -128,18 +131,23 @@ object SbtDependencyTraverser {
           .acceptChildren( // fixed: ("com.chuusai" %%% "shapeless" % shapelessVersion).cross(CrossVersion.for3Use2_13)
             new ScalaElementVisitor {
               override def visitParenthesisedExpr(expr: ScParenthesisedExpr): Unit = {
-                expr.acceptChildren(new ScalaElementVisitor {
-                  override def visitInfixExpression(infix: ScInfixExpr): Unit = {
-                    traverseInfixExpr(infix)(callback)
-                    super.visitInfixExpression(infix)
-                  }
-                })
-                super.visitParenthesisedExpr(expr)
+                traverseParenthesisedExpr(expr)(callback)
               }
             }
           )
       case _ =>
     }
+  }
+
+  def traverseParenthesisedExpr(parenthesisedExpr: ScParenthesisedExpr)(callback: PsiElement => Boolean): Unit = {
+    if (!callback(parenthesisedExpr)) return
+
+    parenthesisedExpr.acceptChildren(new ScalaElementVisitor {
+      override def visitInfixExpression(infix: ScInfixExpr): Unit = {
+        traverseInfixExpr(infix)(callback)
+
+      }
+    })
   }
 
   def traverseBlockExpr(blockExpr: ScBlockExpr)(callback: PsiElement => Boolean): Unit = {

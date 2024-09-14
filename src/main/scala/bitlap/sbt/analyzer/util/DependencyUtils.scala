@@ -337,13 +337,13 @@ object DependencyUtils {
             isEqualModule(moduleName.split(' ').last.split('.').head.replace(" ", "-"))
           case 0 =>
             // pekko-root.pekko.actor, pekko-root.pekko-actor
+            val splits = moduleName.split('.')
             if (moduleName.exists(_ == '-')) {
-              val splits = moduleName.split('.')
               isEqualModule(splits.last) ||
-                isEqualModule(splits.last.replace("-", ".")) ||
-                isEqualModule(splits.last.split('-').tail.mkString("-")) ||
-                isEqualModule(splits.last.split('.').tail.mkString("."))
-            } else isEqualModule(moduleName)
+              isEqualModule(splits.last.replace("-", ".")) ||
+              isEqualModule(splits.last.split('-').tail.mkString("-")) ||
+              isEqualModule(splits.last.split('.').tail.mkString("."))
+            } else isEqualModule(moduleName) || isEqualModule(splits.last)
       } else {
         isEqualModule(moduleName)
       }
