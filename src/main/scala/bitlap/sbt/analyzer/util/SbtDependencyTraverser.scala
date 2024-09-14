@@ -7,8 +7,9 @@ import org.jetbrains.plugins.scala.lang.psi.ScalaPsiUtil.inNameContext
 import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaPsiElement }
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
-import org.jetbrains.plugins.scala.lang.psi.api.expr._
+import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
+import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScParenthesisedExprImpl
 
 import com.intellij.psi.{ PsiElement, PsiFile }
 
@@ -57,7 +58,9 @@ object SbtDependencyTraverser {
             traverseInfixExpr(infix)(callback)
           case re: ScReferenceExpression =>
             traverseReferenceExpr(re)(callback)
-          case seq: ScMethodCall if seq.deepestInvokedExpr.textMatches(SbtDependencyUtils.SEQ) =>
+          case seq: ScMethodCall
+              if seq.deepestInvokedExpr
+                .textMatches(SbtDependencyUtils.SEQ) || seq.deepestInvokedExpr.textMatches(SbtDependencyUtils.LIST) =>
             traverseSeq(seq)(callback)
           case stringLiteral: ScStringLiteral =>
             traverseStringLiteral(stringLiteral)(callback)
@@ -71,11 +74,13 @@ object SbtDependencyTraverser {
     if (!callback(call)) return
 
     call match {
-      case seq if seq.deepestInvokedExpr.textMatches(SbtDependencyUtils.SEQ) =>
+      case seq
+          if seq.deepestInvokedExpr
+            .textMatches(SbtDependencyUtils.SEQ) | seq.deepestInvokedExpr.textMatches(SbtDependencyUtils.LIST) =>
         traverseSeq(seq)(callback)
       case settings =>
         settings.getEffectiveInvokedExpr match {
-          case expr: ScReferenceExpression if expr.refName == SbtDependencyUtils.SETTINGS =>
+          case expr: ScReferenceExpression if SbtDependencyUtils.isSettings(expr.refName) =>
             traverseSettings(settings)(callback)
           case _ =>
         }
@@ -95,7 +100,7 @@ object SbtDependencyTraverser {
         SbtDependencyUtils.SBT_CROSS_SETTING_TYPE
       )
     ) {
-      retrieveSettings(patternDef).foreach(traverseMethodCall(_)(callback))
+      retrieveSettings(patternDef, callback).foreach(traverseMethodCall(_)(callback))
     } else {
       patternDef.expr match {
         case Some(call: ScMethodCall)     => traverseMethodCall(call)(callback)
@@ -106,6 +111,8 @@ object SbtDependencyTraverser {
     }
   }
 
+  /** NOTE: not support `if Seq() + (if x else y)`
+   */
   def traverseSeq(seq: ScMethodCall)(callback: PsiElement => Boolean): Unit = {
     if (!callback(seq)) return
 
@@ -114,6 +121,23 @@ object SbtDependencyTraverser {
         traverseInfixExpr(infixExpr)(callback)
       case refExpr: ScReferenceExpression =>
         traverseReferenceExpr(refExpr)(callback)
+      case methodCall: ScMethodCall if methodCall.getEffectiveInvokedExpr.isInstanceOf[ScReferenceExpression] =>
+        val expr = methodCall.getEffectiveInvokedExpr
+          .asInstanceOf[ScReferenceExpression]
+        expr
+          .acceptChildren( // fixed: ("com.chuusai" %%% "shapeless" % shapelessVersion).cross(CrossVersion.for3Use2_13)
+            new ScalaElementVisitor {
+              override def visitParenthesisedExpr(expr: ScParenthesisedExpr): Unit = {
+                expr.acceptChildren(new ScalaElementVisitor {
+                  override def visitInfixExpression(infix: ScInfixExpr): Unit = {
+                    traverseInfixExpr(infix)(callback)
+                    super.visitInfixExpression(infix)
+                  }
+                })
+                super.visitParenthesisedExpr(expr)
+              }
+            }
+          )
       case _ =>
     }
   }
@@ -127,7 +151,10 @@ object SbtDependencyTraverser {
       }
 
       override def visitMethodCallExpression(call: ScMethodCall): Unit = {
-        if (call.deepestInvokedExpr.textMatches(SbtDependencyUtils.SEQ))
+        if (
+          call.deepestInvokedExpr.textMatches(SbtDependencyUtils.SEQ) || call.deepestInvokedExpr
+            .textMatches(SbtDependencyUtils.LIST)
+        )
           traverseSeq(call)(callback)
       }
 
@@ -142,8 +169,8 @@ object SbtDependencyTraverser {
 
     settings.args.exprs.foreach {
       case infix: ScInfixExpr
-          if (infix.left.textMatches(SbtDependencyUtils.LIBRARY_DEPENDENCIES) &&
-            SbtDependencyUtils.isAddableLibraryDependencies(infix)) =>
+          if infix.left.textMatches(SbtDependencyUtils.LIBRARY_DEPENDENCIES) &&
+            SbtDependencyUtils.isAddableLibraryDependencies(infix) =>
         traverseInfixExpr(infix)(callback)
       case refExpr: ScReferenceExpression => traverseReferenceExpr(refExpr)(callback)
       case _                              =>
@@ -159,25 +186,55 @@ object SbtDependencyTraverser {
     }
   }
 
-  def retrieveSettings(patternDef: ScPatternDefinition): Seq[ScMethodCall] = {
+  def retrieveSettings(patternDef: ScPatternDefinition, callback: PsiElement => Boolean): Seq[ScMethodCall] = {
     var res: Seq[ScMethodCall] = Seq.empty
 
     def traverse(pd: ScalaPsiElement): Unit = {
       pd.acceptChildren(new ScalaElementVisitor {
+        // NATIVE_SETTINGS,JS_SETTINGS,JVM_SETTINGS,PLATFORM_SETTINGS
+        override def visitReferenceExpression(ref: ScReferenceExpression): Unit = {
+          ref.acceptChildren(new ScalaElementVisitor {
+            override def visitMethodCallExpression(call: ScMethodCall): Unit = {
+              traverse(call)
+              super.visitMethodCallExpression(call)
+            }
+          })
+          super.visitReferenceExpression(ref)
+        }
+
+        override def visitArgumentExprList(args: ScArgumentExprList): Unit = {
+          args.acceptChildren(
+            new ScalaElementVisitor {
+              override def visitInfixExpression(infix: ScInfixExpr): Unit = {
+                args.getParent match
+                  case msc: ScMethodCall =>
+                    if (msc.`type`().toOption.map(_.canonicalText).contains(SbtDependencyUtils.CROSS_PROJECT)) {
+                      traverseInfixExpr(infix)(callback)
+                    }
+                super.visitInfixExpression(infix)
+              }
+            }
+          )
+          super.visitArgumentExprList(args)
+        }
+
         override def visitMethodCallExpression(call: ScMethodCall): Unit = {
           call.getEffectiveInvokedExpr match {
-            case expr: ScReferenceExpression if expr.refName == SbtDependencyUtils.SETTINGS =>
+            case sc: ScMethodCall
+                if sc.`type`().toOption.map(_.canonicalText).contains(SbtDependencyUtils.CROSS_PROJECT_FUNCTION) =>
+              // platformsSettings(JSPlatform, NativePlatform) \
+              // (libraryDependencies += "io.github.cquiroz" %%% "scala-java-time" % scalaJavaTimeVersion % Test)
+              traverse(call)
+            case expr: ScReferenceExpression if SbtDependencyUtils.isSettings(expr.refName) =>
               res ++= Seq(call)
             case _ =>
           }
-
           traverse(call.getEffectiveInvokedExpr)
           super.visitMethodCallExpression(call)
         }
+
       })
     }
-
-    // TODO: support cross-platform, platformSettings
 
     traverse(patternDef)
 

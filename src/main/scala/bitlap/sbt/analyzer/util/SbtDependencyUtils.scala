@@ -32,15 +32,26 @@ import com.intellij.psi.{ PsiElement, PsiFile, PsiManager }
 object SbtDependencyUtils {
   val LIBRARY_DEPENDENCIES: String = "libraryDependencies"
   val SETTINGS: String             = "settings"
-  val PLATFORM_SETTINGS: String    = "platformsSettings"
-  val SEQ: String                  = "Seq"
-  val ANY: String                  = "Any"
+  val JS_SETTINGS: String          = "jsSettings"
+  val NATIVE_SETTINGS: String      = "nativeSettings"
+  val JVM_SETTINGS: String         = "jvmSettings"
+  val CROSS_PROJECT: String        = "_root_.sbtcrossproject.CrossProject"
+
+  val CROSS_PROJECT_FUNCTION: String =
+    "scala.Seq[_root_.sbt.Def.SettingsDefinition] => _root_.sbtcrossproject.CrossProject"
+  val SEQ: String  = "Seq"
+  val LIST: String = "List"
+  val ANY: String  = "Any"
 
   val SBT_PROJECT_TYPE       = "_root_.sbt.Project"
   val SBT_SETTING_TYPE       = "_root_.sbt.Def.Setting"
   val SBT_CROSS_SETTING_TYPE = "_root_.sbtcrossproject.CrossProject"
   val SBT_MODULE_ID_TYPE     = "sbt.ModuleID"
   val SBT_LIB_CONFIGURATION  = "_root_.sbt.librarymanagement.Configuration"
+
+  def isSettings(setting: String): Boolean = {
+    setting == SETTINGS || setting == JS_SETTINGS || setting == NATIVE_SETTINGS || setting == JVM_SETTINGS
+  }
 
   val SCALA_DEPENDENCIES_WITH_MINOR_SCALA_VERSION_LIST = List(
     "ch.epfl.scala:scalafix-cli",
@@ -380,13 +391,16 @@ object SbtDependencyUtils {
                 false
               }
             case _
-                if !infix.left.asInstanceOf[ScInfixExpr].right.isInstanceOf[ScReferenceExpression] &&
+                if infix.left.isInstanceOf[ScInfixExpr] && !infix.left
+                  .asInstanceOf[ScInfixExpr]
+                  .right
+                  .isInstanceOf[ScReferenceExpression] &&
                   infix.right.isInstanceOf[ScReferenceExpression] &&
                   infix.right.`type`().getOrAny.canonicalText.equals(SBT_LIB_CONFIGURATION) =>
               val configuration = cleanUpDependencyPart(infix.right.getText).toLowerCase.capitalize
               result ++= Seq((infix.left, configuration, infix))
               return false
-            case _ =>
+            case _ if infix.left.isInstanceOf[ScInfixExpr] =>
               // our fix to  resolve if version is a val/var,e.g., pass artifact through configuration
               val fixedSplits = infix.left.asInstanceOf[ScInfixExpr].right match
                 case _: ScStringLiteral =>
@@ -404,6 +418,9 @@ object SbtDependencyUtils {
                 result ++= Seq((infix, "", infix))
               }
               return false
+            case _ =>
+              result ++= Seq((infix, "", infix))
+              return false
           }
         case ref: ScReferenceExpression if ref.`type`().getOrAny.canonicalText.equals(SBT_MODULE_ID_TYPE) =>
           result ++= Seq((ref, "", ref))
@@ -418,12 +435,14 @@ object SbtDependencyUtils {
         case libDep: ScInfixExpr
             if libDep.left.textMatches(LIBRARY_DEPENDENCIES) & isAddableLibraryDependencies(libDep) =>
           result ++= Seq((libDep, "", libDep))
-        case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) =>
+        case call: ScMethodCall
+            if call.deepestInvokedExpr.textMatches(SEQ) || call.deepestInvokedExpr.textMatches(LIST) =>
           result ++= Seq((call, "", call))
         case settings: ScMethodCall =>
           settings.getEffectiveInvokedExpr match {
-            case expr: ScReferenceExpression if expr.refName == SETTINGS => result ++= Seq((settings, "", settings))
-            case _                                                       =>
+            case expr: ScReferenceExpression if SbtDependencyUtils.isSettings(expr.refName) =>
+              result ++= Seq((settings, "", settings))
+            case _ =>
           }
         case _ =>
       }
@@ -452,16 +471,20 @@ object SbtDependencyUtils {
       psiElement match {
         case e: ScInfixExpr if e.left.textMatches(LIBRARY_DEPENDENCIES) && isAddableLibraryDependencies(e) =>
           res ++= Seq(e)
-        case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) => res ++= Seq(call)
+        case call: ScMethodCall
+            if call.deepestInvokedExpr.textMatches(SEQ) || call.deepestInvokedExpr.textMatches(LIST) =>
+          res ++= Seq(call)
         case typedSeq: ScTypedExpression if typedSeq.isSequenceArg =>
           typedSeq.expr match {
-            case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) => res ++= Seq(typedSeq)
-            case _                                                              =>
+            case call: ScMethodCall
+                if call.deepestInvokedExpr.textMatches(SEQ) || call.deepestInvokedExpr.textMatches(LIST) =>
+              res ++= Seq(typedSeq)
+            case _ =>
           }
         case settings: ScMethodCall =>
           settings.getEffectiveInvokedExpr match {
-            case expr: ScReferenceExpression if expr.refName == SETTINGS => res ++= Seq(settings)
-            case _                                                       =>
+            case expr: ScReferenceExpression if SbtDependencyUtils.isSettings(expr.refName) => res ++= Seq(settings)
+            case _                                                                          =>
           }
         case _ =>
       }
@@ -520,12 +543,13 @@ object SbtDependencyUtils {
 
   def addDependency(expr: PsiElement, info: SbtArtifactInfo)(implicit project: Project): Option[PsiElement] = {
     expr match {
-      case e: ScInfixExpr if e.left.textMatches(LIBRARY_DEPENDENCIES)     => addDependencyToLibraryDependencies(e, info)
-      case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) => addDependencyToSeq(call, info)
-      case typedSeq: ScTypedExpression if typedSeq.isSequenceArg          => addDependencyToTypedSeq(typedSeq, info)
+      case e: ScInfixExpr if e.left.textMatches(LIBRARY_DEPENDENCIES) => addDependencyToLibraryDependencies(e, info)
+      case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) | call.deepestInvokedExpr.textMatches(LIST) =>
+        addDependencyToSeq(call, info)
+      case typedSeq: ScTypedExpression if typedSeq.isSequenceArg => addDependencyToTypedSeq(typedSeq, info)
       case settings: ScMethodCall =>
         settings.getEffectiveInvokedExpr match {
-          case expr: ScReferenceExpression if expr.refName == SETTINGS =>
+          case expr: ScReferenceExpression if SbtDependencyUtils.isSettings(expr.refName) =>
             Option(addDependencyToSettings(settings, info))
           case _ => None
         }
@@ -571,7 +595,8 @@ object SbtDependencyUtils {
       case "++=" =>
         val dependencies: ScExpression = infix.right
         dependencies match {
-          case call: ScMethodCall if call.deepestInvokedExpr.textMatches(SEQ) =>
+          case call: ScMethodCall
+              if call.deepestInvokedExpr.textMatches(SEQ) || call.deepestInvokedExpr.textMatches(LIST) =>
             val addedExpr = generateArtifactPsiExpression(info, call)
             doInSbtWriteCommandAction(call.args.addExpr(addedExpr), psiFile)
             Option(addedExpr)

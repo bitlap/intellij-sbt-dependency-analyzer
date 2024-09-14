@@ -250,7 +250,7 @@ object DependencyUtils {
       libDeps
         .map(libDepInfixAndString => {
           val libDepArr = SbtDependencyUtils
-            .processLibraryDependencyFromExprAndString(libDepInfixAndString)
+            .processLibraryDependencyFromExprAndString(libDepInfixAndString) // exist some issues
             .map(_.asInstanceOf[String])
           val dataContext: DataContext = (dataId: String) => {
             if (CommonDataKeys.PSI_ELEMENT.is(dataId)) {
@@ -259,24 +259,6 @@ object DependencyUtils {
           }
 
           libDepArr.length match {
-//            case x if x == 2 =>
-//              val scope = SbtDependencyCommon.defaultLibScope
-//              // if version is a val, not a string, cannot get it
-//              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
-//                new DeclaredDependency(
-//                  new UnifiedDependency(
-//                    libDepArr.head,
-//                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, libDepArr(1), scalaVer),
-//                    scope,
-//                    scope
-//                  ),
-//                  dataContext
-//                )
-//              else
-//                new DeclaredDependency(
-//                  new UnifiedDependency(libDepArr.head, libDepArr(1), scope, scope),
-//                  dataContext
-//                )
             case x if x < 3 || x > 4 => null
             case x if x >= 3 =>
               val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
@@ -306,7 +288,8 @@ object DependencyUtils {
         .asJava
     })
   } catch {
-    case c: ControlFlowException => throw c
+    case c: ControlFlowException =>
+      throw c
     case e: Exception =>
       LOG.warn(
         s"Error occurs when obtaining the list of dependencies for module ${module.getName} using package search plugin",
@@ -324,9 +307,11 @@ object DependencyUtils {
       return false
     }
     def isEqualModule(name: String) =
-      proj.getText.toLowerCase.contains("\"" + name + "\"".toLowerCase) ||
-      proj.getText.toLowerCase.contains("lazy val `" + name + "`".toLowerCase) || // if project doesn't set module name
-      proj.getText.toLowerCase.contains("val `" + name + "`".toLowerCase)         // if project doesn't set module name
+      proj.getText.toLowerCase.contains(("\"" + name + "\"").toLowerCase) ||
+      proj.getText.toLowerCase.contains(
+        ("lazy val `" + name + "`").toLowerCase
+      ) ||                                                                  // if project doesn't set module name
+      proj.getText.toLowerCase.contains(("val `" + name + "`").toLowerCase) // if project doesn't set module name
 
     val projectSettings = settings.getLinkedProjectSettings(moduleData.orNull.getData.getLinkedExternalProjectPath)
     val moduleExists    = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
