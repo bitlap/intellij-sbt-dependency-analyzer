@@ -12,7 +12,7 @@ lazy val ktVersion             = "1.9.10"
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
 lazy val intellijVersion = "242.21829.142"
-lazy val pluginVersion   = s"0.4.0-$intellijVersion"
+lazy val pluginVersion   = s"0.4.1-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 

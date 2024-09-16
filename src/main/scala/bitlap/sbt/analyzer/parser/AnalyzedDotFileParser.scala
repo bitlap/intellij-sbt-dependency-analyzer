@@ -56,7 +56,7 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
         .dfs(topNode.getId.toInt)
         .tail
         .map(_.intValue())
-        .filter(childId => filterOnlyDirectlyChild(topNode, childId, dependencies.relations))
+        .filter(childId => filterDirectChildren(topNode, childId, dependencies.relations))
       topNode.getId.toString -> path.toList
     }
     (relationLabelsMap, parentChildrenMap.toMap)
@@ -64,28 +64,23 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
 
   /** build tree for dependency analyzer view
    */
-  override def buildDependencyTree(
-    context: ModuleContext,
-    root: DependencyScopeNode,
-    declared: List[UnifiedCoordinates]
-  ): DependencyScopeNode = {
+  override def buildDependencyTree(context: ModuleContext, root: DependencyScopeNode): DependencyScopeNode = {
     val data                       = getDependencyRelations(context)
     val dependencies: Dependencies = data.orNull
     val depMap = data.map(_.dependencies.map(a => a.id.toString -> toDependencyNode(a)).toMap).getOrElse(Map.empty)
 
     // if no relations for dependency object
+    val (selfNode, otherNodes) = depMap.values.toSet.toSeq.partition(d => isSelfNode(d, context))
     if (dependencies == null || dependencies.relations.isEmpty) {
-      val excludeSelfNode = depMap.values.toSeq.filterNot(d => isSelfModule(d, context))
-      appendChildrenAndFixProjectNodes(root, excludeSelfNode, context)
+      appendChildrenAndFixProjectNodes(root, otherNodes, context)
       return root
     }
     // build graph
     val (relationLabelsMap, parentChildrenMap) = buildChildrenRelationsData(dependencies, depMap)
     // get self
-    val selfNode = depMap.values.toSet.toSeq.filter(d => isSelfModule(d, context))
     // append children for self
     selfNode.foreach { node =>
-      buildNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
+      buildChildrenNodes(node, parentChildrenMap, depMap, relationLabelsMap, context, dependencies.relations)
     }
 
     // transfer from self to root
@@ -95,13 +90,13 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
 
   /** This is important to filter out non-direct dependencies
    */
-  private def filterOnlyDirectlyChild(parent: DependencyNode, childId: Int, relations: List[Relation]) = {
+  private def filterDirectChildren(parent: DependencyNode, childId: Int, relations: List[Relation]) = {
     relations.exists(r => r.head == parent.getId && r.tail == childId)
   }
 
   /** Recursively create and add child nodes to root
    */
-  private def buildNodes(
+  private def buildChildrenNodes(
     parentNode: DependencyNode,
     parentChildrenMap: Map[String, List[Int]],
     depMap: Map[String, DependencyNode],
@@ -111,7 +106,7 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
   ): Unit = {
     val childIds = parentChildrenMap
       .getOrElse(parentNode.getId.toString, List.empty)
-      .filter(cid => filterOnlyDirectlyChild(parentNode, cid, relations))
+      .filter(cid => filterDirectChildren(parentNode, cid, relations))
     if (childIds.isEmpty) return
     val childNodes = childIds.flatMap { id =>
       depMap
@@ -129,7 +124,7 @@ final class AnalyzedDotFileParser extends AnalyzedFileParser:
         }
         .toList
     }
-    childNodes.foreach(d => buildNodes(d, parentChildrenMap, depMap, relationLabelsMap, context, relations))
+    childNodes.foreach(d => buildChildrenNodes(d, parentChildrenMap, depMap, relationLabelsMap, context, relations))
     appendChildrenAndFixProjectNodes(parentNode, childNodes, context)
   }
 

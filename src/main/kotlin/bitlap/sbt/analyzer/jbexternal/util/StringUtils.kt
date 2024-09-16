@@ -1,9 +1,7 @@
 package bitlap.sbt.analyzer.jbexternal.util
 
-import org.apache.commons.lang3.StringUtils
-
 /**
- * Copy from commons-lang3 [[org.apache.commons.lang.StringUtils]]
+ * Copy from commons-lang3
  */
 fun abbreviate(str: String, maxWidth: Int): String {
     return abbreviate(str, "...", 0, maxWidth)
@@ -13,11 +11,27 @@ fun abbreviate(str: String, abbrevMarker: String, maxWidth: Int): String {
     return abbreviate(str, abbrevMarker, 0, maxWidth)
 }
 
+fun isAnyEmpty(vararg css: CharSequence): Boolean {
+    if (css.isEmpty()) {
+        return false
+    } else {
+        val length = css.size
+        for (var3 in 0 until length) {
+            val cs = css[var3]
+            if (cs.isEmpty()) {
+                return true
+            }
+        }
+
+        return false
+    }
+}
+
 fun abbreviate(str: String, abbrevMarker: String, stringOffset: Int, maxWidth: Int): String {
     var offset = stringOffset
-    return if (StringUtils.isNotEmpty(str) && "" == abbrevMarker && maxWidth > 0) {
-        StringUtils.substring(str, 0, maxWidth)
-    } else if (StringUtils.isAnyEmpty(str, abbrevMarker)) {
+    return if (str.isNotEmpty() && "" == abbrevMarker && maxWidth > 0) {
+        str.substring(0, maxWidth)
+    } else if (isAnyEmpty(str, abbrevMarker)) {
         str
     } else {
         val abbrevMarkerLength = abbrevMarker.length

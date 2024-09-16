@@ -49,9 +49,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   @volatile
   private var ideaModuleIdSbtModules: Map[String, String] = Map.empty
 
-  @volatile
-  private var declaredDependencies: List[UnifiedCoordinates] = List.empty
-
   private lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
     ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
   private lazy val dependencyMap: ConcurrentHashMap[Long, Dependency] = ConcurrentHashMap[Long, Dependency]()
@@ -263,13 +260,6 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     ideaModuleIdSbtModules
   end getIdeaModuleIdSbtModules
 
-  private def getDeclaredDependencies(project: Project, moduleData: ModuleData): List[UnifiedCoordinates] =
-    if (declaredDependencies.nonEmpty) return declaredDependencies
-    val module = findModule(project, moduleData)
-    declaredDependencies = DependencyUtils.getDeclaredDependency(module).map(_.getCoordinates)
-    declaredDependencies
-  end getDeclaredDependencies
-
   private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] =
     // use to link dependencies between modules.
     // obtain the mapping of module name to file path.
@@ -282,8 +272,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           project,
           getOrganization(project),
           projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap,
-          getIdeaModuleIdSbtModules(project),
-          getDeclaredDependencies(project, moduleData)
+          getIdeaModuleIdSbtModules(project)
         )
     )
     Option(result).getOrElse(Collections.emptyList())
@@ -369,8 +358,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
       project: Project,
       organization: String,
       ideaModuleNamePaths: Map[String, String],
-      ideaModuleIdSbtModules: Map[String, String],
-      declared: List[UnifiedCoordinates]
+      ideaModuleIdSbtModules: Map[String, String]
     ): JList[DependencyScopeNode] =
       val module   = findModule(project, moduleData)
       val moduleId = moduleData.getId.split(" ")(0)
@@ -405,8 +393,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
                 if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
                 else ideaModuleIdSbtModules
               ),
-              createRootScopeNode(scope, project),
-              declared
+              createRootScopeNode(scope, project)
             )
         } else {
           SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
@@ -415,8 +402,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
             scope,
             organization,
             ideaModuleNamePaths,
-            ideaModuleIdSbtModules,
-            declared
+            ideaModuleIdSbtModules
           )
         }
       end executeCommandOrReadExistsFile

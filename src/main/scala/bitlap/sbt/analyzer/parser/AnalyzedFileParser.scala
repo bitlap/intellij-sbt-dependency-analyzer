@@ -11,8 +11,7 @@ trait AnalyzedFileParser {
 
   def buildDependencyTree(
     context: ModuleContext,
-    root: DependencyScopeNode,
-    declared: List[UnifiedCoordinates]
+    root: DependencyScopeNode
   ): DependencyScopeNode
 
 }
