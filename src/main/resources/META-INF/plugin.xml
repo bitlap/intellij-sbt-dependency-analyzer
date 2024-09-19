@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.4.0-242.21829.142</version>
+    <version>0.4.1-242.21829.142</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
@@ -117,7 +117,7 @@
               <li>Show Dependency Tree</li>
               <li>Show Conflicts</li>
               <li>Search Dependencies</li>
-              <li>Locate Dependency (multi-module)</li>
+              <li>Goto Dependency (Jump to the location defined by the dependency)</li>
               <li>Show Dependencies Between Modules</li>
               <li>Show JAR Size</li>
         </ul>
@@ -129,6 +129,12 @@
 
         <![CDATA[
 
+            <h1>0.4.1-242.21829.142</h1>
+            <ul>
+                <li>Code improvement, compatible with the latest IJ version.</li>
+            </ul>
+            <!-- @@ -->
+            
             <h1>0.4.0-242.21829.142</h1>
             <ul>
                 <li>Support idea 2024.2.</li>

@@ -28,8 +28,7 @@ trait SbtShellDependencyAnalysisTask:
     scope: DependencyScopeEnum,
     organization: String,
     moduleNamePaths: Map[String, String],
-    sbtModules: Map[String, String],
-    declared: List[UnifiedCoordinates]
+    sbtModules: Map[String, String]
   ): DependencyScopeNode
 
   protected final def taskCompleteCallback(

@@ -33,7 +33,7 @@ class AnalyzedDotFileParserSpec extends AnyFlatSpec {
 
     val relations = AnalyzedParserFactory
       .getInstance(AnalyzedFileType.Dot)
-      .buildDependencyTree(ctx, root, List.empty)
+      .buildDependencyTree(ctx, root)
 
     println(s"analyze dot cost:${System.currentTimeMillis() - start}ms")
 

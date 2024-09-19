@@ -53,7 +53,7 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyze
  */
 class DependencyAnalyzerViewImpl(
     private val project: Project, private val systemId: ProjectSystemId, private val parentDisposable: Disposable
-) : DependencyAnalyzerView {
+) : DependencyAnalyzerView , DataProvider {
 
     private val iconsProvider = ExternalSystemIconProvider.getExtension(systemId)
     private val contributor =
@@ -142,7 +142,7 @@ class DependencyAnalyzerViewImpl(
         return externalProjects.find(predicate)
     }
 
-    override fun getData(dataId: String): Any? {
+    override fun getAnalyzerData(dataId: String): Any? {
         return when (dataId) {
             DependencyAnalyzerView.VIEW.name -> this
             CommonDataKeys.PROJECT.name -> project

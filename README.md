@@ -19,7 +19,7 @@ English | [中文](README-CN.md)
 - [x] View Dependency Tree
 - [x] Show Conflicts
 - [x] Search Dependencies
-- [x] Locate Dependency (Jump to the location defined by the dependency)
+- [x] Goto Dependency (Jump to the location defined by the dependency)
 - [x] Show Dependencies Between Modules
 - [x] Show JAR Size
 

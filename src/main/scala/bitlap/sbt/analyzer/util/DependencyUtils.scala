@@ -67,7 +67,7 @@ object DependencyUtils {
   /** self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it. This is
    *  important, for dependency graphs/trees, this is the root node.
    */
-  def isSelfModule(dn: DependencyNode, context: ModuleContext): Boolean = {
+  def isSelfNode(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
       case SBT_ARTIFACT_REGEX(group, artifact, _) =>
         context.organization == group && isSelfArtifact(artifact, context)
@@ -213,7 +213,7 @@ object DependencyUtils {
     }
     p.getDependencies.addAll(
       dn.getDependencies.asScala
-        .filterNot(d => isSelfModule(d, context.copy(currentModuleId = sbtModuleName)))
+        .filterNot(d => isSelfNode(d, context.copy(currentModuleId = sbtModuleName)))
         .asJava
     )
     Some(p)

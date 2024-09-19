@@ -23,7 +23,7 @@ import com.intellij.util.ui.JBUI
 internal class ExternalProjectSelector(
     property: ObservableMutableProperty<DependencyAnalyzerProject?>,
     externalProjects: List<DependencyAnalyzerProject>,
-    private val iconProvider: ExternalSystemIconProvider
+    iconProvider: ExternalSystemIconProvider
 ) : JPanel() {
 
     private val projectIcon = if (iconProvider.projectIcon is EmptyIcon) {

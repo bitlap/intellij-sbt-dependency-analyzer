@@ -27,8 +27,7 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
     scope: DependencyScopeEnum,
     organization: String,
     moduleNamePaths: Map[String, String],
-    ideaModuleIdSbtModules: Map[String, String],
-    declared: List[UnifiedCoordinates]
+    ideaModuleIdSbtModules: Map[String, String]
   ): DependencyScopeNode =
     val module   = findModule(project, moduleData)
     val moduleId = moduleData.getId.split(" ")(0)
@@ -50,8 +49,7 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
             module.isScalaNative,
             sbtModuleNameMap
           ),
-          createRootScopeNode(scope, project),
-          declared
+          createRootScopeNode(scope, project)
         )
     }
   end executeCommand
