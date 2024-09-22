@@ -34,6 +34,7 @@ import com.intellij.openapi.module as OpenapiModule
 import com.intellij.openapi.project.{ DumbService, Project }
 import com.intellij.psi.PsiManager
 
+// copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/SbtDependencyModifier.scala
 object SbtDependencyModifier extends ExternalDependencyModificator {
 
   private val logger = Logger.getInstance(this.getClass)

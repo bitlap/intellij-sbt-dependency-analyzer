@@ -13,6 +13,7 @@ import com.intellij.ide.wizard.Step
 import com.intellij.openapi.project.Project
 import com.intellij.ui.scale.JBUIScale
 
+// copy from https://github.com/JetBrains/intellij-scala/tree/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/ui
 private class SbtPossiblePlacesStep(
   wizard: AddDependencyPreviewWizard,
   project: Project,

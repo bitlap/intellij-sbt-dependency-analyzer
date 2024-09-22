@@ -35,7 +35,8 @@ import com.intellij.ui.{
 }
 import com.intellij.ui.components.JBList
 
-private[packagesearch] class SbtPossiblePlacesPanel(
+// copy from https://github.com/JetBrains/intellij-scala/tree/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/ui
+private class SbtPossiblePlacesPanel(
   project: Project,
   wizard: AddDependencyPreviewWizard,
   fileLines: Seq[DependencyOrRepositoryPlaceInfo]
