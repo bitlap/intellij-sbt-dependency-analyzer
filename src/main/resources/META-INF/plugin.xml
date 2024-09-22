@@ -53,6 +53,12 @@
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
         </action>
+        <action id="Sbt.DependencyAnalyzer.ExcludeDependency"
+                class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerExcludeAction">
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
+            <add-to-group group-id="ExternalSystem.DependencyAnalyzer.UsagesTreeGroup"/>
+        </action>
         <action id="Sbt.DependencyAnalyzer.GoTo" class="bitlap.sbt.analyzer.action.SbtDependencyAnalyzerGoToAction">
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyListGroup"/>
             <add-to-group group-id="ExternalSystem.DependencyAnalyzer.DependencyTreeGroup"/>
