@@ -18,6 +18,7 @@ final class SbtRefreshSnapshotDependenciesAction extends BaseRefreshDependencies
     SbtDependencyAnalyzerContributor.isAvailable.set(false)
     SbtShellOutputAnalysisTask.refreshSnapshotsTask.executeCommand(e.getProject)
     SbtUtils.refreshProject(e.getProject)
+    SbtDependencyAnalyzerContributor.isAvailable.set(true)
   }
 
 end SbtRefreshSnapshotDependenciesAction

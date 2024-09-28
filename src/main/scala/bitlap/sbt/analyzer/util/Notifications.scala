@@ -11,13 +11,13 @@ import bitlap.sbt.analyzer.activity.WhatsNew
 import bitlap.sbt.analyzer.activity.WhatsNew.canBrowseInHTMLEditor
 
 import org.jetbrains.plugins.scala.*
+import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.project.Version
 
 import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
@@ -46,7 +46,7 @@ object Notifications {
   }
 
   def notifyParseFileError(file: String, msg: String): Unit = {
-    // add notification when gets vfsFile timeout
+    // add notification when get vfsFile timeout
     val notification = NotificationGroup
       .createNotification(
         SbtDependencyAnalyzerBundle.message("analyzer.task.error.title"),
@@ -84,82 +84,75 @@ object Notifications {
   def notifyAndCreateSdapFile(project: Project): Unit = {
     // get project/plugins.sbt
     // val pluginSbtFileName = "plugins.sbt"
-    val pluginSbtFileName = "sdap.sbt"
-    val basePath          = VfsUtil.findFile(Path.of(project.getBasePath), true)
+    val pluginSbtFileName   = "sdap.sbt"
+    val basePath            = VfsUtil.findFile(Path.of(project.getBasePath), true)
+    implicit val p: Project = project
+    // 1. get or create sdap.sbt file and add dependency tree statement
+    inWriteCommandAction {
+      val sdapText    = getSdapText(project)
+      val projectPath = VfsUtil.createDirectoryIfMissing(basePath, "project")
 
-    WriteCommandAction.runWriteCommandAction(
-      project,
-      new Runnable() {
-        override def run(): Unit = {
-          // 1. get or create sdap.sbt file and add dependency tree statement
-          val sdapText    = getSdapText(project)
-          val projectPath = VfsUtil.createDirectoryIfMissing(basePath, "project")
+      var pluginsSbtFile     = projectPath.findChild(pluginSbtFileName)
+      val isSdapAutoGenerate = pluginsSbtFile.isSdapAutoGenerate(sdapText)
+      if (isSdapAutoGenerate) {
+        // add to git ignore
+        val gitExclude    = VfsUtil.findRelativeFile(basePath, ".git", "info", "exclude")
+        val gitExcludeDoc = gitExclude.document()
+        if (gitExcludeDoc != null) {
+          val ignoreText = "project" + Constants.SEPARATOR + pluginSbtFileName
+          if (gitExcludeDoc.getText != null && !gitExcludeDoc.getText.contains(ignoreText)) {
+            gitExcludeDoc.setReadOnly(false)
+            gitExcludeDoc.setText(
+              gitExcludeDoc.getText + Constants.LINE_SEPARATOR + ignoreText + Constants.LINE_SEPARATOR
+            )
+          }
+        }
+        pluginsSbtFile = projectPath.findOrCreateChildData(null, pluginSbtFileName)
+      }
 
-          var pluginsSbtFile     = projectPath.findChild(pluginSbtFileName)
-          val isSdapAutoGenerate = pluginsSbtFile.isSdapAutoGenerate(sdapText)
-          if (isSdapAutoGenerate) {
-            // add to git ignore
-            val gitExclude    = VfsUtil.findRelativeFile(basePath, ".git", "info", "exclude")
-            val gitExcludeDoc = gitExclude.document()
-            if (gitExcludeDoc != null) {
-              val ignoreText = "project" + Constants.SEPARATOR + pluginSbtFileName
-              if (gitExcludeDoc.getText != null && !gitExcludeDoc.getText.contains(ignoreText)) {
-                gitExcludeDoc.setReadOnly(false)
-                gitExcludeDoc.setText(
-                  gitExcludeDoc.getText + Constants.LINE_SEPARATOR + ignoreText + Constants.LINE_SEPARATOR
-                )
+      val doc = pluginsSbtFile.document()
+      doc.setReadOnly(false)
+      if (isSdapAutoGenerate) {
+        doc.setText(sdapText)
+      } else {
+        doc.setText(doc.getText + Constants.LINE_SEPARATOR + sdapText)
+      }
+      // if intellij not enable auto-reload
+      // force refresh project
+      // SbtUtils.refreshProject(project)
+      // SbtUtils.untilProjectReady(project)
+
+    }
+    invokeAndWait(SbtUtils.refreshProject(project))
+    // 2. add notification
+    NotificationGroup
+      .createNotification(
+        SbtDependencyAnalyzerBundle.message("analyzer.notification.addSdap.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.notification.addSdap.text", pluginSbtFileName),
+        NotificationType.INFORMATION
+      )
+      .setImportant(true)
+      .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .addAction(
+        new NotificationAction(
+          SbtDependencyAnalyzerBundle.message("analyzer.notification.gotoSdap", pluginSbtFileName)
+        ) {
+          override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
+            inReadAction {
+              notification.expire()
+              val recheckFile = VfsUtil.findRelativeFile(basePath, "project", pluginSbtFileName)
+              if (recheckFile != null) {
+                FileEditorManager
+                  .getInstance(project)
+                  .openTextEditor(new OpenFileDescriptor(project, recheckFile), true)
               }
             }
-            pluginsSbtFile = projectPath.findOrCreateChildData(null, pluginSbtFileName)
-          }
 
-          val doc = pluginsSbtFile.document()
-          doc.setReadOnly(false)
-          if (isSdapAutoGenerate) {
-            doc.setText(sdapText)
-          } else {
-            doc.setText(doc.getText + Constants.LINE_SEPARATOR + sdapText)
           }
-          // if intellij not enable auto-reload
-          // force refresh project
-          SbtUtils.refreshProject(project)
-          SbtUtils.untilProjectReady(project)
-
-          // 2. add notification
-          val addNotification = NotificationGroup
-            .createNotification(
-              SbtDependencyAnalyzerBundle.message("analyzer.notification.addSdap.title"),
-              SbtDependencyAnalyzerBundle.message("analyzer.notification.addSdap.text", pluginSbtFileName),
-              NotificationType.INFORMATION
-            )
-            .setImportant(true)
-            .setIcon(SbtDependencyAnalyzerIcons.ICON)
-            .addAction(
-              new NotificationAction(
-                SbtDependencyAnalyzerBundle.message("analyzer.notification.gotoSdap", pluginSbtFileName)
-              ) {
-                override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
-                  WriteCommandAction.runWriteCommandAction(
-                    project,
-                    new Runnable() {
-                      override def run(): Unit = {
-                        notification.expire()
-                        val recheckFile = VfsUtil.findRelativeFile(basePath, "project", pluginSbtFileName)
-                        if (recheckFile != null) {
-                          FileEditorManager
-                            .getInstance(project)
-                            .openTextEditor(new OpenFileDescriptor(project, recheckFile), true)
-                        }
-                      }
-                    }
-                  )
-                }
-              }
-            )
-          addNotification.notify(project)
         }
-      }
-    )
+      )
+      .notify(project)
+
   }
 
   /** notify information when update plugin

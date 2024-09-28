@@ -9,7 +9,6 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.ScParenthesisedExprImpl
 
 import com.intellij.psi.{ PsiElement, PsiFile }
 

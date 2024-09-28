@@ -7,6 +7,8 @@ import java.io.File
 import java.nio.file.Path
 
 import scala.util.Try
+import scala.util.control.Breaks
+import scala.util.control.Breaks.breakable
 
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
@@ -29,31 +31,37 @@ object DotUtil {
 
   def parseAsGraph(context: ModuleContext): MutableGraph = {
     if (context.isTest) return parseAsGraphTestOnly(context.analysisFile)
-    val file    = context.analysisFile
-    var vfsFile = VfsUtil.findFile(Path.of(file), true)
+    val file = context.analysisFile
     try {
-
-      val start = System.currentTimeMillis()
+      var vfsFile = VfsUtil.findFile(Path.of(file), true)
+      val start   = System.currentTimeMillis()
       // TODO Tried all kinds of refreshes but nothing works.
-      while (vfsFile == null) {
-        vfsFile = VfsUtil.findFile(Path.of(file), true)
-        if (vfsFile != null) {
-          VfsUtil.markDirtyAndRefresh(true, true, true, vfsFile)
-        } else {
-          if (System.currentTimeMillis() - start > Constants.TIMEOUT.toMillis) {
-            Notifications.notifyParseFileError(file, "The file has expired")
-            return null
+      breakable {
+        while (vfsFile == null) {
+          vfsFile = VfsUtil.findFile(Path.of(file), true)
+          if (vfsFile != null) {
+            VfsUtil.markDirtyAndRefresh(true, true, true, vfsFile)
+            Breaks.break()
+          } else {
+            if (System.currentTimeMillis() - start > Constants.TIMEOUT.toMillis) {
+              Notifications.notifyParseFileError(file, "The file has expired")
+              Breaks.break()
+            }
           }
         }
       }
       inReadAction {
-        val f = vfsFile.findDocument.map(_.getImmutableCharSequence.toString).orNull
-        parser.read(f)
+        if (vfsFile != null) {
+          val f = vfsFile.findDocument.map(_.getImmutableCharSequence.toString).orNull
+          parser.read(f)
+        } else {
+          Notifications.notifyParseFileError(file, "The file was not found")
+          Breaks.break()
+        }
       }
-
     } catch {
-      case e: Throwable =>
-        Notifications.notifyParseFileError(file, "Parsing file failed")
+      case ignore: Throwable =>
+        Notifications.notifyParseFileError(file, "The file parsing failed")
         null
     }
   }

@@ -10,36 +10,24 @@ import scala.util.boundary
 
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.GetDep
 
-import org.jetbrains.annotations.ApiStatus
 import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaFile }
-import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.*
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResultExt
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.sbt.Sbt
+import org.jetbrains.sbt.{ Sbt, SbtUtil as SSbtUtil }
 import org.jetbrains.sbt.SbtUtil.{ getBuildModuleData, getSbtModuleData }
-import org.jetbrains.sbt.SbtUtil as SSbtUtil
-import org.jetbrains.sbt.language.SbtFileImpl
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
-import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.buildsystem.model.unified.*
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.diagnostic.*
-import com.intellij.openapi.externalSystem.dependency.analyzer.DAScope
-import com.intellij.openapi.externalSystem.model.project.ModuleData
-import com.intellij.openapi.externalSystem.model.project.dependencies.*
-import com.intellij.openapi.externalSystem.service.project.nameGenerator.ModuleNameGenerator
-import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.{ Module as OpenapiModule, ModuleManager }
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
