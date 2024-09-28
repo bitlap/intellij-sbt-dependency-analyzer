@@ -18,7 +18,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.{ ScArgumentExprList, ScInfixExpr }
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.*
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
-import org.jetbrains.plugins.scala.project.{ ModuleExt, ProjectPsiElementExt, ProjectPsiFileExt }
+import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
@@ -27,11 +27,10 @@ import org.jetbrains.sbt.resolvers.{ SbtMavenResolver, SbtResolverUtils }
 import com.intellij.buildsystem.model.DeclaredDependency
 import com.intellij.buildsystem.model.unified.{ UnifiedDependency, UnifiedDependencyRepository }
 import com.intellij.externalSystem.ExternalDependencyModificator
-import com.intellij.openapi.actionSystem.{ CommonDataKeys, DataContext }
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
 import com.intellij.openapi.module as OpenapiModule
-import com.intellij.openapi.project.{ DumbService, Project }
+import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/SbtDependencyModifier.scala
