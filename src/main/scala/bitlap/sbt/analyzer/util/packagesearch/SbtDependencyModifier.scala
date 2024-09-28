@@ -13,11 +13,16 @@ import bitlap.sbt.analyzer.util.SbtDependencyUtils.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.*
 
 import org.jetbrains.plugins.scala.extensions.*
+import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaPsiElement }
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
-import org.jetbrains.plugins.scala.lang.psi.api.expr.{ ScArgumentExprList, ScInfixExpr }
+import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
+import org.jetbrains.plugins.scala.lang.psi.api.expr.*
+import org.jetbrains.plugins.scala.lang.psi.api.expr.{ ScArgumentExprList, ScInfixExpr, ScParenthesisedExpr }
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.*
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
+import org.jetbrains.plugins.scala.lang.psi.impl.expr.*
+import org.jetbrains.plugins.scala.project.{ ProjectContext, ScalaFeatures }
 import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
@@ -25,12 +30,13 @@ import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
 import org.jetbrains.sbt.resolvers.{ SbtMavenResolver, SbtResolverUtils }
 
 import com.intellij.buildsystem.model.DeclaredDependency
-import com.intellij.buildsystem.model.unified.{ UnifiedDependency, UnifiedDependencyRepository }
+import com.intellij.buildsystem.model.unified.{ UnifiedCoordinates, UnifiedDependency, UnifiedDependencyRepository }
 import com.intellij.externalSystem.ExternalDependencyModificator
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
 import com.intellij.openapi.module as OpenapiModule
 import com.intellij.openapi.project.Project
+import com.intellij.psi.{ PsiElement, PsiFile }
 import com.intellij.psi.PsiManager
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/SbtDependencyModifier.scala
@@ -195,5 +201,31 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
         e
       )
       emptyList()
+  }
+
+  final def addExcludeToDependency(
+    module: OpenapiModule.Module,
+    currentDependency: UnifiedDependency,
+    coordinates: UnifiedCoordinates
+  ): Unit = {
+    implicit val project: Project = module.getProject
+    val targetedLibDepTuple =
+      SbtDependencyUtils.findLibraryDependency(project, module, currentDependency, configurationRequired = false)
+    if (targetedLibDepTuple == null) return
+    // add `(expr)`
+    inWriteCommandAction {
+      val newExpr = wrapInParentheses(targetedLibDepTuple._3)
+      val newCode = s"""${newExpr.getText}.${ScalaPsiElementFactory
+          .createNewLine()
+          .getText}exclude("${coordinates.getGroupId}", "${coordinates.getArtifactId}")"""
+      targetedLibDepTuple._3.replace(code"""$newCode""")
+    }
+  }
+
+  private def wrapInParentheses(expression: ScExpression)(implicit ctx: ProjectContext): ScParenthesisedExpr = {
+    val parenthesised = ScalaPsiElementFactory
+      .createElementFromText[ScParenthesisedExpr](expression.getText.parenthesize(true), expression)
+    parenthesised.innerElement.foreach(_.replace(expression.copy()))
+    parenthesised
   }
 }

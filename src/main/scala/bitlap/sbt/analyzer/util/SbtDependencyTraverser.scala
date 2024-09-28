@@ -8,7 +8,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaPsiE
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
-import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
+import org.jetbrains.plugins.scala.lang.psi.api.statements.{ ScFunctionDefinition, ScPatternDefinition }
 
 import com.intellij.psi.{ PsiElement, PsiFile }
 
@@ -66,9 +66,18 @@ object SbtDependencyTraverser {
             traverseSeq(seq)(callback)
           case stringLiteral: ScStringLiteral =>
             traverseStringLiteral(stringLiteral)(callback)
+
+          case scParenthesisedExpr: ScParenthesisedExpr =>
+            traverseParenthesisedExpr(scParenthesisedExpr)(callback)
           case _ =>
         }
       case _ =>
+        refExpr.acceptChildren(
+          new ScalaElementVisitor {
+            override def visitParenthesisedExpr(expr: ScParenthesisedExpr): Unit =
+              traverseParenthesisedExpr(expr)(callback)
+          }
+        )
     }
   }
 
@@ -144,8 +153,18 @@ object SbtDependencyTraverser {
     parenthesisedExpr.acceptChildren(new ScalaElementVisitor {
       override def visitInfixExpression(infix: ScInfixExpr): Unit = {
         traverseInfixExpr(infix)(callback)
-
       }
+
+      override def visitParenthesisedExpr(expr: ScParenthesisedExpr): Unit =
+        traverseParenthesisedExpr(expr)(callback)
+
+      override def visitMethodCallExpression(call: ScMethodCall): Unit =
+        call.acceptChildren(
+          new ScalaElementVisitor {
+            override def visitReferenceExpression(ref: ScReferenceExpression): Unit =
+              traverseReferenceExpr(ref)(callback)
+          }
+        )
     })
   }
 

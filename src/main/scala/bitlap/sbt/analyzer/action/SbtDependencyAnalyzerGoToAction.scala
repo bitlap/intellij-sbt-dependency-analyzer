@@ -26,7 +26,7 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
 
   override def getNavigatable(e: AnActionEvent): Navigatable =
     Option(SbtDependencyAnalyzerActionUtil.getModifiableDependency(e))
-      .flatMap(_.declaredDependencies)
+      .flatMap(_.declaredDependency)
       .flatMap { dependency =>
         Try {
           val data = dependency.getDataContext.getData(CommonDataKeys.PSI_ELEMENT.getName)

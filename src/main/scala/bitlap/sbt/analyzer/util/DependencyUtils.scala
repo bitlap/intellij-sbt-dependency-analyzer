@@ -245,8 +245,11 @@ object DependencyUtils {
       ) ||                                                                  // if project doesn't set module name
       proj.getText.toLowerCase.contains(("val `" + name + "`").toLowerCase) // if project doesn't set module name
 
-    val projectSettings = settings.getLinkedProjectSettings(moduleData.orNull.getData.getLinkedExternalProjectPath)
-    val moduleExists    = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
+    val projectSettings = settings.getLinkedProjectSettings(module).orNull
+    if (projectSettings == null) {
+      return false
+    }
+    val moduleExists = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
     val fixModuleName = if (!projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '-')) {
       isEqualModule(moduleName)
     } else {

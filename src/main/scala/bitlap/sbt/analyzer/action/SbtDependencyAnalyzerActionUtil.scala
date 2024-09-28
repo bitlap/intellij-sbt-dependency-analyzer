@@ -14,7 +14,7 @@ import com.intellij.openapi.module.Module as OpenapiModule
 final case class ModifiableDependency(
   module: OpenapiModule,
   coordinates: UnifiedCoordinates,
-  declaredDependencies: Option[DeclaredDependency],
+  declaredDependency: Option[DeclaredDependency],
   candidateDeclaredDependencies: List[DeclaredDependency],
   parentDependency: DependencyAnalyzerDependency
 )
