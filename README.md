@@ -22,6 +22,9 @@ English | [中文](README-CN.md)
 - [x] Goto Dependency (Jump to the location defined by the dependency)
 - [x] Show Dependencies Between Modules
 - [x] Show JAR Size
+- [x] Dependency Exclusion (Experimental) 
+  - **Selecting transitive dependencies in user-defined dependencies indicates exclusion, while selecting user-defined dependencies indicates deletion itself**
+  - Available since Sbt Dependency Analyzer `0.5.0-242.21829.142`
 
 ## Usage Instructions
 

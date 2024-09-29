@@ -126,6 +126,7 @@
               <li>Goto Dependency (Jump to the location defined by the dependency)</li>
               <li>Show Dependencies Between Modules</li>
               <li>Show JAR Size</li>
+              <li>Exclude specified dependencies or delete user-defined dependencies</li>
         </ul>
         <br/>
         Visit GitHub for instructions on how to properly use this plugin!</br>
@@ -135,10 +136,11 @@
 
         <![CDATA[
 
-            <h1>0.4.1-242.21829.142</h1>
+            <h1>0.5.0-242.21829.142</h1>
             <ul>
                 <li>Improve code and API compatibility.</li>
                 <li>Fix Open Config Action.</li>
+                <li>Add Exclude Dependency Action.</li>
             </ul>
             <!-- @@ -->
             

@@ -61,11 +61,33 @@ object Notifications {
   def notifySettingsChanged(project: Project): Unit = {
     val notification = NotificationGroup
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("analyzer.notification.setting.changed.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.title"),
         NotificationType.INFORMATION
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
     notification.notify(project)
+  }
+
+  def notifyDependencyChanged(project: Project, dependency: String, self: Boolean = false): Unit = {
+    val msg =
+      if (!self) SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.title", dependency)
+      else SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.removed.title", dependency)
+    NotificationGroup
+      .createNotification(msg, NotificationType.INFORMATION)
+      .setIcon(SbtDependencyAnalyzerIcons.ICON)
+      .addAction(
+        new NotificationAction(
+          SbtDependencyAnalyzerBundle.message("analyzer.notification.ok")
+        ) {
+          override def actionPerformed(e: AnActionEvent, notification: Notification): Unit = {
+            inReadAction {
+              notification.expire()
+            }
+
+          }
+        }
+      )
+      .notify(project)
   }
 
   def notifyUnknownError(project: Project, command: String, moduleId: String, scope: DependencyScopeEnum): Unit = {

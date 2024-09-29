@@ -9,6 +9,7 @@ import java.util.Collections.emptyList
 
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.*
 
@@ -150,6 +151,9 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
       SbtDependencyUtils.findLibraryDependency(project, module, toRemoveDependency, configurationRequired = false)
+    if (targetedLibDepTuple == null) {
+      throw AnalyzerCommandNotFoundException("Target dependency not found")
+    }
     targetedLibDepTuple._3.getParent match {
       case _: ScArgumentExprList =>
         inWriteCommandAction {
@@ -159,7 +163,13 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
         inWriteCommandAction {
           infix.delete()
         }
+      case infix: ScParenthesisedExpr if infix.parents.toList.exists(_.isInstanceOf[ScReferenceExpression]) =>
+        val lastRef = infix.parents.toList.filter(_.isInstanceOf[ScReferenceExpression]).lastOption
+        inWriteCommandAction {
+          lastRef.foreach(_.parent.foreach(_.delete()))
+        }
       case _ =>
+        throw AnalyzerCommandNotFoundException("Target parent not found")
     }
   }
 
@@ -207,12 +217,12 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
     module: OpenapiModule.Module,
     currentDependency: UnifiedDependency,
     coordinates: UnifiedCoordinates
-  ): Unit = {
+  ): Boolean = {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
       SbtDependencyUtils.findLibraryDependency(project, module, currentDependency, configurationRequired = false)
-    if (targetedLibDepTuple == null) return
-    // add `(expr)`
+    if (targetedLibDepTuple == null) return false
+    // add `(expr).exclude('group', 'artifact')`
     inWriteCommandAction {
       val newExpr = wrapInParentheses(targetedLibDepTuple._3)
       val newCode = s"""${newExpr.getText}.${ScalaPsiElementFactory
@@ -220,6 +230,7 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
           .getText}exclude("${coordinates.getGroupId}", "${coordinates.getArtifactId}")"""
       targetedLibDepTuple._3.replace(code"""$newCode""")
     }
+    true
   }
 
   private def wrapInParentheses(expression: ScExpression)(implicit ctx: ProjectContext): ScParenthesisedExpr = {
