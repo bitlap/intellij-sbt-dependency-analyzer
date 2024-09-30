@@ -126,7 +126,7 @@
               <li>Goto Dependency (Jump to the location defined by the dependency)</li>
               <li>Show Dependencies Between Modules</li>
               <li>Show JAR Size</li>
-              <li>Exclude specified dependencies or delete user-defined dependencies</li>
+              <li>Dependency Exclusion (Experimental)</li>
         </ul>
         <br/>
         Visit GitHub for instructions on how to properly use this plugin!</br>
