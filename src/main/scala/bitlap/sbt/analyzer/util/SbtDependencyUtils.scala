@@ -1,31 +1,39 @@
-package bitlap.sbt.analyzer.util
+package bitlap
+package sbt
+package analyzer
+package util
 
+import java.util.Collections
+
+import scala.jdk.CollectionConverters.*
 import scala.util.boundary
 
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.GetDep
 
-import org.jetbrains.annotations.ApiStatus
-import org.jetbrains.plugins.scala.extensions.{ inReadAction, ObjectExt, PsiFileExt }
+import org.jetbrains.plugins.scala.ScalaVersion
+import org.jetbrains.plugins.scala.extensions.*
 import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaFile }
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.*
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResultExt
-import org.jetbrains.plugins.scala.project.{ ProjectContext, ProjectExt, ProjectPsiElementExt }
-import org.jetbrains.sbt.Sbt
+import org.jetbrains.plugins.scala.project.*
+import org.jetbrains.sbt.{ Sbt, SbtUtil as SSbtUtil }
 import org.jetbrains.sbt.SbtUtil.{ getBuildModuleData, getSbtModuleData }
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
 
-import com.intellij.buildsystem.model.unified.{ UnifiedDependency, UnifiedDependencyRepository }
+import com.intellij.buildsystem.model.DeclaredDependency
+import com.intellij.buildsystem.model.unified.*
+import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.diagnostic.*
 import com.intellij.openapi.module.{ Module as OpenapiModule, ModuleManager }
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.{ PsiElement, PsiFile, PsiManager }
+import com.intellij.psi.*
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/sbt/sbt-impl/src/org/jetbrains/sbt/language/utils/SbtDependencyUtils.scala
 // we have changed some
@@ -48,6 +56,8 @@ object SbtDependencyUtils {
   val SBT_CROSS_SETTING_TYPE = "_root_.sbtcrossproject.CrossProject"
   val SBT_MODULE_ID_TYPE     = "sbt.ModuleID"
   val SBT_LIB_CONFIGURATION  = "_root_.sbt.librarymanagement.Configuration"
+
+  private val LOG = Logger.getInstance(SbtDependencyUtils.getClass)
 
   def isSettings(setting: String): Boolean = {
     setting == SETTINGS || setting == JS_SETTINGS || setting == NATIVE_SETTINGS || setting == JVM_SETTINGS
@@ -136,16 +146,6 @@ object SbtDependencyUtils {
     case object GetDep   extends GetMode
   }
 
-  /** Use [[org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil.getAllScalaVersionsOrDefault]] */
-  @ApiStatus.Obsolete
-  def getAllScalaVersionsOrDefault(psiElement: PsiElement, majorOnly: Boolean = false): Seq[String] = {
-    var scalaVers =
-      psiElement.getProject.allScalaVersions.map(_.minor).sortWith(SbtDependencyUtils.isGreaterStableVersion)
-    if (scalaVers.isEmpty) scalaVers = Seq(psiElement.scalaLanguageLevelOrDefault.getVersion)
-    if (majorOnly) scalaVers = scalaVers.map(ver => ver.split("\\.").take(2).mkString("."))
-    scalaVers.distinct
-  }
-
   def preprocessVersion(v: String): String = {
     val pattern = """\d+""".r
     v.split("\\.")
@@ -172,19 +172,12 @@ object SbtDependencyUtils {
       .fold(0) { case (a, b) => a.toInt - b.toInt } > 0
   }
 
-  /** Use [[org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil.buildScalaArtifactIdString]] */
-  @ApiStatus.Obsolete
   def buildScalaArtifactIdString(groupId: String, artifactId: String, scalaVer: String): String = {
-    if (scalaVer == null || scalaVer.isEmpty) return artifactId
-    val shouldIncludeScalaMinorVer = SCALA_DEPENDENCIES_WITH_MINOR_SCALA_VERSION_LIST contains s"$groupId:$artifactId"
-    val paddedScalaVer             = scalaVer.split('.').padTo(3, "0")
-    if (shouldIncludeScalaMinorVer) return s"${artifactId}_${paddedScalaVer.mkString(".")}"
-    paddedScalaVer.head match {
-      case "3" =>
-        s"${artifactId}_${paddedScalaVer(0)}"
-      case _ =>
-        s"${artifactId}_${paddedScalaVer(0)}.${paddedScalaVer(1)}"
-    }
+    org.jetbrains.plugins.scala.packagesearch.util.DependencyUtil.buildScalaArtifactIdString(
+      artifactId,
+      scalaVer,
+      SCALA_DEPENDENCIES_WITH_MINOR_SCALA_VERSION_LIST.contains(s"$groupId:$artifactId")
+    )
   }
 
   def findLibraryDependency(
@@ -228,8 +221,8 @@ object SbtDependencyUtils {
           boundary.break(libDep.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
         }
       })
+      null.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)]
     }
-    null
   }
 
   def getLibraryDependenciesOrPlacesUtil(
@@ -782,7 +775,7 @@ object SbtDependencyUtils {
       .orElse(otherSbtFiles.headOption)
   }
 
-  /** Find the corresponding sbt build module for an sbt module */
+  /** Find the corresponding sbt build module for a sbt module */
   def getBuildModule(module: OpenapiModule): Option[OpenapiModule] = {
     val project       = module.getProject
     val moduleManager = ModuleManager.getInstance(project)
@@ -799,4 +792,70 @@ object SbtDependencyUtils {
     getBuildModule(module)
       .flatMap(getSbtFileFromBuildModule)
       .orElse(getSbtFileFromBuildModule(module)) // if module is itself a build module
+
+  /** copy from DependencyModifierService, and fix
+   */
+  def declaredDependencies(module: OpenapiModule): java.util.List[DeclaredDependency] = try {
+    // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
+    // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
+    val scalaVer = module.scalaMinorVersion.map(_.major).getOrElse(ScalaVersion.default.major)
+    inReadAction({
+      val libDeps = SbtDependencyUtils
+        .getLibraryDependenciesOrPlaces(
+          SbtDependencyUtils.getSbtFileOpt(module),
+          module.getProject,
+          module,
+          SbtDependencyUtils.GetMode.GetDep
+        )
+        .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
+      libDeps
+        .map(libDepInfixAndString => {
+          val libDepArr = SbtDependencyUtils
+            .processLibraryDependencyFromExprAndString(libDepInfixAndString) // exist some issues
+            .map(_.asInstanceOf[String])
+          val dataContext: DataContext = (dataId: String) => {
+            if (CommonDataKeys.PSI_ELEMENT.is(dataId)) {
+              libDepInfixAndString
+            } else null
+          }
+
+          libDepArr.length match {
+            case x if x < 3 || x > 4 => null
+            case x if x >= 3 =>
+              val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
+              val fixedArtifact =
+                if (!DependencyScopeEnum.values.exists(_.toString.toLowerCase.contains(scope.toLowerCase))) {
+                  scope
+                } else libDepArr(1)
+              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
+                new DeclaredDependency(
+                  new UnifiedDependency(
+                    libDepArr.head,
+                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, fixedArtifact, scalaVer),
+                    libDepArr(2),
+                    scope
+                  ),
+                  dataContext
+                )
+              else
+                new DeclaredDependency(
+                  new UnifiedDependency(libDepArr.head, fixedArtifact, libDepArr(2), scope),
+                  dataContext
+                )
+          }
+        })
+        .filter(_ != null)
+        .toList
+        .asJava
+    })
+  } catch {
+    case c: ControlFlowException =>
+      throw c
+    case e: Exception =>
+      LOG.warn(
+        s"Error occurs when obtaining the list of dependencies for module ${module.getName} using package search plugin",
+        e
+      )
+      Collections.emptyList()
+  }
 }

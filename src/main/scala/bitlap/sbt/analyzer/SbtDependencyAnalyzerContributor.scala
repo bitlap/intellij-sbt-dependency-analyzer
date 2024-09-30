@@ -23,7 +23,6 @@ import org.jetbrains.sbt.project.SbtProjectSystem
 import org.jetbrains.sbt.project.data.*
 import org.jetbrains.sbt.project.module.*
 
-import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.externalSystem.dependency.analyzer.{ DependencyAnalyzerDependency as Dependency, * }
@@ -36,6 +35,7 @@ import com.intellij.openapi.externalSystem.service.notification.ExternalSystemPr
 import com.intellij.openapi.externalSystem.service.project.ProjectDataManager
 import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VfsUtil
 
 import kotlin.jvm.functions
 
@@ -286,9 +286,9 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
 
   // if data change
   override def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit = {
-    // TODO
     isAvailable.set(false)
     SbtUtils.refreshProject(project)
+    isAvailable.set(true)
   }
 
   ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
@@ -297,10 +297,15 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
 
   private def isValidFile(project: Project, file: String): Boolean = {
     if (isAvailable.get()) {
-      val lastModified = Path.of(file).toFile.lastModified()
-      System.currentTimeMillis() <= lastModified + SettingsState.getSettings(project).fileCacheTimeout * 1000
+      val lastModified = VfsUtil.findFile(Path.of(file), true).getTimeStamp
+      val upToDate =
+        System.currentTimeMillis() <= lastModified + SettingsState.getSettings(project).fileCacheTimeout * 1000
+      if (!upToDate) {
+        isAvailable.set(false)
+      }
+      isAvailable.get()
     } else {
-      isAvailable.getAndSet(true)
+      isAvailable.get()
     }
   }
 
@@ -376,7 +381,8 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
         val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[AnalyzedFileType])
-        val useCache = !isNotifying.get() && Files.exists(Path.of(file)) && isValidFile(project, file)
+        val vfsFile  = VfsUtil.findFile(Path.of(file), true)
+        val useCache = vfsFile != null && isValidFile(project, file)
         // File cache for one hour
         if (useCache) {
           AnalyzedParserFactory
@@ -396,6 +402,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
               createRootScopeNode(scope, project)
             )
         } else {
+          isAvailable.set(true)
           SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
             project,
             moduleData,

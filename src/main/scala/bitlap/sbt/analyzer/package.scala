@@ -40,14 +40,29 @@ def getUnifiedCoordinates(data: DependencyAnalyzerDependency.Data.Module): Unifi
   UnifiedCoordinates(moduleData.getGroup, moduleData.getExternalName, moduleData.getVersion)
 }
 
-def getParentModule(project: Project, dependency: DependencyAnalyzerDependency): Module = {
+def getParentModule(
+  project: Project,
+  dependency: DependencyAnalyzerDependency
+): (DependencyAnalyzerDependency, Module) = {
   val parentData = dependency.getParent
-  if (parentData == null) return null
+  if (parentData == null) return getRootModule(project, dependency, dependency)
   dependency.getParent.getData match
     case _: Data.Module =>
       val data = dependency.getParent.getData.asInstanceOf[DependencyAnalyzerDependency.Data.Module]
-      getModule(project, data)
-    case _ => null
+      dependency -> getModule(project, data)
+    case _ => getRootModule(project, dependency, dependency)
+}
+
+def getRootModule(
+  project: Project,
+  dependency: DependencyAnalyzerDependency,
+  parent: DependencyAnalyzerDependency
+): (DependencyAnalyzerDependency, Module) = {
+  parent.getData match
+    case _: Data.Module =>
+      val data = parent.getData.asInstanceOf[DependencyAnalyzerDependency.Data.Module]
+      dependency -> getModule(project, data)
+    case _ => getRootModule(project, parent, parent.getParent)
 }
 
 def getModule(project: Project, data: DependencyAnalyzerDependency.Data.Module): Module = {

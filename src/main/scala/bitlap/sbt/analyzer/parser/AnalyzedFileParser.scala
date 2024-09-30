@@ -2,7 +2,6 @@ package bitlap.sbt.analyzer.parser
 
 import bitlap.sbt.analyzer.model.*
 
-import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
 trait AnalyzedFileParser {

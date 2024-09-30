@@ -17,6 +17,7 @@ final class SbtRefreshDependenciesAction extends BaseRefreshDependenciesAction:
   override def actionPerformed(e: AnActionEvent): Unit = {
     SbtDependencyAnalyzerContributor.isAvailable.set(false)
     SbtUtils.refreshProject(e.getProject)
+    SbtDependencyAnalyzerContributor.isAvailable.set(true)
   }
 
 end SbtRefreshDependenciesAction

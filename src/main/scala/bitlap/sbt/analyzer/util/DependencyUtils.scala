@@ -58,10 +58,8 @@ object DependencyUtils {
     scalaVersion: String
   )
 
-  private val LOG: Logger = Logger.getInstance(classOf[DependencyUtils.type])
-
   def getDeclaredDependency(module: OpenapiModule): List[DeclaredDependency] = {
-    declaredDependencies(module).asScala.toList
+    SbtDependencyUtils.declaredDependencies(module).asScala.toList
   }
 
   /** self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it. This is
@@ -232,72 +230,6 @@ object DependencyUtils {
 
   }
 
-  /** copy from DependencyModifierService, and fix
-   */
-  def declaredDependencies(module: OpenapiModule): java.util.List[DeclaredDependency] = try {
-    // Check whether the IDE is in Dumb Mode. If it is, return empty list instead proceeding
-    // if (DumbService.getInstance(module.getProject).isDumb) return Collections.emptyList()
-    val scalaVer = module.scalaMinorVersion.map(_.major).getOrElse(ScalaVersion.default.major)
-    inReadAction({
-      val libDeps = SbtDependencyUtils
-        .getLibraryDependenciesOrPlaces(
-          SbtDependencyUtils.getSbtFileOpt(module),
-          module.getProject,
-          module,
-          SbtDependencyUtils.GetMode.GetDep
-        )
-        .map(_.asInstanceOf[(ScInfixExpr, String, ScInfixExpr)])
-      libDeps
-        .map(libDepInfixAndString => {
-          val libDepArr = SbtDependencyUtils
-            .processLibraryDependencyFromExprAndString(libDepInfixAndString) // exist some issues
-            .map(_.asInstanceOf[String])
-          val dataContext: DataContext = (dataId: String) => {
-            if (CommonDataKeys.PSI_ELEMENT.is(dataId)) {
-              libDepInfixAndString
-            } else null
-          }
-
-          libDepArr.length match {
-            case x if x < 3 || x > 4 => null
-            case x if x >= 3 =>
-              val scope = if (x == 3) SbtDependencyCommon.defaultLibScope else libDepArr(3)
-              val fixedArtifact =
-                if (!DependencyScopeEnum.values.exists(_.toString.toLowerCase.contains(scope.toLowerCase))) {
-                  scope
-                } else libDepArr(1)
-              if (SbtDependencyUtils.isScalaLibraryDependency(libDepInfixAndString._1))
-                new DeclaredDependency(
-                  new UnifiedDependency(
-                    libDepArr.head,
-                    SbtDependencyUtils.buildScalaArtifactIdString(libDepArr.head, fixedArtifact, scalaVer),
-                    libDepArr(2),
-                    scope
-                  ),
-                  dataContext
-                )
-              else
-                new DeclaredDependency(
-                  new UnifiedDependency(libDepArr.head, fixedArtifact, libDepArr(2), scope),
-                  dataContext
-                )
-          }
-        })
-        .filter(_ != null)
-        .toList
-        .asJava
-    })
-  } catch {
-    case c: ControlFlowException =>
-      throw c
-    case e: Exception =>
-      LOG.warn(
-        s"Error occurs when obtaining the list of dependencies for module ${module.getName} using package search plugin",
-        e
-      )
-      Collections.emptyList()
-  }
-
   def containsModuleName(proj: ScPatternDefinition, module: OpenapiModule): Boolean = {
     val project    = module.getProject
     val moduleName = module.getName
@@ -313,8 +245,11 @@ object DependencyUtils {
       ) ||                                                                  // if project doesn't set module name
       proj.getText.toLowerCase.contains(("val `" + name + "`").toLowerCase) // if project doesn't set module name
 
-    val projectSettings = settings.getLinkedProjectSettings(moduleData.orNull.getData.getLinkedExternalProjectPath)
-    val moduleExists    = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
+    val projectSettings = settings.getLinkedProjectSettings(module).orNull
+    if (projectSettings == null) {
+      return false
+    }
+    val moduleExists = proj.getText.toLowerCase.contains("\"" + moduleName + "\"".toLowerCase)
     val fixModuleName = if (!projectSettings.isUseQualifiedModuleNames && moduleName.exists(_ == '-')) {
       isEqualModule(moduleName)
     } else {

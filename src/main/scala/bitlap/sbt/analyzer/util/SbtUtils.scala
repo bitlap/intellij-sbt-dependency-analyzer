@@ -66,6 +66,7 @@ object SbtUtils {
     true
   }
 
+  // TODO
   def isProjectReady(project: Project): Boolean = {
     SbtUtils
       .getExternalProjectPath(project)
