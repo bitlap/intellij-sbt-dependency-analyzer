@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.4.1-242.21829.142</version>
+    <version>0.5.0-242.21829.142</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
@@ -126,7 +126,7 @@
               <li>Goto Dependency (Jump to the location defined by the dependency)</li>
               <li>Show Dependencies Between Modules</li>
               <li>Show JAR Size</li>
-              <li>Exclude specified dependencies or delete user-defined dependencies</li>
+              <li>Dependency Exclusion (Experimental)</li>
         </ul>
         <br/>
         Visit GitHub for instructions on how to properly use this plugin!</br>
