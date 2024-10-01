@@ -6,21 +6,14 @@ import java.util.{ Collections, Map as JMap }
 
 import scala.beans.BeanProperty
 
-import org.jetbrains.sbt.project.settings.*
-
-import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.*
-import com.intellij.openapi.externalSystem.settings.*
 import com.intellij.openapi.project.Project
 import com.intellij.util.messages.Topic
 import com.intellij.util.xmlb.XmlSerializerUtil
-import com.intellij.util.xmlb.annotations.Transient
 
 @State(name = "SbtDependencyAnalyzer.Settings", storages = Array(new Storage("bitlap.sbt.dependency.analyzer.xml")))
 final class SettingsState extends PersistentStateComponent[SettingsState] {
-
-  import SettingsState.*
 
   @BeanProperty
   var sbtModules: JMap[String, String] = Collections.emptyMap()

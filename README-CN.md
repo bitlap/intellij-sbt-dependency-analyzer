@@ -39,13 +39,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 ## 更多细节
 
-该插件使用以下 sbt 任务。但请放心，插件已经优化，以尽量减少冗余执行：
-
-1. `organization`
-2. `moduleName`
-3. `dependencyDot`
-4. `reload`
-5. `update`
+该插件使用以下 sbt 命令。但请放心，插件已经优化，以尽量减少执行的次数：`organization`、`moduleName`、`dependencyDot`、`reload`、`update`
 
 ## 高级设置
 
@@ -57,11 +51,11 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 **文件缓存超时**
 
-如果文件在超过 `3600` 秒内未更改，则插件将执行 `dependencyDot` 任务。否则，它将使用现有的文件，除非您选择进行 `刷新`。
+如果依赖文件（`.dot`）在最近`3600秒`（默认值）内没有修改过，插件将继续使用存在的文件来分析，否则将重新执行`dependencyDot`命令，这是一定程度上的缓存，但在项目首次打开分析图时，缓存可能不生效。
 
-**组织**
+**组织ID**
 
-如果您指定了此值，则将不再使用 `organization` 任务获取项目的组织信息。
+如果您指定了此值，则将不再使用 `organization` 命令获取项目的组织信息。
 
 **禁用作用域**
 

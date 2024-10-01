@@ -40,13 +40,7 @@ This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now 
 
 ## More Details
 
-The plugin utilizes the following sbt tasks. However, rest assured that the plugin has been optimized to minimize redundant executions:
-
-1. `organization`
-2. `moduleName`
-3. `dependencyDot`
-4. `reload`
-5. `update`
+The plugin utilizes the following sbt commands. However, rest assured that the plugin has been optimized to minimize the number of executions as much as possible: `organization`,`moduleName`,`dependencyDot`,`reload`,`update`
 
 ## Advanced Setup
 
@@ -58,11 +52,12 @@ By utilizing configurations, analysis wait times can be significantly reduced:
 
 **File Cache Timeout**
 
-If a file remains unchanged for more than 3600 seconds, the plugin will execute the `dependencyDot` task. Otherwise, it will use the existing one, unless you opt for a `Refresh`.
+If the dependent file (`.dot`) has not been modified within the last `3600 seconds` (default value), the plugin will continue to use the existing file for analysis, 
+otherwise the `dependencyDot` command will be executed, which is a certain degree of caching, but the caching may not take effect when the project first opens the analysis graph.
 
 **Organization** 
 
-If you specify this value, the `organization` task will not be used to retrieve your project's organization.
+If you specify this value, the `organization` command will not be used to retrieve your project's organization.
 
 **Disable Scopes**
 

@@ -14,17 +14,12 @@ import bitlap.sbt.analyzer.util.SbtDependencyUtils.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.*
 
 import org.jetbrains.plugins.scala.extensions.*
-import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaPsiElement }
 import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
-import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
-import org.jetbrains.plugins.scala.lang.psi.api.expr.{ ScArgumentExprList, ScInfixExpr, ScParenthesisedExpr }
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaCode.*
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
-import org.jetbrains.plugins.scala.lang.psi.impl.expr.*
-import org.jetbrains.plugins.scala.project.{ ProjectContext, ScalaFeatures }
-import org.jetbrains.plugins.scala.project.ProjectPsiFileExt
+import org.jetbrains.plugins.scala.project.{ ProjectContext, ProjectPsiFileExt, ScalaFeatures }
 import org.jetbrains.sbt.SbtUtil
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
 import org.jetbrains.sbt.language.utils.SbtDependencyCommon.defaultLibScope
@@ -37,7 +32,6 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.{ ControlFlowException, Logger }
 import com.intellij.openapi.module as OpenapiModule
 import com.intellij.openapi.project.Project
-import com.intellij.psi.{ PsiElement, PsiFile }
 import com.intellij.psi.PsiManager
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/SbtDependencyModifier.scala

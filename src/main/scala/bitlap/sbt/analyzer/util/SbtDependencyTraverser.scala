@@ -8,7 +8,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.{ ScalaElementVisitor, ScalaPsiE
 import org.jetbrains.plugins.scala.lang.psi.api.base.literals.ScStringLiteral
 import org.jetbrains.plugins.scala.lang.psi.api.base.patterns.ScReferencePattern
 import org.jetbrains.plugins.scala.lang.psi.api.expr.*
-import org.jetbrains.plugins.scala.lang.psi.api.statements.{ ScFunctionDefinition, ScPatternDefinition }
+import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 
 import com.intellij.psi.{ PsiElement, PsiFile }
 

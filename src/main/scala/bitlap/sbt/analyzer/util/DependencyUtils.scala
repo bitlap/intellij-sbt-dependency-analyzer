@@ -3,41 +3,25 @@ package sbt
 package analyzer
 package util
 
-import java.util.Collections
 import java.util.concurrent.atomic.AtomicLong
 
 import scala.jdk.CollectionConverters.*
 
+import bitlap.sbt.analyzer.model.*
+import bitlap.sbt.analyzer.parser.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils
 
-import org.jetbrains.plugins.scala.ScalaVersion
 import org.jetbrains.plugins.scala.extensions.*
-import org.jetbrains.plugins.scala.lang.psi.api.ScalaFile
-import org.jetbrains.plugins.scala.lang.psi.api.expr.ScInfixExpr
 import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.project.*
 import org.jetbrains.sbt.SbtUtil as SSbtUtil
-import org.jetbrains.sbt.language.SbtFileImpl
-import org.jetbrains.sbt.language.utils.*
-import org.jetbrains.sbt.project.SbtProjectSystem
 
 import com.intellij.buildsystem.model.DeclaredDependency
-import com.intellij.buildsystem.model.unified.*
-import com.intellij.openapi.actionSystem.*
-import com.intellij.openapi.diagnostic.*
 import com.intellij.openapi.externalSystem.dependency.analyzer.DAScope
-import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
-import com.intellij.openapi.externalSystem.service.project.nameGenerator.ModuleNameGenerator
-import com.intellij.openapi.externalSystem.settings.ExternalProjectSettings
-import com.intellij.openapi.externalSystem.util.ExternalSystemApiUtil
 import com.intellij.openapi.module.Module as OpenapiModule
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.PsiManager
-
-import model.*
-import parser.*
 
 object DependencyUtils {
 
