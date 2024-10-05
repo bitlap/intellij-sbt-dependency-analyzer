@@ -55,7 +55,7 @@ Sbt Dependency Analyzer for IntelliJ IDEA
 
 **组织ID**
 
-如果您指定了此值，则将不再使用 `organization` 命令获取项目的组织信息。
+如果您指定了此值，则将不再使用 `organization` 命令获取项目的组织ID。
 
 **禁用作用域**
 
