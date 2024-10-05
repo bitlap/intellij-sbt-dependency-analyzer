@@ -13,16 +13,18 @@ English | [中文](README-CN.md)
 
 ## Features
 
-> Support available since IntelliJ IDEA 2023.1 (231.9392.1)
+> The plugin is available since IntelliJ IDEA 2023.1 (Community, Ultimate and Android Studio)
 
 - [x] View Dependency Tree
 - [x] Show Conflicts
 - [x] Search Dependencies
-- [x] Goto Dependency (Jump to the location defined by the dependency)
 - [x] Show Dependencies Between Modules
 - [x] Show JAR Size
+- [x] Goto Dependency
+  - Clicking on them will take you to the location of the dependency in `build.sbt`
+  - Available only for user-defined dependencies
 - [x] Dependency Exclusion (Experimental) 
-  - **Selecting transitive dependencies in user-defined dependencies indicates exclusion, while selecting user-defined dependencies indicates deletion itself**
+  - Selecting transitive dependencies in user-defined dependencies indicates exclusion, while selecting user-defined dependencies indicates deletion itself
   - Available since Sbt Dependency Analyzer `0.5.0-242.21829.142`
 
 ## Usage Instructions
