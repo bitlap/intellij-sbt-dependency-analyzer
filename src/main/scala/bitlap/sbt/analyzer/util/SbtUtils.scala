@@ -27,7 +27,7 @@ import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 
 object SbtUtils {
 
-  private val log = Logger.getInstance(getClass)
+  private val LOG = Logger.getInstance(getClass)
 
   /** sbt: com.softwaremill.sttp.shared:zio_3:1.3.7:jar
    */
@@ -117,9 +117,9 @@ object SbtUtils {
       val message =
         s"Can't calculate external root project path for project `${project.getName}`, fallback to `ProjectUtil.guessProjectDir`"
       if (ApplicationManager.getApplication.isInternal)
-        log.error(message)
+        LOG.error(message)
       else
-        log.warn(message)
+        LOG.warn(message)
       Option(ProjectUtil.guessProjectDir(project)).map(_.getCanonicalPath)
     }
       .getOrElse(throw new IllegalStateException(s"no project directory found for project ${project.getName}"))

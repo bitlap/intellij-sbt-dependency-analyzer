@@ -15,8 +15,6 @@ object Constants:
 
   final val PROJECT = "project"
 
-  final val PROTOBUF = "protobuf"
-
   final val TIMEOUT = 10.minutes
 
   final val INTERVAL_TIMEOUT = 1010.milliseconds

@@ -7,7 +7,6 @@ import scala.concurrent.*
 
 import org.jetbrains.sbt.shell.SbtShellCommunication
 
-import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.DependencyScopeNode
 import com.intellij.openapi.project.Project
@@ -61,13 +60,16 @@ trait SbtShellDependencyAnalysisTask:
               )
             }
           case SbtShellCommunication.Output(line) =>
-            if (line.startsWith(s"[error]") && line.contains(parserTypeEnum.cmd) && !promise.isCompleted) {
+            if (
+              line.startsWith(SbtShellDependencyAnalysisTask.ERROR_PREFIX) && line
+                .contains(parserTypeEnum.cmd) && !promise.isCompleted
+            ) {
               promise.failure(
                 AnalyzerCommandNotFoundException(
                   SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")
                 )
               )
-            } else if (line.startsWith(s"[error]") && !promise.isCompleted) {
+            } else if (line.startsWith(SbtShellDependencyAnalysisTask.ERROR_PREFIX) && !promise.isCompleted) {
               promise.failure(
                 AnalyzerCommandUnknownException(
                   parserTypeEnum.cmd,
@@ -90,7 +92,7 @@ trait SbtShellDependencyAnalysisTask:
 end SbtShellDependencyAnalysisTask
 
 object SbtShellDependencyAnalysisTask:
-
+  private val ERROR_PREFIX                                   = "[error]"
   lazy val dependencyDotTask: SbtShellDependencyAnalysisTask = new DependencyDotTask
 
 end SbtShellDependencyAnalysisTask

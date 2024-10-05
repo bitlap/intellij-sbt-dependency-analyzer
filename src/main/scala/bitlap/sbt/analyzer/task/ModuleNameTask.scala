@@ -41,14 +41,14 @@ final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String
 
     moduleIdSbtModuleNameMap.map { (k, v) =>
       val key = k match
-        case moduleNameInputRegex(_, _, moduleName, _, _) => moduleName.trim
-        case rootModuleNameInputRegex(_, _)               => ROOT_SBT_MODULE
-        case SINGLE_SBT_MODULE                            => SINGLE_SBT_MODULE
-        case _                                            => EMPTY_STRING
+        case MODULE_NAME_INPUT_REGEX(_, _, moduleName, _, _) => moduleName.trim
+        case ROOT_MODULE_NAME_INPUT_REGEX(_, _)              => ROOT_SBT_MODULE
+        case SINGLE_SBT_MODULE                               => SINGLE_SBT_MODULE
+        case _                                               => EMPTY_STRING
 
       val value = v match
-        case shellOutputResultRegex(_, _, sbtModuleName) => sbtModuleName.trim
-        case _                                           => EMPTY_STRING
+        case SHELL_OUTPUT_RESULT_REGEX(_, _, sbtModuleName) => sbtModuleName.trim
+        case _                                              => EMPTY_STRING
 
       key -> value
 

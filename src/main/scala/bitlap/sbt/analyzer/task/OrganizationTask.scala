@@ -11,7 +11,7 @@ final class OrganizationTask extends SbtShellOutputAnalysisTask[String]:
   override def executeCommand(project: Project): String =
     val outputLines = getCommandOutputLines(project, "organization")
     outputLines.lastOption.getOrElse("") match
-      case shellOutputResultRegex(_, _, org) =>
+      case SHELL_OUTPUT_RESULT_REGEX(_, _, org) =>
         org.trim
       case _ => null
 

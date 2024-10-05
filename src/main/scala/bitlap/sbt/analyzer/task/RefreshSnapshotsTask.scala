@@ -9,7 +9,7 @@ import com.intellij.openapi.project.Project
 
 import util.SbtUtils
 
-/** Process the `set csrConfiguration;update` command, load fresh snapshots for analysis plugin.
+/** Process the `set csrConfiguration;update` command, load fresh snapshots for sbt shell.
  */
 final class RefreshSnapshotsTask extends SbtShellOutputAnalysisTask[Unit]:
 

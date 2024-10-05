@@ -13,7 +13,7 @@ import com.intellij.openapi.util.Conditions
 import com.intellij.ui.jcef.JBCefApp
 
 object WhatsNew:
-  private lazy val Log     = Logger.getInstance(classOf[WhatsNew.type])
+  private lazy val Log     = Logger.getInstance(getClass)
   private val ReleaseNotes = "https://github.com/bitlap/intellij-sbt-dependency-analyzer/releases/tag/v"
 
   def canBrowseInHTMLEditor: Boolean = JBCefApp.isSupported
