@@ -14,13 +14,13 @@ import bitlap.sbt.analyzer.jbexternal.util.getDisplayText
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.actionSystem.PlatformCoreDataKeys
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.application.runInEdt
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.diagnostic.logger
 import com.intellij.openapi.externalSystem.autoimport.ExternalSystemProjectNotificationAware.Companion.isNotificationVisibleProperty
-import com.intellij.openapi.externalSystem.autoimport.ProjectRefreshAction
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerExtension
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerProject
@@ -53,7 +53,7 @@ import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyze
  */
 class DependencyAnalyzerViewImpl(
     private val project: Project, private val systemId: ProjectSystemId, private val parentDisposable: Disposable
-) : DependencyAnalyzerView , DataProvider {
+) : DataProvider, DependencyAnalyzerView {
 
     private val iconsProvider = ExternalSystemIconProvider.getExtension(systemId)
     private val contributor =
@@ -142,7 +142,7 @@ class DependencyAnalyzerViewImpl(
         return externalProjects.find(predicate)
     }
 
-    override fun getAnalyzerData(dataId: String): Any? {
+    override fun getData(dataId: String): Any? {
         return when (dataId) {
             DependencyAnalyzerView.VIEW.name -> this
             CommonDataKeys.PROJECT.name -> project
@@ -347,7 +347,7 @@ class DependencyAnalyzerViewImpl(
         }.asActionButton(ACTION_PLACE).bindEnabled(!dependencyLoadingProperty)
         val reloadNotificationProperty = isNotificationVisibleProperty(project, systemId)
         val projectReloadSeparator = separator().bindVisible(reloadNotificationProperty)
-        val projectReloadAction = action { ProjectRefreshAction.Manager.refreshProject(project) }.apply {
+        val projectReloadAction = action { ProjectUtil.refreshProject(project) }.apply {
             templatePresentation.icon = AllIcons.Actions.BuildLoadChanges
         }.asActionButton(ACTION_PLACE).bindVisible(reloadNotificationProperty)
 

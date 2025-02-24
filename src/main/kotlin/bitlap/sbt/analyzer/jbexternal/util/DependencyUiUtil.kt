@@ -8,9 +8,9 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
-import bitlap.sbt.analyzer.jbexternal.DataProvider
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.DataProvider
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
@@ -96,11 +96,11 @@ internal abstract class AbstractDependencyList(
         dependencyProperty.bind(property)
     }
 
-    override fun getAnalyzerData(dataId: String): Any? {
+    override fun getData(dataId: String): Any? {
         return when (dataId) {
             DependencyAnalyzerView.DEPENDENCY.name -> dependencyProperty.get()
             DependencyAnalyzerView.DEPENDENCIES.name -> dependencyGroupProperty.get()
-            else -> dataProvider.getAnalyzerData(dataId)
+            else -> dataProvider.getData(dataId)
         }
     }
 
@@ -123,11 +123,11 @@ internal abstract class AbstractDependencyTree(
         dependencyProperty.bind(property)
     }
 
-    override fun getAnalyzerData(dataId: String): Any? {
+    override fun getData(dataId: String): Any? {
         return when (dataId) {
             DependencyAnalyzerView.DEPENDENCY.name -> dependencyProperty.get()
             DependencyAnalyzerView.DEPENDENCIES.name -> dependencyGroupProperty.get()
-            else -> dataProvider.getAnalyzerData(dataId)
+            else -> dataProvider.getData(dataId)
         }
     }
 

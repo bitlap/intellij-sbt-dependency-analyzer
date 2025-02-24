@@ -15,10 +15,15 @@ import org.jetbrains.sbt.settings.SbtSettings
 
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.externalSystem.autoimport.{
+  ExternalSystemProjectNotificationAware,
+  ExternalSystemProjectTracker
+}
 import com.intellij.openapi.externalSystem.importing.ImportSpecBuilder
 import com.intellij.openapi.externalSystem.model.project.dependencies.DependencyNode
 import com.intellij.openapi.externalSystem.model.task.ExternalSystemTaskType
 import com.intellij.openapi.externalSystem.service.internal.ExternalSystemProcessingManager
+import com.intellij.openapi.externalSystem.service.project.trusted.ExternalSystemTrustedProjectDialog
 import com.intellij.openapi.externalSystem.util.{ ExternalSystemApiUtil, ExternalSystemUtil }
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.*
@@ -50,24 +55,21 @@ object SbtUtils {
 
   def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
 
-  def refreshProject(project: Project): Unit = {
-    ExternalSystemUtil.refreshProjects(
-      new ImportSpecBuilder(project, SbtProjectSystem.Id)
-        .dontNavigateToError()
-        .dontReportRefreshErrors()
-        .build()
-    )
-  }
+  def refreshProject(project: Project): Unit = jbexternal.util.ProjectUtil.INSTANCE.refreshProject(project)
 
   def untilProjectReady(project: Project): Boolean = {
-    while (!SbtUtils.isProjectReady(project)) {
-      waitInterval(100.millis)
+    val timeout   = 10.minutes
+    val interval  = 100.millis
+    val startTime = System.currentTimeMillis()
+    val endTime   = startTime + timeout.toMillis
+    while (System.currentTimeMillis() < endTime && !SbtUtils.isProjectReady(project)) {
+      waitInterval(interval)
     }
     true
   }
 
   // TODO
-  def isProjectReady(project: Project): Boolean = {
+  private def isProjectReady(project: Project): Boolean = {
     SbtUtils
       .getExternalProjectPath(project)
       .map { externalProjectPath =>
