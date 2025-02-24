@@ -13,12 +13,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
-          cache: 'sbt'
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - uses: coursier/cache-action@v6          
       - name: Build
         run: sbt compile
 
@@ -30,19 +32,23 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-          cache: 'sbt'
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - uses: coursier/cache-action@v6          
       - name: Check Style
         run: sbt check
         
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup JDK
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 17
-          cache: 'sbt'
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - uses: coursier/cache-action@v6
       - name: Test
         run: sbt test
   
@@ -54,7 +60,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
-          cache: 'sbt'
+          cache: sbt
+      - uses: sbt/setup-sbt@v1
+      - uses: coursier/cache-action@v6          
       - name: Check Binary Compatibility
         run: sbt runPluginVerifier
 
