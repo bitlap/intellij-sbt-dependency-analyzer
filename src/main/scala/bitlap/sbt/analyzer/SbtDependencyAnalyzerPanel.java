@@ -60,7 +60,7 @@ public class SbtDependencyAnalyzerPanel {
         }
         if (changed) {
             Notifications$.MODULE$.notifySettingsChanged(project);
-            SettingsState.SettingsChangePublisher().onAnalyzerConfigurationChanged(this.project, settings);
+            SettingsState.SettingsChangePublisher().onConfigurationChanged(this.project, settings);
         }
     }
 

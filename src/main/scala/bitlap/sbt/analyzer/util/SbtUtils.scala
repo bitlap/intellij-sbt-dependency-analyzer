@@ -55,7 +55,14 @@ object SbtUtils {
 
   def getSbtProject(project: Project): SbtSettings = SSbtUtil.sbtSettings(project)
 
-  def refreshProject(project: Project): Unit = jbexternal.util.ProjectUtil.INSTANCE.refreshProject(project)
+  def forceRefreshProject(project: Project): Unit = {
+    ExternalSystemUtil.refreshProjects(
+      new ImportSpecBuilder(project, SbtProjectSystem.Id)
+        .dontNavigateToError()
+        .dontReportRefreshErrors()
+        .build()
+    )
+  }
 
   def untilProjectReady(project: Project): Boolean = {
     val timeout   = 10.minutes

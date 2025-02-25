@@ -3,7 +3,7 @@ package sbt
 package analyzer
 package action
 
-import bitlap.sbt.analyzer.util.SbtUtils
+import bitlap.sbt.analyzer.util.SbtReimportProject
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 
@@ -15,9 +15,7 @@ final class SbtRefreshDependenciesAction extends BaseRefreshDependenciesAction:
     SbtDependencyAnalyzerBundle.message("analyzer.refresh.dependencies.description")
 
   override def actionPerformed(e: AnActionEvent): Unit = {
-    SbtDependencyAnalyzerContributor.isAvailable.set(false)
-    SbtUtils.refreshProject(e.getProject)
-    SbtDependencyAnalyzerContributor.isAvailable.set(true)
+    SbtReimportProject.ReimportProjectPublisher.onReimportProject(e.getProject)
   }
 
 end SbtRefreshDependenciesAction

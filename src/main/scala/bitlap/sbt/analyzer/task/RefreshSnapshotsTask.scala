@@ -20,17 +20,17 @@ final class RefreshSnapshotsTask extends SbtShellOutputAnalysisTask[Unit]:
       getCommandOutputLines(
         project,
         """
-          |set update / skip := false
+          |set update / skip := false;
           |set csrConfiguration := csrConfiguration.value.withTtl(Option(scala.concurrent.duration.DurationInt(0).seconds));
-          |update
+          |update;
           |""".stripMargin
       )
     } else {
       getCommandOutputLines(
         project,
         """
-          |set update / skip := false
-          |update
+          |set update / skip := false;
+          |update;
           |""".stripMargin
       )
     }

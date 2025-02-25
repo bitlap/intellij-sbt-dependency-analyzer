@@ -13,6 +13,7 @@ import scala.util.control.Breaks.breakable
 import org.jetbrains.plugins.scala.extensions.inReadAction
 import org.jetbrains.plugins.scala.project.VirtualFileExt
 
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.vfs.VfsUtil
 
 import analyzer.util.Notifications
@@ -22,6 +23,8 @@ import guru.nidi.graphviz.parse.Parser
 import model.ModuleContext
 
 object DotUtil {
+
+  private val LOG = Logger.getInstance(getClass)
 
   private lazy val parser = (new Parser).forEngine(ValidatorEngine.DOT).notValidating()
 
@@ -61,6 +64,7 @@ object DotUtil {
       }
     } catch {
       case ignore: Throwable =>
+        LOG.error(ignore)
         Notifications.notifyParseFileError(file, "The file parsing failed")
         null
     }

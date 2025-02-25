@@ -280,32 +280,37 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
 }
 
-object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeListener:
-
-  final val isAvailable = new AtomicBoolean(true)
+object SbtDependencyAnalyzerContributor
+    extends SettingsState.SettingsChangeListener,
+      SbtReimportProject.ReimportProjectListener:
+  import com.intellij.openapi.observable.properties.AtomicProperty
+  private final val dependencyIsAvailable = new AtomicProperty[Boolean](true)
 
   // if data change
-  override def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit = {
-    isAvailable.set(false)
-    SbtUtils.refreshProject(project)
-    isAvailable.set(true)
+  override def onConfigurationChanged(project: Project, settingsState: SettingsState): Unit = {
+    SbtReimportProject.ReimportProjectPublisher.onReimportProject(project)
+  }
+
+  override def onReimportProject(project: Project): Unit = {
+    SbtUtils.forceRefreshProject(project)
   }
 
   ApplicationManager.getApplication.getMessageBus.connect().subscribe(SettingsState._Topic, this)
+  ApplicationManager.getApplication.getMessageBus.connect().subscribe(SbtReimportProject._Topic, this)
 
-  private final val isNotifying = new AtomicBoolean(false)
+  private final val hasNotified = new AtomicBoolean(false)
 
   private def isValidFile(project: Project, file: String): Boolean = {
-    if (isAvailable.get()) {
+    if (dependencyIsAvailable.get()) {
       val lastModified = VfsUtil.findFile(Path.of(file), true).getTimeStamp
       val upToDate =
         System.currentTimeMillis() <= lastModified + SettingsState.getSettings(project).fileCacheTimeout * 1000
       if (!upToDate) {
-        isAvailable.set(false)
+        dependencyIsAvailable.set(false)
       }
-      isAvailable.get()
+      dependencyIsAvailable.get()
     } else {
-      isAvailable.get()
+      dependencyIsAvailable.get()
     }
   }
 
@@ -370,10 +375,10 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
 
       if (DependencyUtils.canIgnoreModule(module)) return Collections.emptyList()
 
-      if (isNotifying.get() && SbtUtils.untilProjectReady(project)) {
+      if (hasNotified.get() && SbtUtils.untilProjectReady(project)) {
         // must reload project to enable it
         SbtShellOutputAnalysisTask.reloadTask.executeCommand(project)
-        isNotifying.compareAndSet(true, false)
+        hasNotified.compareAndSet(true, false)
       }
 
       // if the analysis files already exist (.dot), use it directly.
@@ -402,7 +407,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
               createRootScopeNode(scope, project)
             )
         } else {
-          isAvailable.set(true)
+          dependencyIsAvailable.set(true)
           SbtShellDependencyAnalysisTask.dependencyDotTask.executeCommand(
             project,
             moduleData,
@@ -433,7 +438,7 @@ object SbtDependencyAnalyzerContributor extends SettingsState.SettingsChangeList
             }
           } catch {
             case _: AnalyzerCommandNotFoundException =>
-              if (isNotifying.compareAndSet(false, true)) {
+              if (hasNotified.compareAndSet(false, true)) {
                 Notifications.notifyAndCreateSdapFile(project)
               }
               break()
