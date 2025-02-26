@@ -97,7 +97,7 @@ final class ProjectViewDependencyAnalyzerAction extends AbstractSbtDependencyAna
 
   override def isEnabledAndVisible(e: AnActionEvent): Boolean = {
     super.isEnabledAndVisible(e)
-    && (e.getData(LangDataKeys.MODULE_CONTEXT_ARRAY) != null || !ActionPlaces.isPopupPlace(e.getPlace))
+    && (e.getData(LangDataKeys.MODULE_CONTEXT_ARRAY) != null || !e.isFromContextMenu)
   }
 
 end ProjectViewDependencyAnalyzerAction

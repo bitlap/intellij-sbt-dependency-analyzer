@@ -8,9 +8,10 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.TreeModel
 
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
-import bitlap.sbt.analyzer.jbexternal.DataProvider
 
 import com.intellij.icons.AllIcons
+import com.intellij.openapi.actionSystem.DataSink
+import com.intellij.openapi.actionSystem.UiDataProvider
 import com.intellij.openapi.application.invokeLater
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerView
 import com.intellij.openapi.externalSystem.util.ExternalSystemBundle
@@ -86,8 +87,8 @@ private fun SimpleColoredComponent.customizeCellRenderer(
 }
 
 internal abstract class AbstractDependencyList(
-    model: ListModel<DependencyGroup>, private val dataProvider: DataProvider
-) : JBList<DependencyGroup>(model), DataProvider {
+    model: ListModel<DependencyGroup>
+) : JBList<DependencyGroup>(model), UiDataProvider {
 
     private val dependencyProperty = AtomicProperty<Dependency?>(null)
     private val dependencyGroupProperty = AtomicProperty<DependencyGroup?>(null)
@@ -96,12 +97,9 @@ internal abstract class AbstractDependencyList(
         dependencyProperty.bind(property)
     }
 
-    override fun getAnalyzerData(dataId: String): Any? {
-        return when (dataId) {
-            DependencyAnalyzerView.DEPENDENCY.name -> dependencyProperty.get()
-            DependencyAnalyzerView.DEPENDENCIES.name -> dependencyGroupProperty.get()
-            else -> dataProvider.getAnalyzerData(dataId)
-        }
+    override fun uiDataSnapshot(sink: DataSink) {
+        sink[DependencyAnalyzerView.DEPENDENCY] = dependencyProperty.get()
+        sink[DependencyAnalyzerView.DEPENDENCIES] = dependencyGroupProperty.get()?.variances
     }
 
     init {
@@ -113,8 +111,8 @@ internal abstract class AbstractDependencyList(
 }
 
 internal abstract class AbstractDependencyTree(
-    model: TreeModel, private val dataProvider: DataProvider
-) : SimpleTree(model), DataProvider {
+    model: TreeModel
+) : SimpleTree(model), UiDataProvider {
 
     private val dependencyProperty = AtomicProperty<Dependency?>(null)
     private val dependencyGroupProperty = AtomicProperty<DependencyGroup?>(null)
@@ -123,12 +121,9 @@ internal abstract class AbstractDependencyTree(
         dependencyProperty.bind(property)
     }
 
-    override fun getAnalyzerData(dataId: String): Any? {
-        return when (dataId) {
-            DependencyAnalyzerView.DEPENDENCY.name -> dependencyProperty.get()
-            DependencyAnalyzerView.DEPENDENCIES.name -> dependencyGroupProperty.get()
-            else -> dataProvider.getAnalyzerData(dataId)
-        }
+    override fun uiDataSnapshot(sink: DataSink) {
+        sink[DependencyAnalyzerView.DEPENDENCY] = dependencyProperty.get()
+        sink[DependencyAnalyzerView.DEPENDENCIES] = dependencyGroupProperty.get()?.variances
     }
 
     init {
@@ -140,12 +135,11 @@ internal abstract class AbstractDependencyTree(
     }
 }
 
-internal class DependencyList(
+internal open class DependencyList(
     model: ListModel<DependencyGroup>,
     showGroupIdProperty: ObservableProperty<Boolean>,
     showSizeProperty: ObservableProperty<Boolean>,
-    dataProvider: DataProvider
-) : AbstractDependencyList(model, dataProvider) {
+) : AbstractDependencyList(model) {
     init {
         ListUiUtil.Selection.installSelectionOnRightClick(this)
         PopupHandler.installPopupMenu(
@@ -155,12 +149,11 @@ internal class DependencyList(
     }
 }
 
-internal class DependencyTree(
+internal open class DependencyTree(
     model: TreeModel,
     showGroupIdProperty: ObservableProperty<Boolean>,
     showSizeProperty: ObservableProperty<Boolean>,
-    dataProvider: DataProvider
-) : AbstractDependencyTree(model, dataProvider) {
+) : AbstractDependencyTree(model) {
     init {
         PopupHandler.installPopupMenu(
             this, "ExternalSystem.DependencyAnalyzer.DependencyTreeGroup", DependencyAnalyzerView.ACTION_PLACE
@@ -169,12 +162,11 @@ internal class DependencyTree(
     }
 }
 
-internal class UsagesTree(
+internal open class UsagesTree(
     model: TreeModel,
     showGroupIdProperty: ObservableProperty<Boolean>,
     showSizeProperty: ObservableProperty<Boolean>,
-    dataProvider: DataProvider
-) : AbstractDependencyTree(model, dataProvider) {
+) : AbstractDependencyTree(model) {
     init {
         PopupHandler.installPopupMenu(
             this, "ExternalSystem.DependencyAnalyzer.UsagesTreeGroup", DependencyAnalyzerView.ACTION_PLACE

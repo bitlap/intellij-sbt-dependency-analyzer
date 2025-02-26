@@ -20,34 +20,36 @@ final class SbtDependencyAnalyzerExcludeAction extends BaseRefreshDependenciesAc
   override def actionPerformed(e: AnActionEvent): Unit = {
     Option(SbtDependencyAnalyzerActionUtil.getModifiableDependency(e)).foreach { modifiableDependency =>
       val parent = getUnifiedCoordinates(modifiableDependency.parentDependency)
-      val unifiedDependency =
-        new UnifiedDependency(parent, modifiableDependency.parentDependency.getParent.getScope.getTitle)
-      val coordinates: UnifiedCoordinates = modifiableDependency.coordinates
-      if (coordinates == parent) {
-        // remove declared dependency
-        try {
-          SbtDependencyModifier.removeDependency(modifiableDependency.module, unifiedDependency)
-          Notifications.notifyDependencyChanged(
-            modifiableDependency.module.getProject,
-            coordinates.getDisplayName,
-            true
-          )
-        } catch {
-          case e: AnalyzerCommandNotFoundException =>
-            LOG.error(s"Cannot remove declared dependency: ${coordinates.getDisplayName}", e)
-          case ignore: Exception => throw ignore
-        }
+      if (modifiableDependency.parentDependency.getParent != null) {
+        val unifiedDependency =
+          new UnifiedDependency(parent, modifiableDependency.parentDependency.getParent.getScope.getTitle)
+        val coordinates: UnifiedCoordinates = modifiableDependency.coordinates
+        if (coordinates == parent) {
+          try {
+            // remove declared dependency
+            SbtDependencyModifier.removeDependency(modifiableDependency.module, unifiedDependency)
+            Notifications.notifyDependencyChanged(
+              modifiableDependency.module.getProject,
+              coordinates.getDisplayName,
+              true
+            )
+          } catch {
+            case e: AnalyzerCommandNotFoundException =>
+              LOG.error(s"Cannot remove declared dependency: ${coordinates.getDisplayName}", e)
+            case ignore: Exception => throw ignore
+          }
 
-      } else {
-        // add exclude coordinates
-        val ret =
-          SbtDependencyModifier.addExcludeToDependency(modifiableDependency.module, unifiedDependency, coordinates)
-        if (ret) {
-          Notifications.notifyDependencyChanged(
-            modifiableDependency.module.getProject,
-            coordinates.getDisplayName,
-            false
-          )
+        } else {
+          // add exclude coordinates
+          val ret =
+            SbtDependencyModifier.addExcludeToDependency(modifiableDependency.module, unifiedDependency, coordinates)
+          if (ret) {
+            Notifications.notifyDependencyChanged(
+              modifiableDependency.module.getProject,
+              coordinates.getDisplayName,
+              false
+            )
+          }
         }
       }
     }

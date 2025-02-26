@@ -18,6 +18,7 @@ import com.intellij.icons.AllIcons
 import com.intellij.ide.BrowserUtil
 import com.intellij.notification.*
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.Document
 import com.intellij.openapi.fileEditor.*
 import com.intellij.openapi.project.{ DumbAwareAction, Project }
@@ -61,7 +62,7 @@ object Notifications {
   def notifySettingsChanged(project: Project): Unit = {
     val notification = NotificationGroup
       .createNotification(
-        SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.title"),
+        SbtDependencyAnalyzerBundle.message("analyzer.notification.setting.changed.title"),
         NotificationType.INFORMATION
       )
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
@@ -145,7 +146,7 @@ object Notifications {
       // SbtUtils.untilProjectReady(project)
 
     }
-    invokeAndWait(SbtUtils.refreshProject(project))
+    invokeAndWait(SbtUtils.forceRefreshProject(project))
     // 2. add notification
     NotificationGroup
       .createNotification(
