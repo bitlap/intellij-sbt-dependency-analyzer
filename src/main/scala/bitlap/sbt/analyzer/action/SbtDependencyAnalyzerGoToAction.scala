@@ -24,15 +24,20 @@ final class SbtDependencyAnalyzerGoToAction extends DependencyAnalyzerGoToAction
 
   private val LOG = Logger.getInstance(classOf[SbtDependencyAnalyzerGoToAction])
 
+  // PsiNavigationSupport
   override def getNavigatable(e: AnActionEvent): Navigatable =
     Option(SbtDependencyAnalyzerActionUtil.getModifiableDependency(e))
       .flatMap(_.declaredDependency)
       .flatMap { dependency =>
         Try {
-          val data = dependency.getDataContext.getData(CommonDataKeys.PSI_ELEMENT.getName)
+          // warn: this will always yield false since type com.intellij.psi.PsiElement and class Tuple3 are unrelated
+          // add asInstanceOf to fix it
+          val data = dependency.getDataContext.getData(CommonDataKeys.PSI_ELEMENT).asInstanceOf[AnyRef]
           data match
-            case t: (_, _, _) if t._1.isInstanceOf[PsiElement] =>
-              Some(t._1.asInstanceOf[PsiElement])
+            case t: (_, _, _) =>
+              t._1 match
+                case element: PsiElement => Some(element)
+                case _                   => None
             case _ => None
         }.getOrElse {
           LOG.error(s"Cannot get 'PSI_ELEMENT' as 'PsiElement' for ${dependency.getCoordinates}")

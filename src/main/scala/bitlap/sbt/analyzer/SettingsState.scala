@@ -50,7 +50,7 @@ object SettingsState {
 
   trait SettingsChangeListener:
 
-    def onAnalyzerConfigurationChanged(project: Project, settingsState: SettingsState): Unit
+    def onConfigurationChanged(project: Project, settingsState: SettingsState): Unit
 
   end SettingsChangeListener
 
