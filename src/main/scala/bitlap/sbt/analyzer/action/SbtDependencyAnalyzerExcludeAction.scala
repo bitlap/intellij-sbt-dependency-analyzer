@@ -31,12 +31,17 @@ final class SbtDependencyAnalyzerExcludeAction extends BaseRefreshDependenciesAc
             Notifications.notifyDependencyChanged(
               modifiableDependency.module.getProject,
               coordinates.getDisplayName,
-              true
+              self = true
             )
           } catch {
-            case e: AnalyzerCommandNotFoundException =>
+            case e: Exception =>
               LOG.error(s"Cannot remove declared dependency: ${coordinates.getDisplayName}", e)
-            case ignore: Exception => throw ignore
+              Notifications.notifyDependencyChanged(
+                modifiableDependency.module.getProject,
+                coordinates.getDisplayName,
+                self = true,
+                success = false
+              )
           }
 
         } else {
@@ -47,7 +52,15 @@ final class SbtDependencyAnalyzerExcludeAction extends BaseRefreshDependenciesAc
             Notifications.notifyDependencyChanged(
               modifiableDependency.module.getProject,
               coordinates.getDisplayName,
-              false
+              success = true,
+              self = false
+            )
+          } else {
+            Notifications.notifyDependencyChanged(
+              modifiableDependency.module.getProject,
+              coordinates.getDisplayName,
+              success = false,
+              self = false
             )
           }
         }

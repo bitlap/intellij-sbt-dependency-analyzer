@@ -69,10 +69,21 @@ object Notifications {
     notification.notify(project)
   }
 
-  def notifyDependencyChanged(project: Project, dependency: String, self: Boolean = false): Unit = {
+  def notifyDependencyChanged(
+    project: Project,
+    dependency: String,
+    success: Boolean = true,
+    self: Boolean = false
+  ): Unit = {
     val msg =
-      if (!self) SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.title", dependency)
-      else SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.removed.title", dependency)
+      if (!self) {
+        if (success) SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.title", dependency)
+        else SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.excluded.failed.title", dependency)
+      } else {
+        if (success)
+          SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.removed.title", dependency)
+        else SbtDependencyAnalyzerBundle.message("analyzer.notification.dependency.removed.failed.title", dependency)
+      }
     NotificationGroup
       .createNotification(msg, NotificationType.INFORMATION)
       .setIcon(SbtDependencyAnalyzerIcons.ICON)
