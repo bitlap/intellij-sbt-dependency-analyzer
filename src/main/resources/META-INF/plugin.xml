@@ -2,12 +2,12 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.6.0-243.24978.46</version>
+    <version>0.7.0-251.23536.34</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
     <!-- old version support, see branch idea231.x   -->
-    <idea-version since-build="243.0"/>
+    <idea-version since-build="251.0"/>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.lang</depends>
@@ -136,9 +136,15 @@
 
         <![CDATA[
 
+            <h1>0.7.0-251.23536.34</h1>
+            <ul>
+                <li>Support IDEA 251.x .</li>
+            </ul>
+            <!-- @@ -->
+
             <h1>0.6.0-243.24978.46</h1>
             <ul>
-                <li>Upgrade Dependency.</li>
+                <li>Support IDEA 243.x .</li>
             </ul>
             <!-- @@ -->
             
@@ -152,7 +158,7 @@
             
             <h1>0.4.0-242.21829.142</h1>
             <ul>
-                <li>Support idea 2024.2.</li>
+                <li>Support IDEA 2024.2.</li>
                 <li>Fix Goto dependency (Now supports custom dependencies for all projects).</li>
             </ul>
             <!-- @@ -->
@@ -166,7 +172,7 @@
                     
             <h1>0.3.0-233.11799.241</h1>
             <ul>
-                <li>Support idea 2023.3.</li>
+                <li>Support IDEA 2023.3.</li>
             </ul>
             <!-- @@ -->
             

@@ -24,7 +24,7 @@ class AddDependencyPreviewWizard(
   private val sbtPossiblePlacesStep = new SbtPossiblePlacesStep(this, project, fileLines)
 
   val elementToAdd: Any                                       = elem
-  var resultFileLine: Option[DependencyOrRepositoryPlaceInfo] = scala.compiletime.uninitialized
+  var resultFileLine: Option[DependencyOrRepositoryPlaceInfo] = None
 
   override def getHelpID: String = null
 
@@ -42,4 +42,5 @@ class AddDependencyPreviewWizard(
     sbtPossiblePlacesStep.panel.releaseEditor()
     super.dispose()
   }
+
 }

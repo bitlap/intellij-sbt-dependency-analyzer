@@ -32,7 +32,7 @@ object Notifications {
     NotificationGroupManager.getInstance().getNotificationGroup("Sbt.DependencyAnalyzer.Notification")
 
   private def getSdapText(project: Project): String = {
-    val sbtVersion = Version(SbtUtils.getSbtVersion(project))
+    val sbtVersion = SbtUtils.getSbtVersion(project).binaryVersion
     val line = if (sbtVersion.major(2) >= Version("1.4")) {
       "addDependencyTreePlugin"
     } else {
