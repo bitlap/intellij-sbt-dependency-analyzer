@@ -72,7 +72,7 @@ jobs:
 
   
   ci:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [ build, lint, test, verification]
     steps:
       - name: Aggregate outcomes
