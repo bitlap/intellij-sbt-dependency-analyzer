@@ -7,12 +7,13 @@ lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
 lazy val scalatestVersion      = "3.2.19"
 lazy val pluginVerifierVersion = "1.305"
-lazy val ktVersion             = "1.9.10"
+lazy val ktVersion             = "2.1.0"
+lazy val jbAnnotVersion        = "26.0.2"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
-lazy val intellijVersion = "243.24978.46"
-lazy val pluginVersion   = s"0.6.0-$intellijVersion"
+lazy val intellijVersion = "251.23536.34"
+lazy val pluginVersion   = s"0.7.0-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -76,7 +77,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       "guru.nidi"      % "graphviz-java-min-deps" % graphvizVersion,
       "ch.qos.logback" % "logback-classic"        % logbackVersion,
       "org.jooq"       % "joor"                   % joorVersion,
-      "org.scalatest" %% "scalatest"              % scalatestVersion % Test
+      "org.scalatest" %% "scalatest"              % scalatestVersion % Test,
+      "org.jetbrains"  % "annotations"            % jbAnnotVersion
     ),
     kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
