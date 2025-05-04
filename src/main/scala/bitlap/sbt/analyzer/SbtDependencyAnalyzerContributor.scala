@@ -223,7 +223,8 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     projectDir: String
   ): Unit = {
     val dependency = createDependency(dependencyNode, scope, usage)
-    if (dependency == null) {} else {
+    if (dependency == null) {}
+    else {
       dependencies.append(dependency)
       for (node <- dependencyNode.getDependencies.asScala) {
         addDependencies(dependency, scope, node, dependencies, projectDir)
@@ -428,9 +429,10 @@ object SbtDependencyAnalyzerContributor
           var node: DependencyScopeNode = null
           try {
 
-            if (settings.disableAnalyzeProvided && scope == DependencyScopeEnum.Provided) {} else if (
-              settings.disableAnalyzeTest && scope == DependencyScopeEnum.Test
-            ) {} else if (settings.disableAnalyzeCompile && scope == DependencyScopeEnum.Compile) {} else {
+            if (settings.disableAnalyzeProvided && scope == DependencyScopeEnum.Provided) {}
+            else if (settings.disableAnalyzeTest && scope == DependencyScopeEnum.Test) {}
+            else if (settings.disableAnalyzeCompile && scope == DependencyScopeEnum.Compile) {}
+            else {
               node = executeCommandOrReadExistsFile(scope)
             }
             if (node != null) {
