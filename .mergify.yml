@@ -1,24 +1,30 @@
+queue_rules:
+  - name: default
+    merge_conditions:
+      - "-draft"
+    merge_method: merge
+    update_method: rebase
+    
 pull_request_rules:
   - name: assign and label scala-steward's PRs
     conditions:
-      - author=scala-steward
+      - or:
+          - "author=scala-steward"
+          - "author=scala-steward-bitlap[bot]"
+          - "author=renovate[bot]"
     actions:
       assign:
         users: ["@bitlap/intellij-sbt-dependency-analyzer"]
       label:
         add: ["type: dependencies"]
-  - name: label scala-steward's breaking PRs
-    conditions:
-      - author=scala-steward
-      - "body~=(labels: library-update, early-semver-major)|(labels: sbt-plugin-update, early-semver-major)"
-    actions:
-      label:
-        add: ["type: breaking"]
+        
   - name: merge Scala Steward's PRs
     conditions:
-      - author=scala-steward
-      - "body~=(labels: library-update, early-semver-minor)|(labels: library-update, early-semver-patch)|(labels: sbt-plugin-update, early-semver-minor)|(labels: sbt-plugin-update, early-semver-patch)|(labels: test-library-update)"
-      - "check-success=ci"
+      - "check-success=ci"     
+      - or:
+          - "author=scala-steward"
+          - "author=scala-steward-bitlap[bot]"
+          - "author=renovate[bot]"
     actions:
-      merge:
-        method: squash
+      queue:
+        name: default
