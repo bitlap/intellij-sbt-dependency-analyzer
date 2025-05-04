@@ -2,12 +2,12 @@ name: Auto approve
 on: pull_request_target
 
 jobs:
-  build:
+  auto-approve:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
-    if: github.actor == 'renovate[bot]' || github.actor == 'scala-steward-bitlap[bot]'
     steps:
       - uses: hmarr/auto-approve-action@v4
+        if: github.actor == 'renovate[bot]' || github.actor == 'scala-steward-bitlap[bot]'
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"

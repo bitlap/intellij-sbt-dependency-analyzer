@@ -20,7 +20,8 @@ pull_request_rules:
         
   - name: merge Scala Steward's PRs
     conditions:
-      - "check-success=ci"     
+      - "check-success=ci"
+      - "#approved-reviews-by>=1"
       - or:
           - "author=scala-steward"
           - "author=scala-steward-bitlap[bot]"
