@@ -5,4 +5,4 @@ ThisBuild / resolvers ++= Seq(
 addSbtPlugin("org.jetbrains" % "sbt-ide-settings"  % "1.1.0")
 addSbtPlugin("org.jetbrains" % "sbt-idea-plugin"   % "4.1.5")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt"      % "2.5.4")
-addSbtPlugin("org.bitlap"    % "sbt-kotlin-plugin" % "4.0.0")
+addSbtPlugin("org.bitlap"    % "sbt-kotlin-plugin" % "4.0.1")
