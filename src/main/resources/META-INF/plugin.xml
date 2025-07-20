@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.7.0-251.23536.34</version>
+    <version>0.7.1-251.26927.53</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
@@ -136,6 +136,12 @@
 
         <![CDATA[
 
+            <h1>0.7.1-251.26927.53</h1>
+            <ul>
+                <li>Fix warnings .</li>
+            </ul>
+            <!-- @@ -->
+            
             <h1>0.7.0-251.23536.34</h1>
             <ul>
                 <li>Support IDEA 251.x .</li>
