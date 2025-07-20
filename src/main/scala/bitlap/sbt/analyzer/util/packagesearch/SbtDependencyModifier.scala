@@ -76,7 +76,7 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
       val wizard = new AddDependencyPreviewWizard(project, newArtifactInfo, dependencyPlaces)
       wizard.search() match {
         case Some(fileLine) =>
-          SbtDependencyUtils.addDependency(fileLine.element, newArtifactInfo)(project)
+          SbtDependencyUtils.addDependency(fileLine.element, newArtifactInfo)(using project)
         case _ =>
       }
     }
@@ -191,7 +191,7 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
 
   override def declaredRepositories(module: OpenapiModule.Module): util.List[UnifiedDependencyRepository] = try {
     SbtResolverUtils
-      .projectResolvers(module.getProject)
+      .projectResolvers(using module.getProject)
       .collect { case r: SbtMavenResolver =>
         new UnifiedDependencyRepository(r.name, r.presentableName, r.normalizedRoot)
       }

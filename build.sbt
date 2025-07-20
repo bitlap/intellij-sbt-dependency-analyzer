@@ -1,7 +1,7 @@
 import org.jetbrains.sbtidea.Keys.*
 import org.jetbrains.sbtidea.verifier.FailureLevel
 
-lazy val scala3Version         = "3.6.4"
+lazy val scala3Version         = "3.7.1"
 lazy val logbackVersion        = "1.5.18"
 lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
@@ -12,8 +12,8 @@ lazy val jbAnnotVersion        = "26.0.2"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
-lazy val intellijVersion = "251.23536.34"
-lazy val pluginVersion   = s"0.7.0-$intellijVersion"
+lazy val intellijVersion = "251.26927.53"
+lazy val pluginVersion   = s"0.7.1-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -44,8 +44,11 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     organization := "org.bitlap",
     scalacOptions ++= Seq(
       "-deprecation",
-      "-Xfatal-warnings"
-      /** , "-rewrite", "-source:3.4-migration"* */
+      "-Xfatal-warnings",
+      "-Ybackend-parallelism:16" // https://github.com/scala/scala3/pull/15392
+//       "-nowarn", // during migration
+//      "-rewrite",
+//      "-source:3.7-migration"
     ),
     version                        := (ThisBuild / version).value,
     ThisBuild / intellijPluginName := "Sbt Dependency Analyzer",
@@ -62,6 +65,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       offline = true,                  // forbid the verifier from reaching the internet
       failureLevels = Set(FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.COMPATIBILITY_WARNINGS)
     ),
+    autoRemoveOldCachedIntelliJSDK := true,
     Global / intellijAttachSources := true,
     intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
