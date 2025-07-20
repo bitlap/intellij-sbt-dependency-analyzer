@@ -141,6 +141,19 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
     }
   }
 
+  /** * Support syntaxes: e.g.
+   *
+   *  [["x" % "y" % Versions.z withSources ()]]
+   *
+   *  [["x" %% "y" % Versions.z % Test]]
+   *
+   *  [["x" % "y" % z]]
+   *
+   *  [[libraryDependencies ++= Seq("x" % "y" % z)]]
+   *
+   *  @param module
+   *  @param toRemoveDependency
+   */
   override def removeDependency(module: OpenapiModule.Module, toRemoveDependency: UnifiedDependency): Unit = {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
