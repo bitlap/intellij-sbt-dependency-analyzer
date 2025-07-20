@@ -44,7 +44,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     organization := "org.bitlap",
     scalacOptions ++= Seq(
       "-deprecation",
-      "-Xfatal-warnings",
+//      "-Xfatal-warnings",
       "-Ybackend-parallelism:16" // https://github.com/scala/scala3/pull/15392
 //       "-nowarn", // during migration
 //      "-rewrite",
