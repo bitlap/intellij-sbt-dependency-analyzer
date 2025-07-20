@@ -65,8 +65,9 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       offline = true,                  // forbid the verifier from reaching the internet
       failureLevels = Set(FailureLevel.COMPATIBILITY_PROBLEMS, FailureLevel.COMPATIBILITY_WARNINGS)
     ),
-    autoRemoveOldCachedIntelliJSDK := true,
-    Global / intellijAttachSources := true,
+    ThisBuild / bundleScalaLibrary             := true,
+    ThisBuild / autoRemoveOldCachedIntelliJSDK := true,
+    Global / intellijAttachSources             := true,
     intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "test" / "resources",
@@ -87,7 +88,10 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
-      "org.jetbrains.kotlin" % ".*" % ".*" -> None,
-      "org.jetbrains"        % ".*" % ".*" -> None
+      "org.jetbrains.kotlin"   % ".*"        % ".*" -> None,
+      "org.jetbrains"          % ".*"        % ".*" -> None,
+      "org.scala-lang"         % "scala-.*"  % ".*" -> None,
+      "org.scala-lang"         % "scala3-.*" % ".*" -> None,
+      "org.scala-lang.modules" % "scala-.*"  % ".*" -> None
     )
   )

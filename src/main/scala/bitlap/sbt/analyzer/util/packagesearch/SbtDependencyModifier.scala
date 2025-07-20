@@ -148,6 +148,7 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
     if (targetedLibDepTuple == null) {
       throw AnalyzerCommandNotFoundException("Target dependency not found")
     }
+    // dangerous, hard-coded
     targetedLibDepTuple._3.getParent match {
       case _: ScArgumentExprList =>
         inWriteCommandAction {
@@ -157,13 +158,17 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
         inWriteCommandAction {
           infix.delete()
         }
+      case infix: ScInfixExpr if infix.getChildren.length == 3 && infix.getChildren()(2).isInstanceOf[ScUnitExpr] =>
+        inWriteCommandAction {
+          infix.delete()
+        }
       case infix: ScParenthesisedExpr if infix.parents.toList.exists(_.isInstanceOf[ScReferenceExpression]) =>
         val lastRef = infix.parents.toList.filter(_.isInstanceOf[ScReferenceExpression]).lastOption
         inWriteCommandAction {
           lastRef.foreach(_.parent.foreach(_.delete()))
         }
       case _ =>
-        throw AnalyzerCommandNotFoundException("Target parent not found")
+        throw AnalyzerCommandNotFoundException("This syntax is not supported at this time")
     }
   }
 
