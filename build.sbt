@@ -43,12 +43,12 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     scalaVersion := scala3Version,
     organization := "org.bitlap",
     scalacOptions ++= Seq(
-//      "-deprecation",
-//      "-Xfatal-warnings"
-      "-Ybackend-parallelism:16", // https://github.com/scala/scala3/pull/15392
+      "-deprecation",
+      "-Xfatal-warnings",
+      "-Ybackend-parallelism:16" // https://github.com/scala/scala3/pull/15392
 //       "-nowarn", // during migration
-      "-rewrite",
-      "-source:3.7-migration"
+//      "-rewrite",
+//      "-source:3.7-migration"
     ),
     version                        := (ThisBuild / version).value,
     ThisBuild / intellijPluginName := "Sbt Dependency Analyzer",
