@@ -88,10 +88,9 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
-      "org.jetbrains.kotlin"   % ".*"        % ".*" -> None,
-      "org.jetbrains"          % ".*"        % ".*" -> None,
-      "org.scala-lang"         % "scala-.*"  % ".*" -> None,
-      "org.scala-lang"         % "scala3-.*" % ".*" -> None,
-      "org.scala-lang.modules" % "scala-.*"  % ".*" -> None
+      "org.jetbrains.kotlin"   % ".*"       % ".*" -> None,
+      "org.jetbrains"          % ".*"       % ".*" -> None,
+      "org.scala-lang"         % "scala-.*" % ".*" -> None,
+      "org.scala-lang.modules" % "scala-.*" % ".*" -> None
     )
   )
