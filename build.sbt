@@ -6,14 +6,14 @@ lazy val logbackVersion        = "1.5.18"
 lazy val graphvizVersion       = "0.18.1"
 lazy val joorVersion           = "0.9.15"
 lazy val scalatestVersion      = "3.2.19"
-lazy val pluginVerifierVersion = "1.388"
+lazy val pluginVerifierVersion = "1.394"
 lazy val ktVersion             = "2.1.0"
 lazy val jbAnnotVersion        = "26.0.2"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
-lazy val intellijVersion = "251.26927.53"
-lazy val pluginVersion   = s"0.7.1-$intellijVersion"
+lazy val intellijVersion = "252.25557.77"
+lazy val pluginVersion   = s"0.8.0-$intellijVersion-RC1"
 
 ThisBuild / version := pluginVersion
 
@@ -68,7 +68,14 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     ThisBuild / bundleScalaLibrary             := true,
     ThisBuild / autoRemoveOldCachedIntelliJSDK := true,
     Global / intellijAttachSources             := true,
-    intellijPlugins ++= Seq("com.intellij.java", "com.intellij.java-i18n", "org.intellij.scala").map(_.toPlugin),
+    intellijPlugins ++= Seq("com.intellij.java", "org.intellij.scala").map(_.toPlugin),
+    intellijVMOptions := intellijVMOptions.value.copy(
+      xmx = 2048,
+      xms = 256,
+      defaultOptions = intellijVMOptions.value.defaultOptions ++ Seq(
+        "--add-exports=java.management/sun.management=ALL-UNNAMED"
+      )
+    ),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "test" / "resources",
     patchPluginXml := pluginXmlOptions { xml =>
@@ -88,8 +95,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
-      "org.jetbrains.kotlin"   % ".*"       % ".*" -> None,
-      "org.jetbrains"          % ".*"       % ".*" -> None,
+      "org.jetbrains.kotlin" % ".*" % ".*" -> None,
+//      "org.jetbrains"          % ".*"       % ".*" -> None,
       "org.scala-lang"         % "scala-.*" % ".*" -> None,
       "org.scala-lang.modules" % "scala-.*" % ".*" -> None
     )

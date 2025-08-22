@@ -88,6 +88,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           val dataNodes          = childrenModules.groupBy(_.getKey)
           val rootModuleDataList = dataNodes.getOrElse(SbtModuleData.Key, Seq.empty).map(_.getData(SbtModuleData.Key))
           rootModuleDataList.foreach { moduleData =>
+            // maybe null if IDEA cache
             val module = findModule(project, moduleData.baseDirectory.getAbsolutePath)
             if (module != null) {
               val externalProject   = DAProject(module, moduleData.id)
