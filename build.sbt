@@ -68,6 +68,7 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     ThisBuild / bundleScalaLibrary             := true,
     ThisBuild / autoRemoveOldCachedIntelliJSDK := true,
     Global / intellijAttachSources             := true,
+    buildIntellijOptionsIndex                  := {},
     intellijPlugins ++= Seq("com.intellij.java", "org.intellij.scala").map(_.toPlugin),
     intellijVMOptions := intellijVMOptions.value.copy(
       xmx = 2048,
@@ -95,8 +96,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     kotlinVersion := ktVersion,
     Compile / unmanagedSourceDirectories += baseDirectory.value / "src" / "main" / "kotlin",
     packageLibraryMappings ++= Seq(
-      "org.jetbrains.kotlin" % ".*" % ".*" -> None,
-//      "org.jetbrains"          % ".*"       % ".*" -> None,
+      "org.jetbrains.kotlin"   % ".*"       % ".*" -> None,
+      "org.jetbrains"          % ".*"       % ".*" -> None,
       "org.scala-lang"         % "scala-.*" % ".*" -> None,
       "org.scala-lang.modules" % "scala-.*" % ".*" -> None
     )
