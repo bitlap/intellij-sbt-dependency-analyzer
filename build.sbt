@@ -79,10 +79,12 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     ),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "test" / "resources",
-    patchPluginXml := pluginXmlOptions { xml =>
-      xml.version = pluginVersion
-//      xml.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
-//      xml.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change.html")
+    patchPluginXml := pluginXmlOptions.apply { (x: org.jetbrains.sbtidea.pluginXmlOptions) =>
+      {
+        x.version = pluginVersion
+        x.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
+        x.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change-notes.html")
+      }
     },
     publish / skip := true,
     commands ++= Commands.value,
