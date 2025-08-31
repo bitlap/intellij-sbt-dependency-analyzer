@@ -12,8 +12,8 @@ lazy val jbAnnotVersion        = "26.0.2"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
-lazy val intellijVersion = "252.25557.77"
-lazy val pluginVersion   = s"0.8.0-$intellijVersion-RC2"
+lazy val intellijVersion = "252.25557.131"
+lazy val pluginVersion   = s"0.8.0-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
