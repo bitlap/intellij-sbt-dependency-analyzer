@@ -8,7 +8,7 @@ lazy val joorVersion           = "0.9.15"
 lazy val scalatestVersion      = "3.2.19"
 lazy val pluginVerifierVersion = "1.394"
 lazy val ktVersion             = "2.1.0"
-lazy val jbAnnotVersion        = "26.0.2"
+lazy val jbAnnotVersion        = "26.0.2-1"
 
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
