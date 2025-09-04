@@ -1,69 +1,64 @@
 name: Bug Report
-description: Create a report to help us improve
-title: "[BUG] "
-projects: ["bitlap/intellij-sbt-dependency-analyzer"]
-blank_issues_enabled: false
-
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["octo-org/1", "octo-org/44"]
+assignees:
+  - octocat
 body:
   - type: markdown
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-
-  - type: checkboxes
-    id: preparation-action
+  - type: input
+    id: contact
     attributes:
-      label: Preparation Checklist
-      description: Please confirm you've completed these preparations
+      label: Contact Details
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us, what did you expect to happen?
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: What version of our software are you running?
       options:
-        - label: I have added `addDependencyTreePlugin` into `plugins.sbt` (sbt 1.4+) or the file `sdap.sbt` exists and contains `addDependencyTreePlugin`
-          required: true
-        - label: I have set `organization :=` for root project and cross-platform
-          required: true
-
+        - 1.0.2 (Default)
+        - 1.0.3 (Edge)
+      default: 0
+    validations:
+      required: true
+  - type: dropdown
+    id: browsers
+    attributes:
+      label: What browsers are you seeing the problem on?
+      multiple: true
+      options:
+        - Firefox
+        - Chrome
+        - Safari
+        - Microsoft Edge
   - type: textarea
-    id: sbt-shell-screenshot
+    id: logs
     attributes:
-      label: Screenshot of the current sbt Shell
-      description: Please provide screenshots or text descriptions of your sbt shell output
-      placeholder: |
-        Paste your sbt shell output here or describe what you see...
-    validations:
-      required: true
-
-  - type: textarea
-    id: dependency-tree
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
     attributes:
-      label: Screenshot of the current dependency tree
-      description: Please provide your dependency tree output (text preferred over screenshot)
-      placeholder: |
-        Paste your dependency tree output here...
-    validations:
-      required: true
-
-  - type: input
-    id: scala-platform
-    attributes:
-      label: Scala Platform
-      description: Which Scala platform are you using? (scala-js, scala-jvm, scala-native)
-      placeholder: e.g. scala-jvm
-    validations:
-      required: true
-
-  - type: input
-    id: scala-version
-    attributes:
-      label: Scala Version
-      description: Which Scala version are you using? (2.x or 3.x)
-      placeholder: e.g. 2.13.8 or 3.1.2
-    validations:
-      required: true
-
-  - type: input
-    id: idea-version
-    attributes:
-      label: IntelliJ IDEA Version
-      description: From "About IntelliJ IDEA" menu
-      placeholder: e.g. 2022.2.3 (Community Edition)
-    validations:
-      required: true
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
