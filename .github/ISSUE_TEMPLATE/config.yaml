@@ -1,0 +1,67 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: checkboxes
+    id: preparation-action
+    attributes:
+      label: Preparation Checklist
+      description: Please confirm you've completed these preparations
+      options:
+        - label: I have added `addDependencyTreePlugin` into `plugins.sbt` (sbt 1.4+) or the file `sdap.sbt` exists and contains `addDependencyTreePlugin`
+          required: true
+        - label: I have set `organization :=` for root project and cross-platform
+          required: true
+
+  - type: textarea
+    id: sbt-shell-screenshot
+    attributes:
+      label: Screenshot of the current sbt Shell
+      description: Please provide screenshots or text descriptions of your sbt shell output
+      placeholder: |
+        Paste your sbt shell output here or describe what you see...
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependency-tree
+    attributes:
+      label: Screenshot of the current dependency tree
+      description: Please provide your dependency tree output (text preferred over screenshot)
+      placeholder: |
+        Paste your dependency tree output here...
+    validations:
+      required: true
+
+  - type: input
+    id: scala-platform
+    attributes:
+      label: Scala Platform
+      description: Which Scala platform are you using? (scala-js, scala-jvm, scala-native)
+      placeholder: e.g. scala-jvm
+    validations:
+      required: true
+
+  - type: input
+    id: scala-version
+    attributes:
+      label: Scala Version
+      description: Which Scala version are you using? (2.x or 3.x)
+      placeholder: e.g. 2.13.8 or 3.1.2
+    validations:
+      required: true
+
+  - type: input
+    id: idea-version
+    attributes:
+      label: IntelliJ IDEA Version
+      description: From "About IntelliJ IDEA" menu
+      placeholder: e.g. 2022.2.3 (Community Edition)
+    validations:
+      required: true
