@@ -1,7 +1,9 @@
 name: Bug Report
 description: Create a report to help us improve
 title: "[BUG] "
-labels: ["bug"]
+projects: ["bitlap/intellij-sbt-dependency-analyzer"]
+blank_issues_enabled: false
+
 body:
   - type: markdown
     attributes:
