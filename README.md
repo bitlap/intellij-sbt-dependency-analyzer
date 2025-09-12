@@ -25,7 +25,7 @@ The Sbt Dependency Analyzer plugin for IntelliJ IDEA provides powerful visual to
 *   **JAR Size Indicators**: See the size of dependency JARs to better manage your project's footprint.
 *   **Navigate to Declaration**: Click on a *user-defined* dependency to jump directly to its declaration in `build.sbt`.
 *   **Dependency Exclusion (Experimental)**:
-    *   Select a *transitive* dependency to exclude it from a user-defined dependency.
+    *   Select a *transitive* dependency to exclude it from a *user-defined* dependency.
     *   Select a *user-defined* dependency to remove it entirely.
     *   *Available since plugin version `0.5.0-242.21829.142`.*
 
