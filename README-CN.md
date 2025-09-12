@@ -45,7 +45,7 @@ IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，�
 
 *交互式依赖关系图清晰地展示了项目的结构。*
 
-## ⚙️ 配置
+## ⚙️ 配置 <a id="settings"></a>
 
 通过 `设置/偏好设置` > `工具` > `Sbt Dependency Analyzer` 微调插件行为并可能加速分析：
 
@@ -65,7 +65,7 @@ IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，�
 ### 问题：无法分析模块间的依赖关系
 如果插件无法确定项目组织（organization），它可能无法正确解析模块间的依赖关系。
 *   **解决方案**：通过以下任一方式确保插件知道您的项目组织：
-    1.  在插件的[设置](#-配置)中设置 **组织（Organization）** 值。
+    1.  在插件的[设置](#settings)中设置 **组织（Organization）** 值。
     2.  在您的 `build.sbt` 中使用 `ThisBuild / organization` 或 `inThisBuild(...)` 全局定义 `organization` 设置。
 > **注意**：未在根项目的 `dependsOn` 子句中声明的子模块将不会被解析。
 

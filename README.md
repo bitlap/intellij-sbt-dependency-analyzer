@@ -44,7 +44,7 @@ Simply open your Sbt project in IntelliJ IDEA and use the shortcut to generate a
 ![Dependency Analysis View](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
 *The interactive dependency graph provides a clear overview of your project's structure.*
 
-## ⚙️ Configuration
+## ⚙️ Configuration <a id="settings"></a>
 
 Fine-tune the plugin's behavior and potentially speed up analysis via `Settings/Preferences` > `Tools` > `Sbt Dependency Analyzer`:
 
@@ -66,7 +66,7 @@ This error can occur due to conflicts between the plugin's use of the sbt shell 
 ### Issue: Cannot analyze dependencies between modules
 The plugin may fail to correctly parse inter-module dependencies if it cannot determine the project organization.
 *   **Solution**: Ensure the plugin knows your project's organization by either:
-    1.  Setting the **Organization** value in the plugin's [settings](#-configuration).
+    1.  Setting the **Organization** value in the plugin's [settings](#settings).
     2.  Defining the `organization` setting in your `build.sbt` globally using `ThisBuild / organization` or `inThisBuild(...)`.
 > **Note**: Submodules not declared within the `dependsOn` clause of the root project will not be parsed.
 
