@@ -20,7 +20,7 @@ The Sbt Dependency Analyzer plugin for IntelliJ IDEA provides powerful visual to
 
 *   **Dependency Tree Visualization**: View a hierarchical tree of all your project's dependencies.
 *   **Conflict Identification**: Quickly spot and resolve version conflicts between libraries.
-*   **Powerful Dependency Search**: Easily find specific dependencies across your project.
+*   **Dependency Search**: Easily find specific dependencies across your project.
 *   **Inter-Module Dependency Analysis**: Visualize how different modules in your project depend on each other.
 *   **JAR Size Indicators**: See the size of dependency JARs to better manage your project's footprint.
 *   **Navigate to Declaration**: Click on a *user-defined* dependency to jump directly to its declaration in `build.sbt`.
