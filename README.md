@@ -1,98 +1,87 @@
-Sbt Dependency Analyzer for IntelliJ IDEA
----------
+# Sbt Dependency Analyzer for IntelliJ IDEA
 
-<img src="./logo.svg" width = "250" height = "150" alt="logo" align="right" />
+<img src="./logo.svg" width="250" height="150" alt="Sbt Dependency Analyzer Logo" align="right" />
 
-[![Build](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
-[![Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
-[![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=JetBrains%20Plugin%20Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
+[![Build Status](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
+[![Plugin Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
+[![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
 
 English | [中文](README-CN.md)
 
-**If you find the Sbt Dependency Analyzer interesting, please ⭐ [Star](https://github.com/bitlap/intellij-sbt-dependency-analyzer) it at the top of the GitHub page to support us.**
+**⭐ Found this plugin useful? Please give it a Star on [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) to show your support!**
 
-## Features
+## 🚀 Overview
 
-> The plugin is available since IntelliJ IDEA 2023.1 (Community, Ultimate and Android Studio)
+The Sbt Dependency Analyzer plugin for IntelliJ IDEA provides powerful visual tools to help you understand, manage, and troubleshoot your Sbt project's dependencies with ease. Gain clear insights into your library dependencies and their relationships, directly within your IDE.
 
-- [x] View Dependency Tree
-- [x] Show Conflicts
-- [x] Search Dependencies
-- [x] Show Dependencies Between Modules
-- [x] Show JAR Size
-- [x] Goto Dependency
-  - Clicking on them will take you to the location of the dependency in `build.sbt`
-  - Available only for user-defined dependencies
-- [x] Dependency Exclusion (Experimental) 
-  - Selecting transitive dependencies in user-defined dependencies indicates exclusion, while selecting user-defined dependencies indicates deletion itself
-  - Available since Sbt Dependency Analyzer `0.5.0-242.21829.142`
+> Compatible with IntelliJ IDEA 2023.1 and later (Community Edition, Ultimate, and Android Studio).
 
-## Usage Instructions
+## ✨ Key Features
 
-This plugin will automatically generate `project/sdap.sbt` when the first analysis fails and insert the `addDependencyTreePlugin` (or `addSbtPlugin(...)`) statement into it. If generated, please do not modify or delete `project/sdap.sbt`. 
+*   **Dependency Tree Visualization**: View a hierarchical tree of all your project's dependencies.
+*   **Conflict Identification**: Quickly spot and resolve version conflicts between libraries.
+*   **Powerful Dependency Search**: Easily find specific dependencies across your project.
+*   **Inter-Module Dependency Analysis**: Visualize how different modules in your project depend on each other.
+*   **JAR Size Indicators**: See the size of dependency JARs to better manage your project's footprint.
+*   **Navigate to Declaration**: Click on a *user-defined* dependency to jump directly to its declaration in `build.sbt`.
+*   **Dependency Exclusion (Experimental)**:
+    *   Select a *transitive* dependency to exclude it from a user-defined dependency.
+    *   Select a *user-defined* dependency to remove it entirely.
+    *   *Available since plugin version `0.5.0-242.21829.142`.*
 
-This plugin relies on `sbt-dependency-tree`, a third-party plugin, which is now integrated into sbt by default (although it won't be enabled by default, as explained in this [sbt issue](https://github.com/sbt/sbt/pull/5880)).
+## 🛠️ Installation & Setup
 
-**Let's explore how to use it!**
+1.  **Install the Plugin**: Go to `Settings/Preferences` > `Plugins` > `Marketplace`, search for "Sbt Dependency Analyzer", and install it.
+2.  **Automatic Setup**: Upon first analysis, the plugin will automatically generate a `project/sdap.sbt` file if needed. This file adds the required `addDependencyTreePlugin` statement. **Please do not modify or delete this file** once created.
+3.  **Plugin Dependency**: This plugin leverages the `sbt-dependency-tree` functionality, which is bundled with recent sbt versions (though not be enabled by default, [sbt issue](https://github.com/sbt/sbt/pull/5880)).
 
-> Default shortcut: Ctrl + Shift + L
+## 📖 Usage
 
-![image](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
+> **Default Keyboard Shortcut**: `Ctrl` + `Shift` + `L` (Windows/Linux) / `Command` + `Shift` + `L` (MacOS)
 
-## More Details
+Simply open your Sbt project in IntelliJ IDEA and use the shortcut to generate and view the dependency analysis.
 
-The plugin utilizes the following sbt commands. However, rest assured that the plugin has been optimized to minimize the number of executions as much as possible: `organization`,`moduleName`,`dependencyDot`,`reload`,`update`
+![Dependency Analysis View](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
+*The interactive dependency graph provides a clear overview of your project's structure.*
 
-## Advanced Setup
+## ⚙️ Configuration
 
-> If you are uncertain, you can safely skip these configurations!
+Fine-tune the plugin's behavior and potentially speed up analysis via `Settings/Preferences` > `Tools` > `Sbt Dependency Analyzer`:
 
-By utilizing configurations, analysis wait times can be significantly reduced:
+<img src="./docs/settings.png" width="400" height="280" alt="Plugin Settings Panel" align="right" />
 
-<img src="./docs/settings.png" width = "400" height = "280" alt="settings" align="right" />
+*   **File Cache Timeout**: Adjust how long (in seconds) the plugin uses cached dependency graph files (`.dot`) before re-running the `dependencyDot` command. (Default: `3600`).
+*   **Organization**: Predefine your project's organization value here to avoid the plugin needing to query sbt for it.
+*   **Disable Scopes**: Improve analysis speed by disabling dependency scopes (e.g., `Test`, `Provided`) you are not interested in.
 
-**File Cache Timeout**
+These settings are stored per IntelliJ project in `.idea/bitlap.sbt.dependency.analyzer.xml`. Deleting this file will reset settings and clear the cache.
 
-If the dependent file (`.dot`) has not been modified within the last `3600 seconds` (default value), the plugin will continue to use the existing file for analysis, 
-otherwise the `dependencyDot` command will be executed, which is a certain degree of caching, but the caching may not take effect when the project first opens the analysis graph.
+## ❗ Troubleshooting
 
-**Organization** 
+### Issue: "Caused by: java.io.IOException: Could not create lock for ..."
+This error can occur due to conflicts between the plugin's use of the sbt shell and IntelliJ IDEA's internal project reload/build mechanisms.
+*   **Solution**: Use the **sbt shell within IntelliJ IDEA** for reloading (`sbt reload`) or building (`sbt compile`) your project, instead of the IDE's built-in buttons.
+    <img src="./docs/sbtShellUseForReload.jpg" width="500" height="230" alt="Using SBT Shell for reload and compile" align="center" />
 
-If you specify this value, the `organization` command will not be used to retrieve your project's organization.
+### Issue: Cannot analyze dependencies between modules
+The plugin may fail to correctly parse inter-module dependencies if it cannot determine the project organization.
+*   **Solution**: Ensure the plugin knows your project's organization by either:
+    1.  Setting the **Organization** value in the plugin's [settings](#-configuration).
+    2.  Defining the `organization` setting in your `build.sbt` globally using `ThisBuild / organization` or `inThisBuild(...)`.
+> **Note**: Submodules not declared within the `dependsOn` clause of the root project will not be parsed.
 
-**Disable Scopes**
+## 🔍 Technical Details
 
-If you do not need to analyze all scopes, simply disable the scope(s) you wish to skip.
+1. The plugin executes several sbt commands (`organization`, `moduleName`, `dependencyDot`, `reload`, `update`) to gather dependency information. Significant optimizations are in place to minimize the number and impact of these commands.
+2. The plugin has replicated the Kotlin code from the [intellij-community](https://github.com/JetBrains/intellij-community) project on the UI and compiles it using the [kotlin-plugin](https://github.com/bitlap/kotlin-plugin).
 
-Configurations are persistent and associated with each IntelliJ project.
+## 🤝 Contributing
 
-Like other plugins, this one maintains its own storage in `.idea/bitlap.sbt.dependency.analyzer.xml`. Deleting this file will clear the cache.
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests on [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer).
 
-## Troubleshooting Issues
+## 🙏 Acknowledgments
 
-### "Caused by: java.io.IOException: Could not create lock for ..."
-
-Due to the plugin's requirement to use sbt shell, opening the dependency analysis view and subsequently using IntelliJ IDEA to reload or build the project may lead to the following issue:
-```
-Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load5964714308503584069_lock, error 5
-```
-
-To avoid this problem, utilize sbt shell for reloading or building the project:
-
-<img src="./docs/sbtShellUseForReload.jpg" width = "500" height = "230" alt="settings" align="center" />
-
-### Unable to analyze dependencies between modules?
-
-Ensure that you have applied one of the following settings to help identify the correct module:
-- The `organization` in [Advanced Setup](#advanced-setup) has been configured.
-- The `organization` value has been set in `build.sbt` via `ThisBuild` or `inThisBuild`.
-
-> Note: Sub modules that are not in the `dependsOn` of the root project will not be parsed and their dependencies will be empty.
-
-## JetBrains Support
-
-This project is developed using JetBrains IDEA.
-Thanks to JetBrains for providing me with a free license, which is a strong support for me.
+**JetBrains Support**: This project is developed using JetBrains IntelliJ IDEA. We extend our gratitude to JetBrains for providing a free license, which significantly supports its development.
 
 <a href="www.jetbrains.com">
 <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg?_gl=1*8f2ovk*_ga*NTY2NTA4Mzg1LjE2NzU3MzgzMTI.*_ga_9J976DJZ68*MTcwMzIwOTE4NS4xODUuMS4xNzAzMjA5NDYzLjI4LjAuMA..&_ga=2.177269094.2105719560.1703209186-566508385.1675738312" alt="IntelliJ IDEA logo.">

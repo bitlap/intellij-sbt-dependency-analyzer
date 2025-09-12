@@ -1,99 +1,86 @@
-Sbt Dependency Analyzer for IntelliJ IDEA
----------
+# IntelliJ IDEA 版 Sbt 依赖分析器
 
-<img src="./logo.svg" width = "250" height = "150" alt="logo" align="right" />
+<img src="./logo.svg" width="250" height="150" alt="Sbt Dependency Analyzer Logo" align="right" />
 
-[![Build](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
-[![Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
-[![JetBrains Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=JetBrains%20Plugin%20Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
+[![Build Status](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
+[![Plugin Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
+[![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
 
-中文 | [English](README.md)
+[English](README.md) | 中文
 
-**如果你喜欢这个项目，或者对你有用，[点击](https://github.com/bitlap/intellij-sbt-dependency-analyzer)右上角 ⭐️ Star 支持下吧~**
+**⭐ 觉得这个插件有用？请在 [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) 上给它一个 Star 以示支持！**
 
-## 特性
+## 🚀 概述
 
-> 本插件从 IntelliJ IDEA 2023.1（Community、Ultimate 或 Android Studio） 开始支持
+IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，帮助您轻松理解、管理和排查 Sbt 项目的依赖关系。直接在 IDE 中清晰洞察您的库依赖及其关系。
 
-- [x] 查看依赖树
-- [x] 显示冲突
-- [x] 搜索依赖
-- [x] 显示模块间依赖关系
-- [x] 查看 JAR 包大小
-- [x] 依赖定位
-  - 点击后将跳转到该依赖在`build.sbt`中的位置
-  - 仅对用户定义依赖可用
-- [x] 依赖排除（实验性）
-  - 选中用户定义依赖下的传递依赖，表示排除；选择中用户定义依赖本身，表示删除该依赖
-  - 版本`0.5.0-242.21829.142`及以上支持
+> 兼容 IntelliJ IDEA 2023.1 及更高版本（社区版、旗舰版和 Android Studio）。
+
+## ✨ 主要特性
+
+*   **依赖树可视化**：以层次结构树的形式查看项目的所有依赖。
+*   **冲突识别**：快速发现并解决库之间的版本冲突。
+*   **依赖搜索**：轻松在项目中查找特定依赖。
+*   **模块间依赖分析**：可视化项目中不同模块之间的依赖关系。
+*   **JAR 大小指示器**：查看依赖 JAR 的大小，以便更好地管理项目的资源占用。
+*   **跳转到声明**：点击 *用户定义的* 依赖项可直接跳转到其在 `build.sbt` 中的声明位置。
+*   **依赖排除（实验性功能）**：
+    *   选择一个 *传递* 依赖项以从某个用户定义的依赖中排除它。
+    *   选择一个 *用户定义的* 依赖项以移除该依赖本身。
+    *   *自插件版本 `0.5.0-242.21829.142` 起可用。*
+
+## 🛠️ 安装与设置
+
+1.  **安装插件**：前往 `设置/偏好设置` > `插件` > `市场`，搜索 "Sbt Dependency Analyzer" 并安装。
+2.  **自动设置**：首次分析时，如果需要，插件会自动生成一个 `project/sdap.sbt` 文件。此文件添加了所需的 `addDependencyTreePlugin` 语句。**创建后请勿修改或删除此文件**。
+3.  **插件依赖**：本插件利用了 `sbt-dependency-tree` 的功能，该功能已捆绑在最近的 sbt 版本中（但默认未启用，[sbt 问题](https://github.com/sbt/sbt/pull/5880)）。
+
+## 📖 使用方法
+
+> **默认键盘快捷键**：`Ctrl` + `Shift` + `L` (Windows/Linux) / `Command` + `Shift` + `L` (MacOS)
+
+只需在 IntelliJ IDEA 中打开您的 Sbt 项目并使用快捷键即可生成和查看依赖分析。
+
+![Dependency Analysis View](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
+
+*交互式依赖关系图清晰地展示了项目的结构。*
+
+## ⚙️ 配置
+
+通过 `设置/偏好设置` > `工具` > `Sbt Dependency Analyzer` 微调插件行为并可能加速分析：
+
+*   **文件缓存超时**：调整插件在重新运行 `dependencyDot` 命令之前，使用缓存的依赖图文件 (`.dot`) 的时长（秒）。(默认：`3600`)。
+*   **组织（Organization）**：在此处预定义您项目的组织（organization）值，以避免插件需要向 sbt 查询。
+*   **禁用作用域（Scope）**：通过禁用您不感兴趣的依赖作用域（例如 `Test`, `Provided`）来提高分析速度。
+
+这些设置按 IntelliJ 项目存储在 `.idea/bitlap.sbt.dependency.analyzer.xml` 中。删除此文件将重置设置并清除缓存。
+
+## ❗ 故障排除
+
+### 问题："Caused by: java.io.IOException: Could not create lock for ..."
+此错误可能由于插件使用 sbt shell 与 IntelliJ IDEA 内部的项目重新加载/构建机制之间的冲突而引起。
+*   **解决方案**：使用 **IntelliJ IDEA 内的 sbt shell** 来重新加载 (`sbt reload`) 或构建 (`sbt compile`) 您的项目，而不是使用 IDE 的内置按钮。
 
 
-## 使用说明
+### 问题：无法分析模块间的依赖关系
+如果插件无法确定项目组织（organization），它可能无法正确解析模块间的依赖关系。
+*   **解决方案**：通过以下任一方式确保插件知道您的项目组织：
+    1.  在插件的[设置](#-配置)中设置 **组织（Organization）** 值。
+    2.  在您的 `build.sbt` 中使用 `ThisBuild / organization` 或 `inThisBuild(...)` 全局定义 `organization` 设置。
+> **注意**：未在根项目的 `dependsOn` 子句中声明的子模块将不会被解析。
 
-此插件首次分析失败时将自动生成 `project/sdap.sbt` 文件，并在其中插入一行 `addDependencyTreePlugin` （或 `addSbtPlugin(...)` ）。 请勿修改或删除 `project/sdap.sbt` 文件。
+## 🔍 技术细节
 
-此插件依赖于 `sbt-dependency-tree`，这是一个第三方插件，但现在已默认集成到 sbt 中（尽管默认情况下未启用，详见 [sbt 问题](https://github.com/sbt/sbt/pull/5880)）。
+1. 插件执行多个 sbt 命令 (`organization`, `moduleName`, `dependencyDot`, `reload`, `update`) 来收集依赖信息。已实施重大优化以尽量减少这些命令的数量和影响。
+2. 插件复制了 [intellij-community](https://github.com/JetBrains/intellij-community) 项目中的 Kotlin UI 代码，并使用 [kotlin-plugin](https://github.com/bitlap/kotlin-plugin) 进行编译。
 
-**让我们看看如何使用它！**
+## 🤝 贡献
 
-> 默认快捷键: Ctrl + Shift + L
+欢迎贡献！请随时在 [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) 上提交问题、功能请求或拉取请求。
 
-![image](https://plugins.jetbrains.com/files/22427/screenshot_064531dc-a3fa-4a8e-9437-7e76defa1f48)
+## 🙏 致谢
 
-## 更多细节
-
-该插件使用以下 sbt 命令。但请放心，插件已经优化，以尽量减少执行的次数：`organization`、`moduleName`、`dependencyDot`、`reload`、`update`
-
-## 高级设置
-
-> 如果不确定，您可以安全地跳过这些配置！
-
-通过使用配置，可以显著减少分析等待时间：
-
-<img src="./docs/settings.png" width="400" height="280" alt="settings" align="right" />
-
-**文件缓存超时**
-
-如果依赖文件（`.dot`）在最近`3600秒`（默认值）内没有修改过，插件将继续使用存在的文件来分析，否则将重新执行`dependencyDot`命令，这是一定程度上的缓存，但在项目首次打开分析图时，缓存可能不生效。
-
-**组织ID**
-
-如果您指定了此值，则将不再使用 `organization` 命令获取项目的组织ID。
-
-**禁用作用域**
-
-如果不需要分析所有作用域，只需禁用您不想要分析的作用域。
-
-配置是持久的，并与每个 IntelliJ 项目相关联。
-
-与其他插件一样，此插件具有自己的存储位置，即 `.idea/bitlap.sbt.dependency.analyzer.xml`。删除此文件将清除缓存。
-
-## 问题排查
-
-### "Caused by: java.io.IOException: Could not create lock for ..."
-
-由于插件需要使用 sbt shell，打开依赖分析视图并随后使用 IntelliJ IDEA 重新加载或构建项目可能会导致以下问题：
-
-```
-Caused by: java.io.IOException: Could not create lock for \\.\pipe\sbt-load5964714308503584069_lock, error 5
-```
-
-为避免此问题，使用 sbt shell 来重新加载或构建项目：
-
-<img src="./docs/sbtShellUseForReload.jpg" width="500" height="230" alt="settings" align="center" />
-
-### 无法分析模块之间的依赖关系？
-
-请确保您已应用了以下配置之一，以帮助识别正确的模块：
-
-- 在 [高级设置](#高级设置) 中已配置 `organization`。
-- 在 `build.sbt` 中使用 `ThisBuild` 或 `inThisBuild` 设置了 `organization` 值。
-
-> 注意：不在根项目的`dependsOn`中的子模块不会被分析，依赖为空。
-
-## 特别感谢
-
-本项目使用 JetBrains IDEA 开发。 感谢 JetBrains 提供的免费许可证。
+**JetBrains 支持**：此项目使用 JetBrains IntelliJ IDEA 开发。我们感谢 JetBrains 提供免费许可证，极大地支持了其开发。
 
 <a href="www.jetbrains.com">
 <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg?_gl=1*8f2ovk*_ga*NTY2NTA4Mzg1LjE2NzU3MzgzMTI.*_ga_9J976DJZ68*MTcwMzIwOTE4NS4xODUuMS4xNzAzMjA5NDYzLjI4LjAuMA..&_ga=2.177269094.2105719560.1703209186-566508385.1675738312" alt="IntelliJ IDEA logo.">
