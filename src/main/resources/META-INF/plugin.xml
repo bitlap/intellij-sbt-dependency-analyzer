@@ -2,7 +2,7 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.8.0-252.25557.131</version>
+    <version>0.8.1-252.25557.131</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
@@ -110,8 +110,173 @@
             <add-to-group group-id="ExternalSystemView.ActionsToolbar.OtherActionsPanel" anchor="last"/>
         </group>
     </actions>
-    
-    <description><![CDATA[ Description will be added by sbt plugin build ]]></description>
-    <change-notes><![CDATA[ Change notes will be filled by sbt plugin build ]]></change-notes>
-    
+
+    <description>
+        <![CDATA[
+        <h1>Sbt Dependency Analyzer for IntelliJ IDEA</h1>
+        <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer">GitHub</a> |
+        <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer/issues">Issues</a>
+        <br/>
+        <br/>
+        Adds support for the Scala's sbt. The following features are available for free with IntelliJ IDEA:
+        <ul>
+            <li><strong>Dependency Tree Visualization</strong>: View a hierarchical tree of all your project's dependencies.</li>
+            <li><strong>Conflict Identification</strong>: Quickly spot and resolve version conflicts between libraries.</li>
+            <li><strong>Dependency Search</strong>: Easily find specific dependencies across your project.</li>
+            <li><strong>Inter-Module Dependency Analysis</strong>: Visualize how different modules in your project depend on each other.</li>
+            <li><strong>JAR Size Indicators</strong>: See the size of dependency JARs to better manage your project's footprint.</li>
+            <li><strong>Navigate to Declaration</strong>: Click on a <em>user-defined</em> dependency to jump directly to its declaration in <code>build.sbt</code>.</li>
+            <li><strong>Dependency Exclusion (Experimental)</strong>:
+            <ul>
+                <li>Select a <em>transitive</em> dependency to exclude it from a <em>user-defined</em> dependency.</li>
+                <li>Select a <em>user-defined</em> dependency to remove it entirely.</li>
+            </ul>
+        </ul>
+        <br/>
+        Visit GitHub for instructions on how to properly use this plugin!</br>
+        ]]>
+    </description>
+
+    <change-notes>
+        <![CDATA[
+            <h1>0.8.1-252.25557.131</h1>
+            <ul>
+                <li>Revert xml patch and fix JA locale message.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.8.0-252.25557.131</h1>
+            <ul>
+                <li>Update Notes .</li>
+                <li>Add JA, KO, DE localization .</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.8.0-252.25557.77-RC1</h1>
+            <ul>
+                <li>Support IDEA 252.x .</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.7.1-251.26927.53</h1>
+            <ul>
+                <li>Fix warnings .</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.7.0-251.23536.34</h1>
+            <ul>
+                <li>Support IDEA 251.x .</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.6.0-243.24978.46</h1>
+            <ul>
+                <li>Support IDEA 243.x .</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.5.0-242.21829.142</h1>
+            <ul>
+                <li>Improve code and API compatibility.</li>
+                <li>Fix Open Config Action.</li>
+                <li>Add Exclude Dependency Action.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.4.0-242.21829.142</h1>
+            <ul>
+                <li>Support IDEA 2024.2.</li>
+                <li>Fix Goto dependency (Now supports custom dependencies for all projects).</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.3.1-233.11799.241</h1>
+            <ul>
+                <li>Suppress errors and delete some errors</li>
+                <li>Filter ignores case</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.3.0-233.11799.241</h1>
+            <ul>
+                <li>Support IDEA 2023.3.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.3.0-RC1-231.9392.1</h1>
+            <ul>
+                <li>Add `sdap.sbt` to .git/info/exclude file.</li>
+                <li>Add Show Size to show jar package size.</li>
+                <li>Add shortcuts to open the analysis view: `Ctrl + Shift + L`.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.2.0-231.9392.1</h1>
+            <ul>
+                <li>Add moduleName cache.</li>
+                <li>Use the first non-root module when opening view (Multi-module project).</li>
+                <li>Update dependencies.</li>
+                <li>Add zh_CN message for What's new.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.2.0-RC3-231.9392.1</h1>
+            <ul>
+                <li>🎉Add Intellij Settings.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.2.0-RC2-231.9392.1</h1>
+            <ul>
+                <li>Update description and action name.</li>
+                <li>Add refresh snapshots button.</li>
+                <li>Add "project/sdap.sbt" to enable "sbt-dependency-tree", plugin no longer modify "project/plugins.sbt".</li>
+                <li>Improved notifications.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.2.0-RC1-231.9392.1</h1>
+            <ul>
+                <li>🎉Add locale zh_CN translation for notification.</li>
+                <li>🎉Add plugin update notification.</li>
+                <li>🎉Add What's New action in Help menu.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.3-231.9392.1</h1>
+            <ul>
+                <li>Fix module recognition failure when analyzing cross-build projects for Scala2 and Scala3.</li>
+                <li>Improve notification,stop immediately when an exception occurs during the first task execution.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.2-231.9392.1</h1>
+            <ul>
+                <li>Improving Error Notification.</li>
+                <li>Support for older versions of sbt.</li>
+                <li>Other improvements.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.1-231.9392.1</h1>
+            <ul>
+                <li>Fix bug: Goto action can match scala library.</li>
+                <li>Add refresh action.</li>
+                <li>Add bootstrap prompt and automatically add the `addDependencyTreePlugin`.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.0-231.9392.1</h1>
+            <ul>
+                <li>Update Action Name.</li>
+                <li>Cache files for one hour.</li>
+                <li>Refactor code.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.0-231.9392.1-M7</h1>
+            <ul>
+                <li>🔥Show Conflict omitted status.</li>
+                <li>🔥Support Scala Js and Scala native.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.0-231.9392.1-M6</h1>
+            <ul>
+                <li>🔥Highlight module dependencies.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.0-231.9392.1-M5</h1>
+            <ul>
+                <li>🔥Significantly improve performance.</li>
+            </ul>
+            <!-- @@ -->
+            <h1>0.1.0-231.9392.1-M4</h1>
+            <ul>
+                <li>🔥 First Blood.</li>
+            </ul>
+            ]]>        
+    </change-notes>
+
 </idea-plugin>

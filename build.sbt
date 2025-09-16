@@ -13,7 +13,7 @@ lazy val jbAnnotVersion        = "26.0.2"
 // https://youtrack.jetbrains.com/articles/IDEA-A-2100661679/IntelliJ-IDEA-2023.3-Latest-Builds
 // NOTE: Latest-Builds 233
 lazy val intellijVersion = "252.25557.131"
-lazy val pluginVersion   = s"0.8.0-$intellijVersion"
+lazy val pluginVersion   = s"0.8.1-$intellijVersion"
 
 ThisBuild / version := pluginVersion
 
@@ -82,8 +82,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
     patchPluginXml := pluginXmlOptions.apply { (x: org.jetbrains.sbtidea.pluginXmlOptions) =>
       {
         x.version = pluginVersion
-        x.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
-        x.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change-notes.html")
+//        x.pluginDescription = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "description.html")
+//        x.changeNotes = IO.read(baseDirectory.value / "src" / "main" / "resources" / "patch" / "change-notes.html")
       }
     },
     publish / skip := true,
