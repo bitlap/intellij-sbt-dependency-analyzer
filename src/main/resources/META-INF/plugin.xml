@@ -2,7 +2,8 @@
 <idea-plugin>
     <id>org.bitlap.sbtDependencyAnalyzer</id>
     <name>Sbt Dependency Analyzer</name>
-    <version>0.8.1-252.25557.131</version>
+    <!--  will be added by sbt plugin build  -->
+    <version>0.8.0-252.25557.131</version>
     <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
