@@ -19,7 +19,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- plugin recommendations,   https://github.com/bzixilu/dotplugin    -->
-        <fileType name="dot file" implementationClass="bitlap.sbt.analyzer.parser.DotFileType" fieldName="INSTANCE" language="Dot" extensions="dot"/>
+        <fileType name="dependency dot file" implementationClass="bitlap.sbt.analyzer.parser.DotFileType" fieldName="INSTANCE" language="Dot" extensions="dot"/>
         <externalSystemDependencyAnalyzer implementation="bitlap.sbt.analyzer.SbtDependencyAnalyzerExtension"/>
         <notificationGroup id="Sbt.DependencyAnalyzer.Notification" displayType="BALLOON"/>
 

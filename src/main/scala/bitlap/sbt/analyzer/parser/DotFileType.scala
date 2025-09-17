@@ -21,14 +21,18 @@ object DotLanguage {
 
 final class DotLanguage private extends Language("Dot")
 
-final class DotFileType extends LanguageFileType(DotLanguage.INSTANCE) {
+final class DotFileType private extends LanguageFileType(DotLanguage.INSTANCE) {
 
-  @NotNull def getName: String = "dot file"
+  @NotNull def getName: String = "dependency dot file"
 
-  @NotNull def getDescription: String = "dot language file"
+  @NotNull def getDescription: String = "Sbt generated the dependency dot file"
 
   @NotNull def getDefaultExtension: String = "dot"
 
   @Nullable def getIcon: Icon = DotIcons.FILE
 
+}
+
+object DotFileType {
+  val INSTANCE = new DotFileType
 }
