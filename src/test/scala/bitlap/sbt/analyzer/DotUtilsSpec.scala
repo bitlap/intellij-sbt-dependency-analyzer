@@ -6,14 +6,14 @@ import java.util.concurrent.atomic.AtomicInteger
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.DotUtil
+import bitlap.sbt.analyzer.parsing.DotUtils
 import bitlap.sbt.analyzer.util.DependencyUtils
 
 import org.scalatest.flatspec.AnyFlatSpec
 
 import guru.nidi.graphviz.model.*
 
-class DotUtilSpec extends AnyFlatSpec {
+class DotUtilsSpec extends AnyFlatSpec {
 
   "parse file as MutableNode" should "ok" in {
     val start = System.currentTimeMillis()
@@ -31,7 +31,7 @@ class DotUtilSpec extends AnyFlatSpec {
         isTest = true
       )
 
-    val mutableGraph: MutableGraph               = DotUtil.parseAsGraph(ctx)
+    val mutableGraph: MutableGraph               = DotUtils.parseAsGraph(ctx)
     val graphNodes: util.Collection[MutableNode] = mutableGraph.nodes()
     val links: util.Collection[Link]             = mutableGraph.edges()
 

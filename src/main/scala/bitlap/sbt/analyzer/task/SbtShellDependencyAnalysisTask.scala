@@ -12,14 +12,15 @@ import com.intellij.openapi.externalSystem.model.project.dependencies.Dependency
 import com.intellij.openapi.project.Project
 
 import model.*
-import parser.*
+import parsing.*
 import util.DependencyUtils.*
 
-/** Tasks depend on the `addDependencyTreePlugin` plugin of the SBT.
+/** Handles SBT tasks that require the `addDependencyTreePlugin` to be enabled, which provides dependency tree and
+ *  analysis capabilities.
  */
 trait SbtShellDependencyAnalysisTask:
 
-  val parserTypeEnum: AnalyzedFileType
+  val dependencyGraphType: DependencyGraphType
 
   def executeCommand(
     project: Project,
@@ -38,10 +39,10 @@ trait SbtShellDependencyAnalysisTask:
     val shellCommunication = SbtShellCommunication.forProject(project)
     val moduleId           = moduleData.getId.split(" ")(0)
     val promise            = Promise[Boolean]()
-    val file               = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, parserTypeEnum)
+    val file               = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, dependencyGraphType)
     val result = shellCommunication
       .command(
-        getScopedCommandKey(moduleId, scope, parserTypeEnum.cmd),
+        getScopedCommandKey(moduleId, scope, dependencyGraphType.cmd),
         new StringBuilder(),
         SbtShellCommunication.listenerAggregator {
           case SbtShellCommunication.TaskComplete =>
@@ -52,7 +53,7 @@ trait SbtShellDependencyAnalysisTask:
             if (!promise.isCompleted) {
               promise.failure(
                 AnalyzerCommandUnknownException(
-                  parserTypeEnum.cmd,
+                  dependencyGraphType.cmd,
                   moduleId,
                   scope,
                   SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")
@@ -62,7 +63,7 @@ trait SbtShellDependencyAnalysisTask:
           case SbtShellCommunication.Output(line) =>
             if (
               line.startsWith(SbtShellDependencyAnalysisTask.ERROR_PREFIX) && line
-                .contains(parserTypeEnum.cmd) && !promise.isCompleted
+                .contains(dependencyGraphType.cmd) && !promise.isCompleted
             ) {
               promise.failure(
                 AnalyzerCommandNotFoundException(
@@ -72,7 +73,7 @@ trait SbtShellDependencyAnalysisTask:
             } else if (line.startsWith(SbtShellDependencyAnalysisTask.ERROR_PREFIX) && !promise.isCompleted) {
               promise.failure(
                 AnalyzerCommandUnknownException(
-                  parserTypeEnum.cmd,
+                  dependencyGraphType.cmd,
                   moduleId,
                   scope,
                   SbtDependencyAnalyzerBundle.message("analyzer.task.error.title")

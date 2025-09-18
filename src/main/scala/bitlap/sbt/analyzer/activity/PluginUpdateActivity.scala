@@ -8,8 +8,6 @@ import org.jetbrains.plugins.scala.project.Version
 import com.intellij.ide.plugins.IdeaPluginDescriptor
 import com.intellij.ide.util.PropertiesComponent
 import com.intellij.openapi.project.*
-import com.intellij.openapi.util.*
-import com.intellij.ui.*
 import com.intellij.util.ui.JBUI
 
 import analyzer.util.Notifications

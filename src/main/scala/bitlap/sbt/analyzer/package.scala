@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters.*
 
-import bitlap.sbt.analyzer.parser.AnalyzedFileType
+import bitlap.sbt.analyzer.parsing.DependencyGraphType
 
 import org.jetbrains.sbt.project.*
 
@@ -12,7 +12,6 @@ import com.intellij.buildsystem.model.unified.UnifiedCoordinates
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency
 import com.intellij.openapi.externalSystem.dependency.analyzer.DependencyAnalyzerDependency.Data
 import com.intellij.openapi.externalSystem.model.project.*
-import com.intellij.openapi.externalSystem.service.execution.ExternalSystemRunnableState.*
 import com.intellij.openapi.externalSystem.service.project.IdeModelsProviderImpl
 import com.intellij.openapi.externalSystem.util.*
 import com.intellij.openapi.module.Module
@@ -23,7 +22,7 @@ lazy val Module_Data: Key[ModuleData] = Key.create[ModuleData]("SbtDependencyAna
 
 given ExecutionContext = ExecutionContext.Implicits.global
 
-given AnalyzedFileType = AnalyzedFileType.Dot
+given DependencyGraphType = DependencyGraphType.Dot
 
 def getUnifiedCoordinates(dependency: DependencyAnalyzerDependency): UnifiedCoordinates =
   dependency.getData match {

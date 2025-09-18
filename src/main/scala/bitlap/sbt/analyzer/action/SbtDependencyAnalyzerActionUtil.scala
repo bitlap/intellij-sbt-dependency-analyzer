@@ -1,7 +1,5 @@
 package bitlap.sbt.analyzer.action
 
-import scala.jdk.CollectionConverters.*
-
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.util.DependencyUtils
 

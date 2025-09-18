@@ -11,7 +11,7 @@ import scala.language.postfixOps
 
 import bitlap.sbt.analyzer.jbexternal.SbtDAArtifact
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parsing.*
 import bitlap.sbt.analyzer.task.*
 import bitlap.sbt.analyzer.util.*
 import bitlap.sbt.analyzer.util.DependencyUtils.*
@@ -151,7 +151,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
 
   private def deleteExistAnalysisFiles(modulePath: String): Unit = {
     DependencyScopeEnum.values
-      .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[AnalyzedFileType])))
+      .map(scope => Path.of(modulePath + analysisFilePath(scope, summon[DependencyGraphType])))
       .foreach(p => Files.deleteIfExists(p))
   }
 
@@ -386,13 +386,13 @@ object SbtDependencyAnalyzerContributor
       def executeCommandOrReadExistsFile(
         scope: DependencyScopeEnum
       ): DependencyScopeNode =
-        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[AnalyzedFileType])
+        val file     = moduleData.getLinkedExternalProjectPath + analysisFilePath(scope, summon[DependencyGraphType])
         val vfsFile  = VfsUtil.findFile(Path.of(file), true)
         val useCache = vfsFile != null && isValidFile(project, file)
         // File cache for one hour
         if (useCache) {
-          AnalyzedParserFactory
-            .getInstance(summon[AnalyzedFileType])
+          DependencyGraphFactory
+            .getInstance(summon[DependencyGraphType])
             .buildDependencyTree(
               ModuleContext(
                 file,

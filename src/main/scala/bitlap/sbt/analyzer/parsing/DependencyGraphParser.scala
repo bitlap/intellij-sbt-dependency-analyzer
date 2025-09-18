@@ -1,12 +1,12 @@
-package bitlap.sbt.analyzer.parser
+package bitlap.sbt.analyzer.parsing
 
 import bitlap.sbt.analyzer.model.*
 
 import com.intellij.openapi.externalSystem.model.project.dependencies.*
 
-trait AnalyzedFileParser {
+trait DependencyGraphParser {
 
-  val fileType: AnalyzedFileType
+  val dependencyGraphType: DependencyGraphType
 
   def buildDependencyTree(
     context: ModuleContext,

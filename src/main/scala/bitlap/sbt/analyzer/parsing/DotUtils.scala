@@ -1,7 +1,7 @@
 package bitlap
 package sbt
 package analyzer
-package parser
+package parsing
 
 import java.io.File
 import java.nio.file.Path
@@ -22,7 +22,7 @@ import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
 import model.ModuleContext
 
-object DotUtil {
+object DotUtils {
 
   private val LOG = Logger.getInstance(getClass)
 

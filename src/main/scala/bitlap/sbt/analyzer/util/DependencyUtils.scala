@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parsing.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils
 
 import org.jetbrains.plugins.scala.extensions.*
@@ -46,8 +46,9 @@ object DependencyUtils {
     SbtDependencyUtils.declaredDependencies(module).asScala.toList
   }
 
-  /** self is a ProjectDependencyNodeImpl, because we first convert it to DependencyNode and then filter it. This is
-   *  important, for dependency graphs/trees, this is the root node.
+  /** Handles the processing of ProjectDependencyNodeImpl objects by converting them to a unified DependencyNode type
+   *  and applying filtering logic, which is critical for dependency graph/tree operations as this node serves as the
+   *  root of the structure.
    */
   def isSelfNode(dn: DependencyNode, context: ModuleContext): Boolean = {
     dn.getDisplayName match
@@ -65,8 +66,7 @@ object DependencyUtils {
 
   def toDAScope(name: String): DAScope = DAScope(name, StringUtil.toTitleCase(name))
 
-  /** do not analyze this module
-   */
+  /** Skip analysis for this module */
   def canIgnoreModule(module: OpenapiModule): Boolean = {
     // if module is itself a build module, skip build module
     val isBuildModule = module.isBuildModule
@@ -78,7 +78,7 @@ object DependencyUtils {
     else s"$project / $scope / $cmd"
   }
 
-  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: AnalyzedFileType): String =
+  def analysisFilePath(scope: DependencyScopeEnum, parserTypeEnum: DependencyGraphType): String =
     s"/target/dependencies-${scope.toString.toLowerCase}.${parserTypeEnum.suffix}"
 
   def createRootScopeNode(dependencyScope: DependencyScopeEnum, project: Project): DependencyScopeNode = {
@@ -206,7 +206,7 @@ object DependencyUtils {
     val artifactInfo = getArtifactInfoFromDisplayName(dn.getDisplayName).orNull
     if (artifactInfo == null) return false
     if (artifactInfo.group != context.organization) return false
-    // Use artifact to determine whether there are modules in the dependency.
+    // Use artifacts to determine if there are dependent modules
     val matchModule =
       context.ideaModuleIdSbtModuleNames.values.filter(m => m == toPlatformModule(artifactInfo.artifact).module)
 

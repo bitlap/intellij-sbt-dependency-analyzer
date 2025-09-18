@@ -4,7 +4,7 @@ package analyzer
 package task
 
 import bitlap.sbt.analyzer.model.*
-import bitlap.sbt.analyzer.parser.*
+import bitlap.sbt.analyzer.parsing.*
 import bitlap.sbt.analyzer.util.DependencyUtils.*
 
 import org.jetbrains.plugins.scala.project.ModuleExt
@@ -13,12 +13,10 @@ import com.intellij.openapi.externalSystem.model.project.ModuleData
 import com.intellij.openapi.externalSystem.model.project.dependencies.DependencyScopeNode
 import com.intellij.openapi.project.Project
 
-/** Process the `sbt dependencyDot` command, when the command execution is completed, use a callback to parse the file
- *  content.
- */
+/** Handles the `sbt dependencyDot` command. Upon completion, parses the resulting file content via a callback. */
 final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
 
-  override val parserTypeEnum: AnalyzedFileType = AnalyzedFileType.Dot
+  override val dependencyGraphType: DependencyGraphType = DependencyGraphType.Dot
 
   override def executeCommand(
     project: Project,
@@ -35,8 +33,8 @@ final class DependencyDotTask extends SbtShellDependencyAnalysisTask:
       val sbtModuleNameMap =
         if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
         else ideaModuleIdSbtModules
-      AnalyzedParserFactory
-        .getInstance(parserTypeEnum)
+      DependencyGraphFactory
+        .getInstance(dependencyGraphType)
         .buildDependencyTree(
           ModuleContext(
             file,

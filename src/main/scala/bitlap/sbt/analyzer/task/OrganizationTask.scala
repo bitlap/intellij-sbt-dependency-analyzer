@@ -2,7 +2,8 @@ package bitlap.sbt.analyzer.task
 
 import com.intellij.openapi.project.Project
 
-/** Process the `sbt organization` command, get current project organization as artifact's groupId.
+/** Handles the `sbt organization` command to retrieve the current project's organization, which typically serves as the
+ *  groupId for artifacts in dependency management.
  */
 final class OrganizationTask extends SbtShellOutputAnalysisTask[String]:
 

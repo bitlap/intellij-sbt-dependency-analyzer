@@ -3,7 +3,6 @@ package bitlap.sbt.analyzer.action
 import bitlap.sbt.analyzer.*
 import bitlap.sbt.analyzer.task.*
 import bitlap.sbt.analyzer.util.SbtReimportProject
-import bitlap.sbt.analyzer.util.SbtUtils
 
 import com.intellij.openapi.actionSystem.AnActionEvent
 

@@ -9,8 +9,9 @@ import com.intellij.openapi.project.Project
 
 import Constants.*
 
-/** Process the `sbt moduleName` command, get all module names in sbt, it refers to the module name declared through
- *  `name =: ` in `build.sbt` instead of Intellij IDEA.
+/** Handles the `sbt moduleName` command to retrieve all module names within an sbt project. This specifically refers to
+ *  modules declared via `name := ` in the `build.sbt` file, as opposed to those defined within IntelliJ IDEA's project
+ *  structure.
  */
 final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String]]:
   import SbtShellOutputAnalysisTask.*
@@ -26,9 +27,9 @@ final class ModuleNameTask extends SbtShellOutputAnalysisTask[Map[String, String
    *  `rolls-docs`
    *  )
    *  }}}
-   *  at present, if do not `aggregate` module rolls-docs, module rolls-docs cannot be analyzed.
+   *  The `rolls-docs` module cannot be processed unless it is explicitly aggregated within the build configuration.
    *
-   *  TODO fallback, exec cmd for single module: `rolls-docs / moduleName` to get module Name
+   *  TODO support executing the command for a single module: `rolls-docs / moduleName` to get module Name
    */
   override def executeCommand(project: Project): Map[String, String] =
     val mms                      = getCommandOutputLines(project, "moduleName")

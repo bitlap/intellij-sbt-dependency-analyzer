@@ -1,8 +1,8 @@
-package bitlap.sbt.analyzer.parser;
+package bitlap.sbt.analyzer.parsing;
 
 import scala.collection.mutable.ListBuffer
 
-final class Graph(size: Int) {
+final class DependencyGraph(size: Int) {
 
   private val graph = Array.fill(size)(ListBuffer[Int]())
 
@@ -13,18 +13,18 @@ final class Graph(size: Int) {
   def dfs(v: Int): ListBuffer[Int] = {
     val visited = Array.fill(size + 1)(false)
     val res     = ListBuffer[Int]()
-    helper(v, visited, res)
+    walk(v, visited, res)
     res
   }
 
-  private def helper(v: Int, visited: Array[Boolean], res: ListBuffer[Int]): Unit = {
+  private def walk(v: Int, visited: Array[Boolean], res: ListBuffer[Int]): Unit = {
     visited(v) = true
 
     res += v
 
     graph(v).foreach(n => {
       if (!visited(n))
-        helper(n, visited, res)
+        walk(n, visited, res)
     })
   }
 }

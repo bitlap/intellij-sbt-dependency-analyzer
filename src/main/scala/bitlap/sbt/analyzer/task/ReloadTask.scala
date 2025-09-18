@@ -2,7 +2,7 @@ package bitlap.sbt.analyzer.task
 
 import com.intellij.openapi.project.Project
 
-/** Process the `sbt reload` command, load new setting for sbt shell.
+/** Handles the `sbt reload` command to load new settings and refresh the environment for the sbt shell.
  */
 final class ReloadTask extends SbtShellOutputAnalysisTask[Unit]:
 

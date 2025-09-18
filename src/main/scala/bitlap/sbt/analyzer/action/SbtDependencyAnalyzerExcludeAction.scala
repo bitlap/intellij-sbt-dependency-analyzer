@@ -1,7 +1,6 @@
 package bitlap.sbt.analyzer.action
 
 import bitlap.sbt.analyzer.*
-import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
 import bitlap.sbt.analyzer.util.*
 import bitlap.sbt.analyzer.util.packagesearch.*
 
