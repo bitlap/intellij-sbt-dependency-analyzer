@@ -14,7 +14,7 @@ pull_request_rules:
           - "author=renovate[bot]"
     actions:
       assign:
-        users: ["@bitlap/intellij-sbt-dependency-analyzer"]
+        users: ["@bitlap/sbt-dependency-analyzer"]
       label:
         add: ["type: dependencies"]
         

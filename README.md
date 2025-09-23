@@ -2,13 +2,13 @@
 
 <img src="./logo.svg" width="250" height="150" alt="Sbt Dependency Analyzer Logo" align="right" />
 
-[![Build Status](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
+[![Build Status](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
 [![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
 
 English | [中文](README-CN.md)
 
-**⭐ Found this plugin useful? Please give it a Star on [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) to show your support!**
+**⭐ Found this plugin useful? Please give it a Star on [GitHub](https://github.com/bitlap/sbt-dependency-analyzer) to show your support!**
 
 ## 🚀 Overview
 
@@ -77,7 +77,7 @@ The plugin may fail to correctly parse inter-module dependencies if it cannot de
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests on [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer).
+Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests on [GitHub](https://github.com/bitlap/sbt-dependency-analyzer).
 
 ## 🙏 Acknowledgments
 

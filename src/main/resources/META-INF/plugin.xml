@@ -4,7 +4,7 @@
     <name>Sbt Dependency Analyzer</name>
     <!--  will be added by sbt plugin build  -->
     <version>0.8.0-252.25557.131</version>
-    <vendor url="https://github.com/bitlap/intellij-sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
+    <vendor url="https://github.com/bitlap/sbt-dependency-analyzer" email="dreamylost@outlook.com">Bitlap
     </vendor>
     <!-- please see https://plugins.jetbrains.com/docs/intellij/build-number-ranges.html for description -->
     <!-- old version support, see branch idea231.x   -->
@@ -113,8 +113,8 @@
     <description>
         <![CDATA[
         <h1>Sbt Dependency Analyzer for IntelliJ IDEA</h1>
-        <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer">GitHub</a> |
-        <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer/issues">Issues</a>
+        <a href="https://github.com/bitlap/sbt-dependency-analyzer">GitHub</a> |
+        <a href="https://github.com/bitlap/sbt-dependency-analyzer/issues">Issues</a>
         <br/>
         <br/>
         Adds support for the Scala's sbt. The following features are available for free with IntelliJ IDEA:
@@ -132,7 +132,7 @@
             </ul>
         </ul>
         <br/>
-        Visit <a href="https://github.com/bitlap/intellij-sbt-dependency-analyzer">GitHub</a> for instructions on how to properly use this plugin!</br>
+        Visit <a href="https://github.com/bitlap/sbt-dependency-analyzer">GitHub</a> for instructions on how to properly use this plugin!</br>
         ]]>
     </description>
 

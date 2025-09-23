@@ -2,13 +2,13 @@
 
 <img src="./logo.svg" width="250" height="150" alt="Sbt Dependency Analyzer Logo" align="right" />
 
-[![Build Status](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/intellij-sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
+[![Build Status](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
 [![Plugin Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
 [![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
 
 [English](README.md) | 中文
 
-**⭐ 觉得这个插件有用？请在 [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) 上给它一个 Star 以示支持！**
+**⭐ 觉得这个插件有用？请在 [GitHub](https://github.com/bitlap/sbt-dependency-analyzer) 上给它一个 Star 以示支持！**
 
 ## 🚀 概述
 
@@ -76,7 +76,7 @@ IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，�
 
 ## 🤝 贡献
 
-欢迎贡献！请随时在 [GitHub](https://github.com/bitlap/intellij-sbt-dependency-analyzer) 上提交问题、功能请求或拉取请求。
+欢迎贡献！请随时在 [GitHub](https://github.com/bitlap/sbt-dependency-analyzer) 上提交问题、功能请求或拉取请求。
 
 ## 🙏 致谢
 

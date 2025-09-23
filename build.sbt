@@ -19,7 +19,7 @@ ThisBuild / version := pluginVersion
 
 inThisBuild(
   List(
-    homepage := Some(url("https://github.com/bitlap/intellij-sbt-dependency-analyzer")),
+    homepage := Some(url("https://github.com/bitlap/sbt-dependency-analyzer")),
     developers := List(
       Developer(
         id = "jxnu-liguobin",
