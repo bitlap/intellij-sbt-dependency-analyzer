@@ -73,7 +73,8 @@ lazy val `sbt-dependency-analyzer` = (project in file("."))
       xmx = 2048,
       xms = 256,
       defaultOptions = intellijVMOptions.value.defaultOptions ++ Seq(
-        "--add-exports=java.management/sun.management=ALL-UNNAMED"
+        "--add-exports=java.management/sun.management=ALL-UNNAMED",
+        "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED"
       )
     ),
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
