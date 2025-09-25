@@ -1,7 +1,6 @@
 package bitlap.sbt.analyzer
 
 import java.util
-import java.util.concurrent.atomic.AtomicInteger
 
 import scala.jdk.CollectionConverters.*
 
@@ -19,15 +18,13 @@ class DotUtilsSpec extends AnyFlatSpec {
     val start = System.currentTimeMillis()
     val file  = getClass.getClassLoader.getResource("test.dot").getFile
     val ctx =
-      ModuleContext(
+      AnalyzerContext(
         file,
         "star-authority-protocol",
         DependencyScopeEnum.Compile,
         "fc.xuanwu.star",
-        ideaModuleNamePaths = Map.empty,
-        isScalaJs = false,
-        isScalaNative = false,
-        ideaModuleIdSbtModuleNames = Map.empty,
+        moduleNamePathsCache = Map.empty,
+        moduleIdArtifactIdsCache = Map.empty,
         isTest = true
       )
 

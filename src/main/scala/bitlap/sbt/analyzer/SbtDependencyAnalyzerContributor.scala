@@ -47,7 +47,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
   private var organization: String = scala.compiletime.uninitialized
 
   @volatile
-  private var ideaModuleIdSbtModules: Map[String, String] = Map.empty
+  private var moduleIdArtifactIds: Map[String, String] = Map.empty
 
   private lazy val projects: ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode] =
     ConcurrentHashMap[DependencyAnalyzerProject, ModuleNode]()
@@ -164,7 +164,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     val root         = DAModule(moduleData.getModuleName)
     root.putUserData(Module_Data, moduleData)
 
-    val rootDependency = DADependency(root, DefaultConfiguration, null, Collections.emptyList())
+    val rootDependency = DADependency(root, DEFAULT_CONFIGURATION, null, Collections.emptyList())
     dependencies.append(rootDependency)
     for (scopeNode <- scopeNodes.asScala) {
       val scope = scopeNode.toScope
@@ -248,18 +248,17 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
     organization
   end getOrganization
 
-  private def getIdeaModuleIdSbtModules(project: Project): Map[String, String] =
-    if (ideaModuleIdSbtModules.nonEmpty) return ideaModuleIdSbtModules
+  private def getModuleIdArtifactIds(project: Project): Map[String, String] =
+    if (moduleIdArtifactIds.nonEmpty) return moduleIdArtifactIds
 
     // we don't actively delete configurations
-
     val settingsState = SettingsState.getSettings(project)
     if (!settingsState.sbtModules.isEmpty) return settingsState.sbtModules.asScala.toMap
 
-    ideaModuleIdSbtModules = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
-    settingsState.sbtModules = ideaModuleIdSbtModules.asJava
-    ideaModuleIdSbtModules
-  end getIdeaModuleIdSbtModules
+    moduleIdArtifactIds = SbtShellOutputAnalysisTask.sbtModuleNamesTask.executeCommand(project)
+    settingsState.sbtModules = moduleIdArtifactIds.asJava
+    moduleIdArtifactIds
+  end getModuleIdArtifactIds
 
   private def getOrRefreshData(moduleData: ModuleData): JList[DependencyScopeNode] =
     // use to link dependencies between modules.
@@ -273,7 +272,7 @@ final class SbtDependencyAnalyzerContributor(project: Project) extends Dependenc
           project,
           getOrganization(project),
           projects.values().asScala.map(d => d.getModuleName -> d.getLinkedExternalProjectPath).toMap,
-          getIdeaModuleIdSbtModules(project)
+          getModuleIdArtifactIds(project)
         )
     )
     Option(result).getOrElse(Collections.emptyList())
@@ -368,8 +367,8 @@ object SbtDependencyAnalyzerContributor
     def loadDependencies(
       project: Project,
       organization: String,
-      ideaModuleNamePaths: Map[String, String],
-      ideaModuleIdSbtModules: Map[String, String]
+      moduleNamePaths: Map[String, String],
+      moduleIdArtifactIds: Map[String, String]
     ): JList[DependencyScopeNode] =
       val module   = findModule(project, moduleData)
       val moduleId = moduleData.getId.split(" ")(0)
@@ -394,16 +393,14 @@ object SbtDependencyAnalyzerContributor
           DependencyGraphFactory
             .getInstance(summon[DependencyGraphType])
             .buildDependencyTree(
-              ModuleContext(
+              AnalyzerContext(
                 file,
                 moduleId,
                 scope,
                 organization,
-                ideaModuleNamePaths,
-                module.isScalaJs,
-                module.isScalaNative,
-                if (ideaModuleIdSbtModules.isEmpty) Map(moduleId -> module.getName)
-                else ideaModuleIdSbtModules
+                moduleNamePaths,
+                if (moduleIdArtifactIds.isEmpty) Map(moduleId -> module.getName)
+                else moduleIdArtifactIds
               ),
               createRootScopeNode(scope, project)
             )
@@ -414,8 +411,8 @@ object SbtDependencyAnalyzerContributor
             moduleData,
             scope,
             organization,
-            ideaModuleNamePaths,
-            ideaModuleIdSbtModules
+            moduleNamePaths,
+            moduleIdArtifactIds
           )
         }
       end executeCommandOrReadExistsFile
