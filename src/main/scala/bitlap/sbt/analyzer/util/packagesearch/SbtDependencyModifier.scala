@@ -10,7 +10,6 @@ import java.util.Collections.emptyList
 import scala.jdk.CollectionConverters.*
 
 import bitlap.sbt.analyzer.model.AnalyzerCommandNotFoundException
-import bitlap.sbt.analyzer.util.SbtDependencyUtils.*
 import bitlap.sbt.analyzer.util.SbtDependencyUtils.GetMode.*
 
 import org.jetbrains.plugins.scala.extensions.*
@@ -35,6 +34,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiManager
 
 // copy from https://github.com/JetBrains/intellij-scala/blob/idea242.x/scala/integration/packagesearch/src/org/jetbrains/plugins/scala/packagesearch/SbtDependencyModifier.scala
+// we have changed some
 object SbtDependencyModifier extends ExternalDependencyModificator {
 
   private val logger = Logger.getInstance(this.getClass)
@@ -89,7 +89,13 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
   ): Unit = {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
-      SbtDependencyUtils.findLibraryDependency(project, module, currentDependency, configurationRequired = false)
+      SbtDependencyUtils.findLibraryDependency(
+        project,
+        module,
+        currentDependency,
+        configurationRequired = false,
+        versionRequired = false
+      )
     if (targetedLibDepTuple == null) return
     val oldLibDep = SbtDependencyUtils.processLibraryDependencyFromExprAndString(targetedLibDepTuple, preserve = true)
     val newCoordinates = newDependency.getCoordinates
@@ -157,7 +163,13 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
   override def removeDependency(module: OpenapiModule.Module, toRemoveDependency: UnifiedDependency): Unit = {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
-      SbtDependencyUtils.findLibraryDependency(project, module, toRemoveDependency, configurationRequired = false)
+      SbtDependencyUtils.findLibraryDependency(
+        project,
+        module,
+        toRemoveDependency,
+        configurationRequired = false,
+        versionRequired = false
+      )
     if (targetedLibDepTuple == null) {
       throw AnalyzerCommandNotFoundException("Target dependency not found")
     }
@@ -181,7 +193,7 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
           lastRef.foreach(_.parent.foreach(_.delete()))
         }
       case _ =>
-        throw AnalyzerCommandNotFoundException("This syntax is not supported at this time")
+        throw AnalyzerCommandNotFoundException("This syntax isn’t supported yet.")
     }
   }
 
@@ -232,7 +244,13 @@ object SbtDependencyModifier extends ExternalDependencyModificator {
   ): Boolean = {
     implicit val project: Project = module.getProject
     val targetedLibDepTuple =
-      SbtDependencyUtils.findLibraryDependency(project, module, currentDependency, configurationRequired = false)
+      SbtDependencyUtils.findLibraryDependency(
+        project,
+        module,
+        currentDependency,
+        configurationRequired = false,
+        versionRequired = false
+      )
     if (targetedLibDepTuple == null) return false
     // add `(expr).exclude('group', 'artifact')`
     inWriteCommandAction {

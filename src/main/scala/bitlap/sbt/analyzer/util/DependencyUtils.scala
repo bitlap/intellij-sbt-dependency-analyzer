@@ -111,7 +111,7 @@ object DependencyUtils {
       // Use artifact to determine whether there are modules in the dependency.
       if (
         context.moduleIdArtifactIdsCache.values
-          .exists(d => group == context.organization && getPlatformModule(artifactId) == d)
+          .exists(d => group == context.organization && getArtifactWithoutScalaVersion(artifactId) == d)
       ) {
         appendChildrenAndFixProjectNodes(
           node,
@@ -140,7 +140,7 @@ object DependencyUtils {
     }
   }
 
-  private def getPlatformModule(artifact: String): String = {
+  def getArtifactWithoutScalaVersion(artifact: String): String = {
     artifact match
       case SCALA_VERSION_PATTERN(module) => module
       case _                             => artifact
@@ -149,7 +149,7 @@ object DependencyUtils {
   private def toProjectDependencyNode(dn: DependencyNode, context: AnalyzerContext): Option[DependencyNode] = {
     val artifactInfo = getArtifactInfoFromDisplayName(dn.getDisplayName).orNull
     if (artifactInfo == null) return None
-    val sbtModuleName  = getPlatformModule(artifactInfo.artifact)
+    val sbtModuleName  = getArtifactWithoutScalaVersion(artifactInfo.artifact)
     val ideaModuleName = context.moduleIdArtifactIdsCache.find(_._2 == sbtModuleName).map(_._1)
 
     // Processing cross-platform, module name is not artifact
@@ -195,7 +195,7 @@ object DependencyUtils {
     if (artifactInfo.group != context.organization) return false
     // Use artifacts to determine if there are dependent modules
     val matchModule =
-      context.moduleIdArtifactIdsCache.values.filter(m => m == getPlatformModule(artifactInfo.artifact))
+      context.moduleIdArtifactIdsCache.values.filter(m => m == getArtifactWithoutScalaVersion(artifactInfo.artifact))
 
     matchModule.nonEmpty
 
