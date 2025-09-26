@@ -19,7 +19,7 @@ import org.jetbrains.plugins.scala.lang.psi.api.statements.ScPatternDefinition
 import org.jetbrains.plugins.scala.lang.psi.impl.ScalaPsiElementFactory
 import org.jetbrains.plugins.scala.lang.psi.types.result.TypeResultExt
 import org.jetbrains.plugins.scala.project.*
-import org.jetbrains.sbt.{ Sbt, SbtUtil as SSbtUtil }
+import org.jetbrains.sbt.Sbt
 import org.jetbrains.sbt.SbtUtil.{ getBuildModuleData, getSbtModuleData }
 import org.jetbrains.sbt.language.utils.{ DependencyOrRepositoryPlaceInfo, SbtArtifactInfo, SbtDependencyCommon }
 
@@ -191,7 +191,7 @@ object SbtDependencyUtils {
     val targetCoordinates = dependency.getCoordinates
     val targetDepText: String = generateArtifactTextVerbose(
       targetCoordinates.getGroupId,
-      targetCoordinates.getArtifactId.replaceAll("_\\d+.*$", ""),
+      DependencyUtils.getArtifactWithoutScalaVersion(targetCoordinates.getArtifactId),
       if (versionRequired) targetCoordinates.getVersion else "",
       if (configurationRequired) dependency.getScope else SbtDependencyCommon.defaultLibScope
     )
@@ -205,15 +205,29 @@ object SbtDependencyUtils {
         var processedDepText: String = ""
         processedDep match {
           case List(a, b, c) =>
-            processedDepText =
-              generateArtifactTextVerbose(a, b, if (versionRequired) c else "", SbtDependencyCommon.defaultLibScope)
+            if (b == targetCoordinates.getVersion) {
+              processedDepText =
+                generateArtifactTextVerbose(a, c, if (versionRequired) b else "", SbtDependencyCommon.defaultLibScope)
+            } else {
+              processedDepText =
+                generateArtifactTextVerbose(a, b, if (versionRequired) c else "", SbtDependencyCommon.defaultLibScope)
+            }
           case List(a, b, c, d) =>
-            processedDepText = generateArtifactTextVerbose(
-              a,
-              b,
-              if (versionRequired) c else "",
-              if (configurationRequired) d else SbtDependencyCommon.defaultLibScope
-            )
+            if (b == targetCoordinates.getVersion) {
+              processedDepText = generateArtifactTextVerbose(
+                a,
+                c,
+                if (versionRequired) c else "",
+                if (configurationRequired) d else SbtDependencyCommon.defaultLibScope
+              )
+            } else {
+              processedDepText = generateArtifactTextVerbose(
+                a,
+                b,
+                if (versionRequired) c else "",
+                if (configurationRequired) d else SbtDependencyCommon.defaultLibScope
+              )
+            }
           case _ =>
         }
 
@@ -264,6 +278,8 @@ object SbtDependencyUtils {
     libDeps.getOrElse(Seq.empty)
   }
 
+  /** It may be necessary to exchange the positions of version and artifact in order to generate dependent coordinates.
+   */
   def processLibraryDependencyFromExprAndString(
     elem: (ScExpression, String, ScExpression),
     preserve: Boolean = false
@@ -810,7 +826,7 @@ object SbtDependencyUtils {
       libDeps
         .map(libDepInfixAndString => {
           val libDepArr = SbtDependencyUtils
-            .processLibraryDependencyFromExprAndString(libDepInfixAndString) // exist some issues
+            .processLibraryDependencyFromExprAndString(libDepInfixAndString)
             .map(_.asInstanceOf[String])
           val dataContext: DataContext = (dataId: String) => {
             if (CommonDataKeys.PSI_ELEMENT.is(dataId)) {
