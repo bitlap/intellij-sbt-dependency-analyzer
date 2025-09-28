@@ -1,10 +1,12 @@
-# Sbt Dependency Analyzer for IntelliJ IDEA
+# sbt-dependency-analyzer
 
 <img src="./logo.svg" width="250" height="150" alt="Sbt Dependency Analyzer Logo" align="right" />
 
-[![Build Status](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg)](https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml)
-[![Plugin Version](https://img.shields.io/jetbrains/plugin/v/22427-sbt-dependency-analyzer?label=Version)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions)
-[![Plugin Downloads](https://img.shields.io/jetbrains/plugin/d/22427?label=Downloads)](https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer)
+[![Build Status][badge:build]][gh:workflows-build]
+[![License][badge:license]][gh:license]
+[![GitHub releases][badge:release]][gh:releases]
+[![Version][badge:version]][plugin-versions]
+[![Downloads][badge:downloads]][plugin-homepage]
 
 English | [中文](README-CN.md)
 
@@ -14,7 +16,7 @@ English | [中文](README-CN.md)
 
 The Sbt Dependency Analyzer plugin for IntelliJ IDEA provides powerful visual tools to help you understand, manage, and troubleshoot your Sbt project's dependencies with ease. Gain clear insights into your library dependencies and their relationships, directly within your IDE.
 
-> Supports Community Edition, Ultimate, and Android Studio.
+<p align="center"><b>Sbt Dependency Analyzer plugin for IntelliJ based IDEs/Android Studio.</b></p>
 
 ## ✨ Key Features
 
@@ -88,3 +90,17 @@ Contributions are welcome! Please feel free to submit issues, feature requests, 
 </a>
 
 <br />
+
+[badge:build]: https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml/badge.svg
+[plugin-logo]: https://github.com/bitlap/sbt-dependency-analyzer/blob/master/logo.svg
+[badge:license]: https://img.shields.io/github/license/bitlap/sbt-dependency-analyzer.svg?style=flat-square
+[badge:release]: https://img.shields.io/github/release/bitlap/sbt-dependency-analyzer.svg?sort=semver&style=flat-square&colorB=0097A7
+[badge:version]: https://img.shields.io/jetbrains/plugin/v/22427.svg?style=flat-square&colorB=2196F3
+[badge:downloads]: https://img.shields.io/jetbrains/plugin/d/22427.svg?style=flat-square&colorB=5C6BC0
+
+[gh:sbt-dependency-analyzer]: https://github.com/bitlap/sbt-dependency-analyzer
+[gh:releases]: https://github.com/bitlap/sbt-dependency-analyzer/releases
+[gh:workflows-build]: https://github.com/bitlap/sbt-dependency-analyzer/actions/workflows/ScalaCI.yml
+[gh:license]: https://github.com/bitlap/sbt-dependency-analyzer/blob/master/LICENSE
+[plugin-homepage]: https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer
+[plugin-versions]: https://plugins.jetbrains.com/plugin/22427-sbt-dependency-analyzer/versions
