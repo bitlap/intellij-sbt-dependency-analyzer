@@ -16,7 +16,7 @@ English | [中文](README-CN.md)
 
 The Sbt Dependency Analyzer plugin for IntelliJ IDEA provides powerful visual tools to help you understand, manage, and troubleshoot your Sbt project's dependencies with ease. Gain clear insights into your library dependencies and their relationships, directly within your IDE.
 
-> Supports Community Edition, Ultimate, and Android Studio.
+<p align="center"><b>Sbt Dependency Analyzer plugin for IntelliJ based IDEs/Android Studio.</b></p>
 
 ## ✨ Key Features
 
