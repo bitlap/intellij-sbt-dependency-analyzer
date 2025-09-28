@@ -16,7 +16,8 @@
 
 IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，帮助您轻松理解、管理和排查 Sbt 项目的依赖关系。直接在 IDE 中清晰洞察您的库依赖及其关系。
 
-> 支持社区版、旗舰版和 Android Studio。
+<p align="center"><b>基于Intellij的IDE/Android Studio的Sbt 依赖分析器插件</b></p>
+
 
 ## ✨ 主要特性
 
