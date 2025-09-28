@@ -8,16 +8,16 @@
 [![Version][badge:version]][plugin-versions]
 [![Downloads][badge:downloads]][plugin-homepage]
 
+<p align="center"><b>基于Intellij的IDE/Android Studio的Sbt 依赖分析器插件</b></p>
+
+
 [English](README.md) | 中文
 
 **⭐ 觉得这个插件有用？请在 [GitHub](https://github.com/bitlap/sbt-dependency-analyzer) 上给它一个 Star 以示支持！**
 
 ## 🚀 概述
 
-IntelliJ IDEA 版 Sbt 依赖分析器插件提供了强大的可视化工具，帮助您轻松理解、管理和排查 Sbt 项目的依赖关系。直接在 IDE 中清晰洞察您的库依赖及其关系。
-
-<p align="center"><b>基于Intellij的IDE/Android Studio的Sbt 依赖分析器插件</b></p>
-
+Sbt 依赖分析器插件提供了强大的可视化工具，帮助您轻松理解、管理和排查 Sbt 项目的依赖关系。直接在 IDE 中清晰洞察您的库依赖及其关系。
 
 ## ✨ 主要特性
 
