@@ -138,7 +138,7 @@
 
     <change-notes>
         <![CDATA[
-            <h1>0.8.4-252.25557.131</h1>
+            <h1>0.8.4</h1>
             <ul>
                 <li>Fix Scala Native/Js Go to dependency .</li>
             </ul>
